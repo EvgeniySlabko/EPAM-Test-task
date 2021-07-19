@@ -12,7 +12,7 @@ namespace FileCabinetApp
         private const int ExplanationHelpIndex = 2;
 
         private static bool isRunning = true;
-        private static FileCabinetService fileCabinetService = new FileCabinetService();
+        private static FileCabinetService fileCabinetService = new ();
 
         private static Tuple<string, Action<string>>[] commands = new Tuple<string, Action<string>>[]
         {
@@ -20,6 +20,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("exit", Exit),
             new Tuple<string, Action<string>>("_stat_", Stat),
             new Tuple<string, Action<string>>("create", Create),
+            new Tuple<string, Action<string>>("_list_", List),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -28,6 +29,7 @@ namespace FileCabinetApp
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "_stat_", "prints the record statistics", "The '_stat_' command prints the record statistics." },
             new string[] { "create", "create a new record", "The 'create' command create a new record." },
+            new string[] { "_list_", "display list of records", "The '_list_' display list of records." },
         };
 
         public static void Main(string[] args)
@@ -74,6 +76,15 @@ namespace FileCabinetApp
         {
             Console.WriteLine($"There is no '{command}' command.");
             Console.WriteLine();
+        }
+
+        private static void List(string parameters)
+        {
+            FileCabinetRecord[] list = fileCabinetService.GetRecords();
+            foreach (var record in list)
+            {
+                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}");
+            }
         }
 
         private static void PrintHelp(string parameters)
