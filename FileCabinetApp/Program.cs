@@ -21,6 +21,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("_stat_", Stat),
             new Tuple<string, Action<string>>("create", Create),
             new Tuple<string, Action<string>>("_list_", List),
+            new Tuple<string, Action<string>>("edit", Edit),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -30,6 +31,7 @@ namespace FileCabinetApp
             new string[] { "_stat_", "prints the record statistics", "The '_stat_' command prints the record statistics." },
             new string[] { "create", "create a new record", "The 'create' command create a new record." },
             new string[] { "_list_", "display list of records", "The '_list_' display list of records." },
+            new string[] { "edit", "edit existing record", "The 'edit' edit existing record." },
         };
 
         public static void Main(string[] args)
@@ -114,92 +116,142 @@ namespace FileCabinetApp
             Console.WriteLine();
         }
 
-        private static void Create(string parameters)
+        private static bool EnterRecord(out FileCabinetRecord inputRecord)
         {
-            string enteredFirstName;
-            string enteredLastName;
-            string enteredDateOfBirth;
+            inputRecord = new FileCabinetRecord();
+            string enteredData;
 
-            string enteredShortProperty;
-            string enteredDecimalProperty;
-            string enteredCharProperty;
-            short pointsForFourTests;
-            char identificationLetter;
-            decimal identificationNumber;
-
-            DateTime dateOfBirth = new ();
+            Console.WriteLine();
             Console.Write($"First name: ");
-            enteredFirstName = Console.ReadLine();
+            inputRecord.FirstName = Console.ReadLine();
 
             Console.Write($"Last name: ");
-            enteredLastName = Console.ReadLine();
+            inputRecord.LastName = Console.ReadLine();
 
             Console.Write($"Date of birth: ");
-            enteredDateOfBirth = Console.ReadLine();
+            enteredData = Console.ReadLine();
+
             try
             {
-                dateOfBirth = Convert.ToDateTime(enteredDateOfBirth, CultureInfo.CurrentCulture);
+                inputRecord.DateOfBirth = Convert.ToDateTime(enteredData, CultureInfo.CurrentCulture);
             }
             catch (FormatException)
             {
                 Console.WriteLine($"Invalid date format");
-                return;
+                return false;
             }
 
             Console.Write($"Points For Four Tests: ");
-            enteredShortProperty = Console.ReadLine();
+            enteredData = Console.ReadLine();
             try
             {
-                pointsForFourTests = short.Parse(enteredShortProperty, CultureInfo.CurrentCulture);
+                inputRecord.PointsForFourTests = short.Parse(enteredData, CultureInfo.CurrentCulture);
             }
             catch (FormatException)
             {
-                Console.WriteLine($"{nameof(enteredShortProperty)} invalid format");
-                return;
+                Console.WriteLine($"{nameof(inputRecord.PointsForFourTests)} invalid format");
+                return false;
             }
             catch (OverflowException)
             {
-                Console.WriteLine($"{nameof(enteredShortProperty)} over flow");
-                return;
+                Console.WriteLine($"{nameof(inputRecord.PointsForFourTests)} overflow");
+                return false;
             }
 
             Console.Write($"Identification Letter: ");
-            enteredCharProperty = Console.ReadLine();
+            enteredData = Console.ReadLine();
             try
             {
-                identificationLetter = char.Parse(enteredCharProperty);
+                inputRecord.IdentificationLetter = char.Parse(enteredData);
             }
             catch (FormatException)
             {
-                Console.WriteLine($"{nameof(enteredCharProperty)} invalid format");
-                return;
+                Console.WriteLine($"{nameof(enteredData)} invalid format");
+                return false;
             }
 
             Console.Write($"Identification Number: ");
-            enteredDecimalProperty = Console.ReadLine();
+            enteredData = Console.ReadLine();
             try
             {
-                identificationNumber = decimal.Parse(enteredDecimalProperty, CultureInfo.CurrentCulture);
+                inputRecord.IdentificationNumber = decimal.Parse(enteredData, CultureInfo.CurrentCulture);
             }
             catch (FormatException)
             {
-                Console.WriteLine($"{nameof(enteredDecimalProperty)} invalid format");
-                return;
+                Console.WriteLine($"{nameof(inputRecord.IdentificationNumber)} invalid format");
+                return false;
             }
             catch (OverflowException)
             {
-                Console.WriteLine($"{nameof(enteredDecimalProperty)} over flow");
+                Console.WriteLine($"{nameof(inputRecord.IdentificationNumber)} over flow");
+                return false;
+            }
+
+            return true;
+        }
+
+        private static void Create(string parameters)
+        {
+            if (!EnterRecord(out FileCabinetRecord inputRecord))
+            {
                 return;
             }
 
-            int id = fileCabinetService.CreateRecord(enteredFirstName, enteredLastName, dateOfBirth, pointsForFourTests, identificationNumber, identificationLetter);
-            Console.WriteLine($"Record #{id} is created.");
+            int recordId = -1;
+            try
+            {
+                recordId = fileCabinetService.CreateRecord(inputRecord);
+            }
+            catch (ArgumentException exeption)
+            {
+                Console.Write(exeption);
+                Create(string.Empty);
+            }
+
+            Console.WriteLine($"Record #{recordId} is created.");
         }
 
         private static void Exit(string parameters)
         {
             Console.WriteLine("Exiting an application...");
             isRunning = false;
+        }
+
+        private static void Edit(string parameters)
+        {
+            int id;
+            try
+            {
+                id = int.Parse(parameters, CultureInfo.CurrentCulture);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Format error. Enter valid id");
+                return;
+            }
+            catch (OverflowException)
+            {
+                Console.WriteLine("Overflow error. Enter valid id");
+                return;
+            }
+
+            if (!EnterRecord(out FileCabinetRecord editRecord))
+            {
+                return;
+            }
+
+            editRecord.Id = id;
+            try
+            {
+                fileCabinetService.Edit(editRecord);
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+                return;
+            }
+
+            Console.WriteLine("Record #{id} is updated.");
         }
     }
 }
