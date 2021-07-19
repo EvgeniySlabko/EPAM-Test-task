@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace FileCabinetApp
 {
@@ -18,6 +19,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("help", PrintHelp),
             new Tuple<string, Action<string>>("exit", Exit),
             new Tuple<string, Action<string>>("_stat_", Stat),
+            new Tuple<string, Action<string>>("create", Create),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -25,13 +27,8 @@ namespace FileCabinetApp
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "_stat_", "prints the record statistics", "The '_stat_' command prints the record statistics." },
+            new string[] { "create", "create a new record", "The 'create' command create a new record." },
         };
-
-        private static void Stat(string parameters)
-        {
-            var recordsCount = Program.fileCabinetService.GetStat();
-            Console.WriteLine($"{recordsCount} record(s).");
-        }
 
         public static void Main(string[] args)
         {
@@ -67,6 +64,12 @@ namespace FileCabinetApp
             while (isRunning);
         }
 
+        private static void Stat(string parameters)
+        {
+            var recordsCount = Program.fileCabinetService.GetStat();
+            Console.WriteLine($"{recordsCount} record(s).");
+        }
+
         private static void PrintMissedCommandInfo(string command)
         {
             Console.WriteLine($"There is no '{command}' command.");
@@ -98,6 +101,49 @@ namespace FileCabinetApp
             }
 
             Console.WriteLine();
+        }
+
+        private static void Create(string parameters)
+        {
+            string enteredFirstName;
+            string enteredLastName;
+            string enteredDateOfBirth;
+
+            DateTime dateOfBirth = new ();
+            Console.Write($"First name: ");
+            enteredFirstName = Console.ReadLine();
+            Console.Write($"Last name: ");
+            enteredLastName = Console.ReadLine();
+            Console.Write($"Date of birth: ");
+            enteredDateOfBirth = Console.ReadLine();
+
+            try
+            {
+                if (string.IsNullOrEmpty(enteredLastName))
+                {
+                    throw new ArgumentException(nameof(enteredLastName));
+                }
+
+                if (string.IsNullOrEmpty(enteredFirstName))
+                {
+                    throw new ArgumentException(nameof(enteredFirstName));
+                }
+
+                dateOfBirth = Convert.ToDateTime(enteredDateOfBirth, CultureInfo.CurrentCulture);
+            }
+            catch (ArgumentException)
+            {
+                Console.WriteLine($"Invalid first name or last name");
+                return;
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine($"Invalid date of birthday value");
+                return;
+            }
+
+            int id = fileCabinetService.CreateRecord(enteredFirstName, enteredLastName, dateOfBirth);
+            Console.WriteLine($"Record #{id} is created.");
         }
 
         private static void Exit(string parameters)
