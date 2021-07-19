@@ -10,9 +10,9 @@ public class FileCabinetRecord
 
     public DateTime DateOfBirth { get; set; }
 
-    public short ShortProperty { get; set; }
+    public short PointsForFourTests { get; set; }
 
-    public decimal DecimalProperty { get; set; }
+    public decimal IdentificationNumber { get; set; }
 
-    public char CharProperty { get; set; }
+    public char IdentificationLetter { get; set; }
 }

@@ -83,7 +83,7 @@ namespace FileCabinetApp
             FileCabinetRecord[] list = fileCabinetService.GetRecords();
             foreach (var record in list)
             {
-                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, ({record.ShortProperty}, {record.DecimalProperty}, {record.CharProperty})");
+                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, (Personal number: {record.IdentificationNumber}{record.IdentificationLetter}, total points: {record.PointsForFourTests})");
             }
         }
 
@@ -123,26 +123,16 @@ namespace FileCabinetApp
             string enteredShortProperty;
             string enteredDecimalProperty;
             string enteredCharProperty;
-            short shortProperty;
-            char charProperty;
-            decimal decimalProperty;
+            short pointsForFourTests;
+            char identificationLetter;
+            decimal identificationNumber;
 
             DateTime dateOfBirth = new ();
             Console.Write($"First name: ");
             enteredFirstName = Console.ReadLine();
-            if (string.IsNullOrEmpty(enteredFirstName))
-            {
-                Console.WriteLine($"Invalid first name. Enter a non-empty string");
-                return;
-            }
 
             Console.Write($"Last name: ");
             enteredLastName = Console.ReadLine();
-            if (string.IsNullOrEmpty(enteredLastName))
-            {
-                Console.WriteLine($"Invalid last name. Enter a non-empty string");
-                return;
-            }
 
             Console.Write($"Date of birth: ");
             enteredDateOfBirth = Console.ReadLine();
@@ -156,11 +146,11 @@ namespace FileCabinetApp
                 return;
             }
 
-            Console.Write($"Short property: ");
+            Console.Write($"Points For Four Tests: ");
             enteredShortProperty = Console.ReadLine();
             try
             {
-                shortProperty = short.Parse(enteredShortProperty, CultureInfo.CurrentCulture);
+                pointsForFourTests = short.Parse(enteredShortProperty, CultureInfo.CurrentCulture);
             }
             catch (FormatException)
             {
@@ -173,11 +163,11 @@ namespace FileCabinetApp
                 return;
             }
 
-            Console.Write($"Char property: ");
+            Console.Write($"Identification Letter: ");
             enteredCharProperty = Console.ReadLine();
             try
             {
-                charProperty = char.Parse(enteredCharProperty);
+                identificationLetter = char.Parse(enteredCharProperty);
             }
             catch (FormatException)
             {
@@ -185,11 +175,11 @@ namespace FileCabinetApp
                 return;
             }
 
-            Console.Write($"Decimal property: ");
+            Console.Write($"Identification Number: ");
             enteredDecimalProperty = Console.ReadLine();
             try
             {
-                decimalProperty = decimal.Parse(enteredDecimalProperty, CultureInfo.CurrentCulture);
+                identificationNumber = decimal.Parse(enteredDecimalProperty, CultureInfo.CurrentCulture);
             }
             catch (FormatException)
             {
@@ -202,7 +192,7 @@ namespace FileCabinetApp
                 return;
             }
 
-            int id = fileCabinetService.CreateRecord(enteredFirstName, enteredLastName, dateOfBirth, shortProperty, decimalProperty, charProperty);
+            int id = fileCabinetService.CreateRecord(enteredFirstName, enteredLastName, dateOfBirth, pointsForFourTests, identificationNumber, identificationLetter);
             Console.WriteLine($"Record #{id} is created.");
         }
 
