@@ -83,7 +83,7 @@ namespace FileCabinetApp
             FileCabinetRecord[] list = fileCabinetService.GetRecords();
             foreach (var record in list)
             {
-                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}");
+                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, ({record.ShortProperty}, {record.DecimalProperty}, {record.CharProperty})");
             }
         }
 
@@ -120,40 +120,89 @@ namespace FileCabinetApp
             string enteredLastName;
             string enteredDateOfBirth;
 
+            string enteredShortProperty;
+            string enteredDecimalProperty;
+            string enteredCharProperty;
+            short shortProperty;
+            char charProperty;
+            decimal decimalProperty;
+
             DateTime dateOfBirth = new ();
             Console.Write($"First name: ");
             enteredFirstName = Console.ReadLine();
+            if (string.IsNullOrEmpty(enteredFirstName))
+            {
+                Console.WriteLine($"Invalid first name. Enter a non-empty string");
+                return;
+            }
+
             Console.Write($"Last name: ");
             enteredLastName = Console.ReadLine();
+            if (string.IsNullOrEmpty(enteredLastName))
+            {
+                Console.WriteLine($"Invalid last name. Enter a non-empty string");
+                return;
+            }
+
             Console.Write($"Date of birth: ");
             enteredDateOfBirth = Console.ReadLine();
-
             try
             {
-                if (string.IsNullOrEmpty(enteredLastName))
-                {
-                    throw new ArgumentException(nameof(enteredLastName));
-                }
-
-                if (string.IsNullOrEmpty(enteredFirstName))
-                {
-                    throw new ArgumentException(nameof(enteredFirstName));
-                }
-
                 dateOfBirth = Convert.ToDateTime(enteredDateOfBirth, CultureInfo.CurrentCulture);
-            }
-            catch (ArgumentException)
-            {
-                Console.WriteLine($"Invalid first name or last name");
-                return;
             }
             catch (FormatException)
             {
-                Console.WriteLine($"Invalid date of birthday value");
+                Console.WriteLine($"Invalid date format");
                 return;
             }
 
-            int id = fileCabinetService.CreateRecord(enteredFirstName, enteredLastName, dateOfBirth);
+            Console.Write($"Short property: ");
+            enteredShortProperty = Console.ReadLine();
+            try
+            {
+                shortProperty = short.Parse(enteredShortProperty, CultureInfo.CurrentCulture);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine($"{nameof(enteredShortProperty)} invalid format");
+                return;
+            }
+            catch (OverflowException)
+            {
+                Console.WriteLine($"{nameof(enteredShortProperty)} over flow");
+                return;
+            }
+
+            Console.Write($"Char property: ");
+            enteredCharProperty = Console.ReadLine();
+            try
+            {
+                charProperty = char.Parse(enteredCharProperty);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine($"{nameof(enteredCharProperty)} invalid format");
+                return;
+            }
+
+            Console.Write($"Decimal property: ");
+            enteredDecimalProperty = Console.ReadLine();
+            try
+            {
+                decimalProperty = decimal.Parse(enteredDecimalProperty, CultureInfo.CurrentCulture);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine($"{nameof(enteredDecimalProperty)} invalid format");
+                return;
+            }
+            catch (OverflowException)
+            {
+                Console.WriteLine($"{nameof(enteredDecimalProperty)} over flow");
+                return;
+            }
+
+            int id = fileCabinetService.CreateRecord(enteredFirstName, enteredLastName, dateOfBirth, shortProperty, decimalProperty, charProperty);
             Console.WriteLine($"Record #{id} is created.");
         }
 
