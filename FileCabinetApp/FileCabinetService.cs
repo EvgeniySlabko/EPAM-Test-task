@@ -8,6 +8,8 @@ public class FileCabinetService
 
     private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
 
+    private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+
     public int CreateRecord(FileCabinetRecord newRecord, bool generateNewId = true)
     {
         ValidityTest(newRecord);
@@ -39,6 +41,18 @@ public class FileCabinetService
             this.firstNameDictionary.Add(currrentRecord.FirstName.ToLower(CultureInfo.CurrentCulture), subList);
         }
 
+        // add record in lastNameDictionary
+        if (this.lastNameDictionary.TryGetValue(currrentRecord.LastName.ToLower(CultureInfo.CurrentCulture), out subList))
+        {
+            subList.Add(currrentRecord);
+        }
+        else
+        {
+            subList = new List<FileCabinetRecord>();
+            subList.Add(currrentRecord);
+            this.lastNameDictionary.Add(currrentRecord.LastName.ToLower(CultureInfo.CurrentCulture), subList);
+        }
+
         return currrentRecord.Id;
     }
 
@@ -64,8 +78,13 @@ public class FileCabinetService
             if (record.Id == newRecord.Id)
             {
                 ValidityTest(newRecord);
+
                 this.firstNameDictionary[record.FirstName.ToLower(CultureInfo.CurrentCulture)].Remove(record);
                 this.firstNameDictionary.Remove(record.FirstName.ToLower(CultureInfo.CurrentCulture));
+
+                this.lastNameDictionary[record.LastName.ToLower(CultureInfo.CurrentCulture)].Remove(record);
+                this.lastNameDictionary.Remove(record.LastName.ToLower(CultureInfo.CurrentCulture));
+
                 this.list.Remove(record);
 
                 this.CreateRecord(newRecord, false);
@@ -101,15 +120,12 @@ public class FileCabinetService
         }
 
         List<FileCabinetRecord> subList = new List<FileCabinetRecord>();
-        foreach (var record in this.list)
+        if (this.lastNameDictionary.TryGetValue(lastName.ToLower(CultureInfo.CurrentCulture), out subList))
         {
-            if (record.LastName.ToLower(CultureInfo.CurrentCulture) == lastName.ToLower(CultureInfo.CurrentCulture))
-            {
-                subList.Add(record);
-            }
+            return subList.ToArray();
         }
 
-        return subList.ToArray();
+        return null;
     }
 
     public FileCabinetRecord[] FindByDate(DateTime dataOfBirthday)
