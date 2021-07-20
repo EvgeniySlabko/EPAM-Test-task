@@ -332,7 +332,7 @@ namespace FileCabinetApp
                 case "lastname":
                     subList = fileCabinetService.FindByLastName(args[1]);
                     break;
-                    /*
+
                 case "dateofbirth":
                     DateTime tmpDate = new ();
                     try
@@ -347,7 +347,6 @@ namespace FileCabinetApp
 
                     subList = fileCabinetService.FindByDate(tmpDate);
                     break;
-                    */
 
                 default:
                     Console.WriteLine("Invalid arguments");

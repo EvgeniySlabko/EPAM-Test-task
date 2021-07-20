@@ -10,6 +10,8 @@ public class FileCabinetService
 
     private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
 
+    private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateTimeDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
+
     public int CreateRecord(FileCabinetRecord newRecord, bool generateNewId = true)
     {
         ValidityTest(newRecord);
@@ -53,6 +55,18 @@ public class FileCabinetService
             this.lastNameDictionary.Add(currrentRecord.LastName.ToLower(CultureInfo.CurrentCulture), subList);
         }
 
+        // add record in dateTimeDictionary
+        if (this.dateTimeDictionary.TryGetValue(currrentRecord.DateOfBirth, out subList))
+        {
+            subList.Add(currrentRecord);
+        }
+        else
+        {
+            subList = new List<FileCabinetRecord>();
+            subList.Add(currrentRecord);
+            this.dateTimeDictionary.Add(currrentRecord.DateOfBirth, subList);
+        }
+
         return currrentRecord.Id;
     }
 
@@ -84,6 +98,9 @@ public class FileCabinetService
 
                 this.lastNameDictionary[record.LastName.ToLower(CultureInfo.CurrentCulture)].Remove(record);
                 this.lastNameDictionary.Remove(record.LastName.ToLower(CultureInfo.CurrentCulture));
+
+                this.dateTimeDictionary[record.DateOfBirth].Remove(record);
+                this.dateTimeDictionary.Remove(record.DateOfBirth);
 
                 this.list.Remove(record);
 
@@ -131,15 +148,12 @@ public class FileCabinetService
     public FileCabinetRecord[] FindByDate(DateTime dataOfBirthday)
     {
         List<FileCabinetRecord> subList = new List<FileCabinetRecord>();
-        foreach (var record in this.list)
+        if (this.dateTimeDictionary.TryGetValue(dataOfBirthday, out subList))
         {
-            if (record.DateOfBirth == dataOfBirthday)
-            {
-                subList.Add(record);
-            }
+            return subList.ToArray();
         }
 
-        return subList.ToArray();
+        return null;
     }
 
     private static void ValidityTest(FileCabinetRecord newRecord)
