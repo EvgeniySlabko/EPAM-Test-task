@@ -14,7 +14,7 @@ public class FileCabinetService
 
     public int CreateRecord(FileCabinetRecord newRecord, bool generateNewId = true)
     {
-        ValidityTest(newRecord);
+        RecordValidityTest(newRecord);
         FileCabinetRecord currrentRecord = new FileCabinetRecord();
 
         currrentRecord.Id = generateNewId ? this.list.Count + 1 : newRecord.Id;
@@ -91,18 +91,9 @@ public class FileCabinetService
         {
             if (record.Id == newRecord.Id)
             {
-                ValidityTest(newRecord);
+                RecordValidityTest(newRecord);
 
-                this.firstNameDictionary[record.FirstName.ToLower(CultureInfo.CurrentCulture)].Remove(record);
-                this.firstNameDictionary.Remove(record.FirstName.ToLower(CultureInfo.CurrentCulture));
-
-                this.lastNameDictionary[record.LastName.ToLower(CultureInfo.CurrentCulture)].Remove(record);
-                this.lastNameDictionary.Remove(record.LastName.ToLower(CultureInfo.CurrentCulture));
-
-                this.dateTimeDictionary[record.DateOfBirth].Remove(record);
-                this.dateTimeDictionary.Remove(record.DateOfBirth);
-
-                this.list.Remove(record);
+                this.RemoveRecord(record);
 
                 this.CreateRecord(newRecord, false);
 
@@ -156,7 +147,7 @@ public class FileCabinetService
         return null;
     }
 
-    private static void ValidityTest(FileCabinetRecord newRecord)
+    private static void RecordValidityTest(FileCabinetRecord newRecord)
     {
         if (newRecord is null)
         {
@@ -187,5 +178,19 @@ public class FileCabinetService
         {
             throw new ArgumentException($"Invalid {nameof(newRecord.PointsForFourTests)}");
         }
+    }
+
+    private void RemoveRecord(FileCabinetRecord record)
+    {
+        this.firstNameDictionary[record.FirstName.ToLower(CultureInfo.CurrentCulture)].Remove(record);
+        this.firstNameDictionary.Remove(record.FirstName.ToLower(CultureInfo.CurrentCulture));
+
+        this.lastNameDictionary[record.LastName.ToLower(CultureInfo.CurrentCulture)].Remove(record);
+        this.lastNameDictionary.Remove(record.LastName.ToLower(CultureInfo.CurrentCulture));
+
+        this.dateTimeDictionary[record.DateOfBirth].Remove(record);
+        this.dateTimeDictionary.Remove(record.DateOfBirth);
+
+        this.list.Remove(record);
     }
 }

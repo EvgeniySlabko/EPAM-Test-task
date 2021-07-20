@@ -192,10 +192,7 @@ namespace FileCabinetApp
         private static void List(string parameters)
         {
             FileCabinetRecord[] list = fileCabinetService.GetRecords();
-            foreach (var record in list)
-            {
-                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, (Personal number: {record.IdentificationNumber}{record.IdentificationLetter}, total points: {record.PointsForFourTests})");
-            }
+            DisplayRecordList(list);
         }
 
         private static void PrintHelp(string parameters)
@@ -225,24 +222,24 @@ namespace FileCabinetApp
             Console.WriteLine();
         }
 
-        private static bool EnterRecord(out FileCabinetRecord inputRecord)
+        private static bool EnterRecord(out FileCabinetRecord newRecord)
         {
-            inputRecord = new FileCabinetRecord();
+            newRecord = new FileCabinetRecord();
             string enteredData;
 
             Console.WriteLine();
             Console.Write($"First name: ");
-            inputRecord.FirstName = Console.ReadLine();
+            newRecord.FirstName = Console.ReadLine();
 
             Console.Write($"Last name: ");
-            inputRecord.LastName = Console.ReadLine();
+            newRecord.LastName = Console.ReadLine();
 
             Console.Write($"Date of birth: ");
             enteredData = Console.ReadLine();
 
             try
             {
-                inputRecord.DateOfBirth = Convert.ToDateTime(enteredData, CultureInfo.CurrentCulture);
+                newRecord.DateOfBirth = Convert.ToDateTime(enteredData, CultureInfo.CurrentCulture);
             }
             catch (FormatException)
             {
@@ -254,16 +251,16 @@ namespace FileCabinetApp
             enteredData = Console.ReadLine();
             try
             {
-                inputRecord.PointsForFourTests = short.Parse(enteredData, CultureInfo.CurrentCulture);
+                newRecord.PointsForFourTests = short.Parse(enteredData, CultureInfo.CurrentCulture);
             }
             catch (FormatException)
             {
-                Console.WriteLine($"{nameof(inputRecord.PointsForFourTests)} invalid format");
+                Console.WriteLine($"{nameof(newRecord.PointsForFourTests)} invalid format");
                 return false;
             }
             catch (OverflowException)
             {
-                Console.WriteLine($"{nameof(inputRecord.PointsForFourTests)} overflow");
+                Console.WriteLine($"{nameof(newRecord.PointsForFourTests)} overflow");
                 return false;
             }
 
@@ -271,7 +268,7 @@ namespace FileCabinetApp
             enteredData = Console.ReadLine();
             try
             {
-                inputRecord.IdentificationLetter = char.Parse(enteredData);
+                newRecord.IdentificationLetter = char.Parse(enteredData);
             }
             catch (FormatException)
             {
@@ -283,23 +280,23 @@ namespace FileCabinetApp
             enteredData = Console.ReadLine();
             try
             {
-                inputRecord.IdentificationNumber = decimal.Parse(enteredData, CultureInfo.CurrentCulture);
+                newRecord.IdentificationNumber = decimal.Parse(enteredData, CultureInfo.CurrentCulture);
             }
             catch (FormatException)
             {
-                Console.WriteLine($"{nameof(inputRecord.IdentificationNumber)} invalid format");
+                Console.WriteLine($"{nameof(newRecord.IdentificationNumber)} invalid format");
                 return false;
             }
             catch (OverflowException)
             {
-                Console.WriteLine($"{nameof(inputRecord.IdentificationNumber)} over flow");
+                Console.WriteLine($"{nameof(newRecord.IdentificationNumber)} over flow");
                 return false;
             }
 
             return true;
         }
 
-        private static void DisplayList(FileCabinetRecord[] records)
+        private static void DisplayRecordList(FileCabinetRecord[] records)
         {
             if (records.Length == 0)
             {
@@ -359,13 +356,13 @@ namespace FileCabinetApp
             }
             else
             {
-                DisplayList(subList);
+                DisplayRecordList(subList);
             }
         }
 
         private static void Create(string parameters)
         {
-            if (!EnterRecord(out FileCabinetRecord inputRecord))
+            if (!EnterRecord(out FileCabinetRecord newRecord))
             {
                 return;
             }
@@ -373,12 +370,12 @@ namespace FileCabinetApp
             int recordId = -1;
             try
             {
-                recordId = fileCabinetService.CreateRecord(inputRecord);
+                recordId = fileCabinetService.CreateRecord(newRecord);
             }
             catch (ArgumentException exeption)
             {
-                Console.Write(exeption);
-                Create(string.Empty);
+                Console.Write(exeption.Message);
+                Create(parameters);
             }
 
             Console.WriteLine($"Record #{recordId} is created.");
@@ -418,13 +415,13 @@ namespace FileCabinetApp
             {
                 fileCabinetService.Edit(editRecord);
             }
-            catch (ArgumentException e)
+            catch (ArgumentException exeption)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(exeption.Message);
                 return;
             }
 
-            Console.WriteLine("Record #{id} is updated.");
+            Console.WriteLine($"Record #{id} is updated.");
         }
     }
 }
