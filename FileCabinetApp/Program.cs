@@ -210,22 +210,24 @@ namespace FileCabinetApp
                 return;
             }
 
-            if (args[0].ToLower(CultureInfo.CurrentCulture) == "firstname")
+            args[1] = args[1][1..^1];
+            FileCabinetRecord[] subList;
+            switch (args[0])
             {
-                FileCabinetRecord[] subList = fileCabinetService.FindByFirstName(args[1]);
-                if (subList.Length != 0)
-                {
-                    DisplayList(subList);
-                }
-                else
-                {
-                    Console.WriteLine("Records was not found");
-                }
+                case "firstname":
+                    subList = fileCabinetService.FindByFirstName(args[1]);
+                    break;
+
+                case "lastname":
+                    subList = fileCabinetService.FindByLastName(args[1]);
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid arguments");
+                    return;
             }
-            else
-            {
-                Console.WriteLine("Ivalid argument");
-            }
+
+            DisplayList(subList);
         }
 
         private static void Create(string parameters)

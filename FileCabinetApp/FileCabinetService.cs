@@ -71,6 +71,25 @@ public class FileCabinetService
         return subList.ToArray();
     }
 
+    public FileCabinetRecord[] FindByLastName(string lastName)
+    {
+        if (lastName is null)
+        {
+            throw new ArgumentNullException(nameof(lastName));
+        }
+
+        List<FileCabinetRecord> subList = new List<FileCabinetRecord>();
+        foreach (var record in this.list)
+        {
+            if (record.LastName.ToLower(CultureInfo.CurrentCulture) == lastName.ToLower(CultureInfo.CurrentCulture))
+            {
+                subList.Add(record);
+            }
+        }
+
+        return subList.ToArray();
+    }
+
     private static void ValidityTest(FileCabinetRecord newRecord)
     {
         if (newRecord is null)
