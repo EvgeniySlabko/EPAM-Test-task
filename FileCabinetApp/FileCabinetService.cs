@@ -6,15 +6,40 @@ public class FileCabinetService
 {
     private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
 
-    public int CreateRecord(FileCabinetRecord newRecord)
+    private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+
+    public int CreateRecord(FileCabinetRecord newRecord, bool generateNewId = true)
     {
         ValidityTest(newRecord);
-        newRecord.Id = this.list.Count + 1;
+        FileCabinetRecord currrentRecord = new FileCabinetRecord();
+
+        currrentRecord.Id = generateNewId ? this.list.Count + 1 : newRecord.Id;
+        currrentRecord.FirstName = newRecord.FirstName;
+        currrentRecord.LastName = newRecord.LastName;
+        currrentRecord.DateOfBirth = newRecord.DateOfBirth;
+
+        currrentRecord.IdentificationLetter = newRecord.IdentificationLetter;
+        currrentRecord.IdentificationNumber = newRecord.IdentificationNumber;
+        currrentRecord.PointsForFourTests = newRecord.PointsForFourTests;
+
+        List<FileCabinetRecord> subList;
 
         // add record in main list
-        this.list.Add(newRecord);
+        this.list.Add(currrentRecord);
 
-        return newRecord.Id;
+        // add record in firstNameDictionary
+        if (this.firstNameDictionary.TryGetValue(currrentRecord.FirstName.ToLower(CultureInfo.CurrentCulture), out subList))
+        {
+            subList.Add(currrentRecord);
+        }
+        else
+        {
+            subList = new List<FileCabinetRecord>();
+            subList.Add(currrentRecord);
+            this.firstNameDictionary.Add(currrentRecord.FirstName.ToLower(CultureInfo.CurrentCulture), subList);
+        }
+
+        return currrentRecord.Id;
     }
 
     public FileCabinetRecord[] GetRecords()
@@ -39,12 +64,12 @@ public class FileCabinetService
             if (record.Id == newRecord.Id)
             {
                 ValidityTest(newRecord);
-                record.FirstName = newRecord.FirstName;
-                record.LastName = newRecord.LastName;
-                record.DateOfBirth = newRecord.DateOfBirth;
-                record.PointsForFourTests = newRecord.PointsForFourTests;
-                record.IdentificationNumber = newRecord.IdentificationNumber;
-                record.IdentificationLetter = newRecord.IdentificationLetter;
+                this.firstNameDictionary[record.FirstName.ToLower(CultureInfo.CurrentCulture)].Remove(record);
+                this.firstNameDictionary.Remove(record.FirstName.ToLower(CultureInfo.CurrentCulture));
+                this.list.Remove(record);
+
+                this.CreateRecord(newRecord, false);
+
                 return;
             }
         }
@@ -60,15 +85,12 @@ public class FileCabinetService
         }
 
         List<FileCabinetRecord> subList = new List<FileCabinetRecord>();
-        foreach (var record in this.list)
+        if (this.firstNameDictionary.TryGetValue(firstName.ToLower(CultureInfo.CurrentCulture), out subList))
         {
-            if (record.FirstName.ToLower(CultureInfo.CurrentCulture) == firstName.ToLower(CultureInfo.CurrentCulture))
-            {
-                subList.Add(record);
-            }
+            return subList.ToArray();
         }
 
-        return subList.ToArray();
+        return null;
     }
 
     public FileCabinetRecord[] FindByLastName(string lastName)
