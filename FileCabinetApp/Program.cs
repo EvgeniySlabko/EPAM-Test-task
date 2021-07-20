@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace FileCabinetApp
@@ -22,6 +23,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("create", Create),
             new Tuple<string, Action<string>>("_list_", List),
             new Tuple<string, Action<string>>("edit", Edit),
+            new Tuple<string, Action<string>>("find", Find),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -32,6 +34,7 @@ namespace FileCabinetApp
             new string[] { "create", "create a new record", "The 'create' command create a new record." },
             new string[] { "_list_", "display list of records", "The '_list_' display list of records." },
             new string[] { "edit", "edit existing record", "The 'edit' edit existing record." },
+            new string[] { "find", "find existing record", "The 'find' find existing record." },
         };
 
         public static void Main(string[] args)
@@ -39,6 +42,10 @@ namespace FileCabinetApp
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
+
+#if DEBUG
+            AddSomeRecords();
+#endif
 
             do
             {
@@ -72,6 +79,108 @@ namespace FileCabinetApp
         {
             var recordsCount = Program.fileCabinetService.GetStat();
             Console.WriteLine($"{recordsCount} record(s).");
+        }
+
+        private static void AddSomeRecords()
+        {
+            FileCabinetRecord[] records = new FileCabinetRecord[]
+            {
+                new FileCabinetRecord
+                {
+                    Id = 0,
+                    FirstName = "Max",
+                    LastName = "maxov",
+                    DateOfBirth = new DateTime(1991, 6, 14),
+                    IdentificationNumber = 324,
+                    IdentificationLetter = 'f',
+                    PointsForFourTests = 123,
+                },
+                new FileCabinetRecord
+                {
+                    Id = 0,
+                    FirstName = "Evgeniy",
+                    LastName = "Slabko",
+                    DateOfBirth = new DateTime(1992, 6, 14),
+                    IdentificationNumber = 4323,
+                    IdentificationLetter = 'f',
+                    PointsForFourTests = 123,
+                },
+                new FileCabinetRecord
+                {
+                    Id = 0,
+                    FirstName = "Kiril",
+                    LastName = "Slabko",
+                    DateOfBirth = new DateTime(1993, 6, 14),
+                    IdentificationNumber = 342,
+                    IdentificationLetter = 'd',
+                    PointsForFourTests = 55,
+                },
+                new FileCabinetRecord
+                {
+                    Id = 0,
+                    FirstName = "Elena",
+                    LastName = "Chernaya",
+                    DateOfBirth = new DateTime(1999, 6, 14),
+                    IdentificationNumber = 4324,
+                    IdentificationLetter = 'f',
+                    PointsForFourTests = 44,
+                },
+                new FileCabinetRecord
+                {
+                    Id = 0,
+                    FirstName = "Masha",
+                    LastName = "Chernaya",
+                    DateOfBirth = new DateTime(1996, 6, 14),
+                    IdentificationNumber = 34234,
+                    IdentificationLetter = 'r',
+                    PointsForFourTests = 23,
+                },
+                new FileCabinetRecord
+                {
+                    Id = 0,
+                    FirstName = "Nik",
+                    LastName = "Arturov",
+                    DateOfBirth = new DateTime(1996, 6, 14),
+                    IdentificationNumber = 2342,
+                    IdentificationLetter = 'k',
+                    PointsForFourTests = 34,
+                },
+                new FileCabinetRecord
+                {
+                    Id = 0,
+                    FirstName = "uram",
+                    LastName = "Urumov",
+                    DateOfBirth = new DateTime(1991, 6, 14),
+                    IdentificationNumber = 3242,
+                    IdentificationLetter = 'b',
+                    PointsForFourTests = 32,
+                },
+                new FileCabinetRecord
+                {
+                    Id = 0,
+                    FirstName = "uram",
+                    LastName = "Urumov",
+                    DateOfBirth = new DateTime(1992, 6, 14),
+                    IdentificationNumber = 33,
+                    IdentificationLetter = 'h',
+                    PointsForFourTests = 1,
+                },
+                new FileCabinetRecord
+                {
+                    Id = 0,
+                    FirstName = "uram",
+                    LastName = "Urumov",
+                    DateOfBirth = new DateTime(1992, 6, 14),
+                    IdentificationNumber = 33,
+                    IdentificationLetter = 'h',
+                    PointsForFourTests = 1,
+                },
+            };
+
+            foreach (var record in records)
+            {
+                fileCabinetService.CreateRecord(record);
+            }
         }
 
         private static void PrintMissedCommandInfo(string command)
@@ -188,6 +297,70 @@ namespace FileCabinetApp
             }
 
             return true;
+        }
+
+        private static void DisplayList(FileCabinetRecord[] records)
+        {
+            if (records.Length == 0)
+            {
+                Console.WriteLine("The list is empty");
+            }
+
+            foreach (var record in records)
+            {
+                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, (Personal number: {record.IdentificationNumber}{record.IdentificationLetter}, total points: {record.PointsForFourTests})");
+            }
+        }
+
+        private static void Find(string parameters)
+        {
+            string[] args = parameters.Split(' ');
+            if (args.Length != 2 || !args[1].StartsWith('"') || !args[1].EndsWith('"'))
+            {
+                Console.WriteLine("Invalid arguments");
+                return;
+            }
+
+            args[1] = args[1][1..^1];
+            FileCabinetRecord[] subList;
+            switch (args[0])
+            {
+                case "firstname":
+                    subList = fileCabinetService.FindByFirstName(args[1]);
+                    break;
+
+                case "lastname":
+                    subList = fileCabinetService.FindByLastName(args[1]);
+                    break;
+
+                case "dateofbirth":
+                    DateTime tmpDate = new ();
+                    try
+                    {
+                        tmpDate = Convert.ToDateTime(args[1], CultureInfo.CurrentCulture);
+                    }
+                    catch (FormatException)
+                    {
+                        Console.WriteLine($"Invalid date format");
+                        return;
+                    }
+
+                    subList = fileCabinetService.FindByDate(tmpDate);
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid arguments");
+                    return;
+            }
+
+            if (subList is null)
+            {
+                Console.WriteLine("Records was not found");
+            }
+            else
+            {
+                DisplayList(subList);
+            }
         }
 
         private static void Create(string parameters)
