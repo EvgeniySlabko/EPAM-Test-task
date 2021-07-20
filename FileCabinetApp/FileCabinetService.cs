@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 public class FileCabinetService
 {
@@ -7,26 +8,13 @@ public class FileCabinetService
 
     public int CreateRecord(FileCabinetRecord newRecord)
     {
-        if (newRecord is null)
-        {
-            throw new ArgumentNullException(nameof(newRecord));
-        }
-
         ValidityTest(newRecord);
-        var record = new FileCabinetRecord
-        {
-            Id = this.list.Count + 1,
-            FirstName = newRecord.FirstName,
-            LastName = newRecord.LastName,
-            DateOfBirth = newRecord.DateOfBirth,
-            PointsForFourTests = newRecord.PointsForFourTests,
-            IdentificationNumber = newRecord.IdentificationNumber,
-            IdentificationLetter = newRecord.IdentificationLetter,
-        };
+        newRecord.Id = this.list.Count + 1;
 
-        this.list.Add(record);
+        // add record in main list
+        this.list.Add(newRecord);
 
-        return record.Id;
+        return newRecord.Id;
     }
 
     public FileCabinetRecord[] GetRecords()
@@ -64,8 +52,32 @@ public class FileCabinetService
         throw new ArgumentException("Id was not found");
     }
 
+    public FileCabinetRecord[] FindByFirstName(string firstName)
+    {
+        if (firstName is null)
+        {
+            throw new ArgumentNullException(nameof(firstName));
+        }
+
+        List<FileCabinetRecord> subList = new List<FileCabinetRecord>();
+        foreach (var record in this.list)
+        {
+            if (record.FirstName.ToLower(CultureInfo.CurrentCulture) == firstName.ToLower(CultureInfo.CurrentCulture))
+            {
+                subList.Add(record);
+            }
+        }
+
+        return subList.ToArray();
+    }
+
     private static void ValidityTest(FileCabinetRecord newRecord)
     {
+        if (newRecord is null)
+        {
+            throw new ArgumentNullException(nameof(newRecord));
+        }
+
         if (string.IsNullOrWhiteSpace(newRecord.FirstName) || newRecord.FirstName.Length < 2 || newRecord.FirstName.Length > 60)
         {
             throw new ArgumentException($"Invalid {nameof(newRecord.FirstName)}");

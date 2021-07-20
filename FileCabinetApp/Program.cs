@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace FileCabinetApp
@@ -22,6 +23,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("create", Create),
             new Tuple<string, Action<string>>("_list_", List),
             new Tuple<string, Action<string>>("edit", Edit),
+            new Tuple<string, Action<string>>("find", Find),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -32,6 +34,7 @@ namespace FileCabinetApp
             new string[] { "create", "create a new record", "The 'create' command create a new record." },
             new string[] { "_list_", "display list of records", "The '_list_' display list of records." },
             new string[] { "edit", "edit existing record", "The 'edit' edit existing record." },
+            new string[] { "find", "find existing record", "The 'find' find existing record." },
         };
 
         public static void Main(string[] args)
@@ -188,6 +191,41 @@ namespace FileCabinetApp
             }
 
             return true;
+        }
+
+        private static void DisplayList(FileCabinetRecord[] records)
+        {
+            foreach (var record in records)
+            {
+                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, (Personal number: {record.IdentificationNumber}{record.IdentificationLetter}, total points: {record.PointsForFourTests})");
+            }
+        }
+
+        private static void Find(string parameters)
+        {
+            string[] args = parameters.Split(' ');
+            if (args.Length != 2 || !args[1].StartsWith('"') || !args[1].EndsWith('"'))
+            {
+                Console.WriteLine("Invalid arguments");
+                return;
+            }
+
+            if (args[0].ToLower(CultureInfo.CurrentCulture) == "firstname")
+            {
+                FileCabinetRecord[] subList = fileCabinetService.FindByFirstName(args[1]);
+                if (subList.Length != 0)
+                {
+                    DisplayList(subList);
+                }
+                else
+                {
+                    Console.WriteLine("Records was not found");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Ivalid argument");
+            }
         }
 
         private static void Create(string parameters)
