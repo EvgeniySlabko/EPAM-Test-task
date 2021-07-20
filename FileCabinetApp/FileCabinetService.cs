@@ -90,6 +90,20 @@ public class FileCabinetService
         return subList.ToArray();
     }
 
+    public FileCabinetRecord[] FindByDate(DateTime dataOfBirthday)
+    {
+        List<FileCabinetRecord> subList = new List<FileCabinetRecord>();
+        foreach (var record in this.list)
+        {
+            if (record.DateOfBirth == dataOfBirthday)
+            {
+                subList.Add(record);
+            }
+        }
+
+        return subList.ToArray();
+    }
+
     private static void ValidityTest(FileCabinetRecord newRecord)
     {
         if (newRecord is null)

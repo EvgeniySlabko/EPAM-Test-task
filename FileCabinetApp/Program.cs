@@ -195,6 +195,11 @@ namespace FileCabinetApp
 
         private static void DisplayList(FileCabinetRecord[] records)
         {
+            if (records.Length == 0)
+            {
+                Console.WriteLine("The list is empty");
+            }
+
             foreach (var record in records)
             {
                 Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, (Personal number: {record.IdentificationNumber}{record.IdentificationLetter}, total points: {record.PointsForFourTests})");
@@ -220,6 +225,21 @@ namespace FileCabinetApp
 
                 case "lastname":
                     subList = fileCabinetService.FindByLastName(args[1]);
+                    break;
+
+                case "dateofbirth":
+                    DateTime tmpDate = new ();
+                    try
+                    {
+                        tmpDate = Convert.ToDateTime(args[1], CultureInfo.CurrentCulture);
+                    }
+                    catch (FormatException)
+                    {
+                        Console.WriteLine($"Invalid date format");
+                        return;
+                    }
+
+                    subList = fileCabinetService.FindByDate(tmpDate);
                     break;
 
                 default:
