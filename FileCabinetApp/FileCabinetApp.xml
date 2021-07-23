@@ -4,5 +4,237 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
+        <member name="T:FileCabinetRecord">
+            <summary>
+            Record.
+            </summary>
+        </member>
+        <member name="P:FileCabinetRecord.Id">
+            <summary>
+            Gets or sets record id.
+            </summary>
+            <value>Record id.</value>
+        </member>
+        <member name="P:FileCabinetRecord.FirstName">
+            <summary>
+            Gets or sets record first name.
+            </summary>
+            <value>Record first name.</value>
+        </member>
+        <member name="P:FileCabinetRecord.LastName">
+            <summary>
+            Gets or sets record last name.
+            </summary>
+            <value>Record last name.</value>
+        </member>
+        <member name="P:FileCabinetRecord.DateOfBirth">
+            <summary>
+            Gets or sets record date of birthday.
+            </summary>
+            <value>Record date of birthday.</value>
+        </member>
+        <member name="P:FileCabinetRecord.PointsForFourTests">
+            <summary>
+            Gets or sets record points for four tests.
+            </summary>
+            <value>Record points for four tests.</value>
+        </member>
+        <member name="P:FileCabinetRecord.IdentificationNumber">
+            <summary>
+            Gets or sets identification number.
+            </summary>
+            <value>Record identification number.</value>
+        </member>
+        <member name="P:FileCabinetRecord.IdentificationLetter">
+            <summary>
+            Gets or sets identification letter.
+            </summary>
+            <value>Record identification letter.</value>
+        </member>
+        <member name="T:FileCabinetService">
+            <summary>
+            Service for working with records.
+            </summary>
+        </member>
+        <member name="M:FileCabinetService.CreateRecord(FileCabinetRecord,System.Boolean)">
+            <summary>
+            Create new record and adds it to list and dictionaries.
+            </summary>
+            <param name="newRecord">Record to add.</param>
+            <param name="generateNewId">determines whether a new id needs to be generated.</param>
+            <returns>id of the new record.</returns>
+        </member>
+        <member name="M:FileCabinetService.GetRecords">
+            <summary>
+            Returns an array with records.
+            </summary>
+            <returns>array with records.</returns>
+        </member>
+        <member name="M:FileCabinetService.GetStat">
+            <summary>
+            Returns the number of entries in the list.
+            </summary>
+            <returns>Number of entries in the list.</returns>
+        </member>
+        <member name="M:FileCabinetService.Edit(FileCabinetRecord)">
+            <summary>
+            Edits the record by its id.
+            </summary>
+            <param name="newRecord">Edited record.</param>
+        </member>
+        <member name="M:FileCabinetService.FindByFirstName(System.String)">
+            <summary>
+            Find record by its first name.
+            </summary>
+            <param name="firstName">First name to search.</param>
+            <returns>Record if found otherwise null.</returns>
+        </member>
+        <member name="M:FileCabinetService.FindByLastName(System.String)">
+            <summary>
+            Find record by its last name.
+            </summary>
+            <param name="lastName">Last name to search.</param>
+            <returns>Record if found otherwise null.</returns>
+        </member>
+        <member name="M:FileCabinetService.FindByDate(System.DateTime)">
+            <summary>
+            Find record by its data of birthday.
+            </summary>
+            <param name="dataOfBirthday">Вata of birthday to search.</param>
+            <returns>Record if found otherwise null.</returns>
+        </member>
+        <member name="M:FileCabinetService.RecordValidityTest(FileCabinetRecord)">
+            <summary>
+            checks the record for validity.
+            </summary>
+            <param name="record">Record to check.</param>
+        </member>
+        <member name="M:FileCabinetService.RemoveRecord(FileCabinetRecord)">
+            <summary>
+            Remove record from list and dictionaries.
+            </summary>
+            <param name="record">Record to remove.</param>
+        </member>
+        <member name="T:FileCabinetApp.Program">
+            <summary>
+            Main class.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Program.Main">
+            <summary>
+            The main method where the work with the console is carried out.
+            </summary>
+        </member>
+        <member name="T:FileCabinetApp.Resource.Strings">
+            <summary>
+              Класс ресурса со строгой типизацией для поиска локализованных строк и т.д.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.ResourceManager">
+            <summary>
+              Возвращает кэшированный экземпляр ResourceManager, использованный этим классом.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.Culture">
+            <summary>
+              Перезаписывает свойство CurrentUICulture текущего потока для всех
+              обращений к ресурсу с помощью этого класса ресурса со строгой типизацией.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.AvailableCommandsMessage">
+            <summary>
+              Ищет локализованную строку, похожую на Available commands: .
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.CreateRecordMessage">
+            <summary>
+              Ищет локализованную строку, похожую на Record #{0} is created..
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.DateOfBirthMessage">
+            <summary>
+              Ищет локализованную строку, похожую на Date of birth: .
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.DeveloperName">
+            <summary>
+              Ищет локализованную строку, похожую на Evgeniy Slabko.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.EmptyListMessage">
+            <summary>
+              Ищет локализованную строку, похожую на The list is empty.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.ExitMessage">
+            <summary>
+              Ищет локализованную строку, похожую на Exiting an application....
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.FirstNameMessage">
+            <summary>
+              Ищет локализованную строку, похожую на First name: .
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.HelpMessageTemplate">
+            <summary>
+              Ищет локализованную строку, похожую на \t{0}\t- {1}.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.HintMessage">
+            <summary>
+              Ищет локализованную строку, похожую на Enter your command, or enter &apos;help&apos; to get help..
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.IdentificationLetterMessage">
+            <summary>
+              Ищет локализованную строку, похожую на Identification letter:.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.IdentificationNumberMessage">
+            <summary>
+              Ищет локализованную строку, похожую на Identification Number:.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.InvalidArgumentsMessage">
+            <summary>
+              Ищет локализованную строку, похожую на Invalid arguments.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.InvalidFormatMessage">
+            <summary>
+              Ищет локализованную строку, похожую на Invalid date format.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.LastNameMessage">
+            <summary>
+              Ищет локализованную строку, похожую на Last name: .
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.OverflowMessage">
+            <summary>
+              Ищет локализованную строку, похожую на Overflow error.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.PointsForFourTestsMessage">
+            <summary>
+              Ищет локализованную строку, похожую на Points for four tests:.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.RecordFindMissMessage">
+            <summary>
+              Ищет локализованную строку, похожую на Records were not found.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.UppdateRecordMessage">
+            <summary>
+              Ищет локализованную строку, похожую на Record #{0} is updated..
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Resource.Strings.WelcomeMessage">
+            <summary>
+              Ищет локализованную строку, похожую на File Cabinet Application, developed by.
+            </summary>
+        </member>
     </members>
 </doc>

@@ -1,16 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
+using System.Resources;
+using System.Threading;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    /// Main class.
+    /// </summary>
     public static class Program
     {
-        private const string DeveloperName = "Evgeniy Slabko";
-        private const string HintMessage = "Enter your command, or enter 'help' to get help.";
+        private const string ConsoleStartSymbol = ">";
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
+        private static ResourceManager rm = new ("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
 
         private static bool isRunning = true;
         private static FileCabinetService fileCabinetService = new ();
@@ -37,10 +42,14 @@ namespace FileCabinetApp
             new string[] { "find", "find existing record", "The 'find' find existing record." },
         };
 
-        public static void Main(string[] args)
+        /// <summary>
+        /// The main method where the work with the console is carried out.
+        /// </summary>
+        public static void Main()
         {
-            Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
-            Console.WriteLine(Program.HintMessage);
+            CultureInfo.CurrentCulture = new CultureInfo("en-US");
+            Console.WriteLine(rm.GetString("WelcomeMessage", CultureInfo.CurrentCulture));
+            Console.WriteLine(rm.GetString("HintMessage", CultureInfo.CurrentCulture));
             Console.WriteLine();
 
 #if DEBUG
@@ -49,14 +58,14 @@ namespace FileCabinetApp
 
             do
             {
-                Console.Write("> ");
+                Console.Write(ConsoleStartSymbol);
                 var inputs = Console.ReadLine().Split(' ', 2);
                 const int commandIndex = 0;
                 var command = inputs[commandIndex];
 
                 if (string.IsNullOrEmpty(command))
                 {
-                    Console.WriteLine(Program.HintMessage);
+                    Console.WriteLine(rm.GetString("HintMessage", CultureInfo.CurrentCulture));
                     continue;
                 }
 
@@ -211,11 +220,11 @@ namespace FileCabinetApp
             }
             else
             {
-                Console.WriteLine("Available commands:");
+                Console.WriteLine(rm.GetString("AvailableCommandsMessage", CultureInfo.CurrentCulture));
 
                 foreach (var helpMessage in helpMessages)
                 {
-                    Console.WriteLine("\t{0}\t- {1}", helpMessage[Program.CommandHelpIndex], helpMessage[Program.DescriptionHelpIndex]);
+                    Console.WriteLine(rm.GetString("HelpMessageTemplate", CultureInfo.CurrentCulture), helpMessage[Program.CommandHelpIndex], helpMessage[Program.DescriptionHelpIndex]);
                 }
             }
 
@@ -228,13 +237,13 @@ namespace FileCabinetApp
             string enteredData;
 
             Console.WriteLine();
-            Console.Write($"First name: ");
+            Console.Write(rm.GetString("FirstNameMessage", CultureInfo.CurrentCulture));
             newRecord.FirstName = Console.ReadLine();
 
-            Console.Write($"Last name: ");
+            Console.Write(rm.GetString("LastNameMessage", CultureInfo.CurrentCulture));
             newRecord.LastName = Console.ReadLine();
 
-            Console.Write($"Date of birth: ");
+            Console.Write(rm.GetString("DateOfBirthMessage", CultureInfo.CurrentCulture));
             enteredData = Console.ReadLine();
 
             try
@@ -243,11 +252,11 @@ namespace FileCabinetApp
             }
             catch (FormatException)
             {
-                Console.WriteLine($"Invalid date format");
+                Console.WriteLine(rm.GetString("InvalidFormatMessage", CultureInfo.CurrentCulture));
                 return false;
             }
 
-            Console.Write($"Points For Four Tests: ");
+            Console.Write(rm.GetString("PointsForFourTestsMessage", CultureInfo.CurrentCulture));
             enteredData = Console.ReadLine();
             try
             {
@@ -255,16 +264,16 @@ namespace FileCabinetApp
             }
             catch (FormatException)
             {
-                Console.WriteLine($"{nameof(newRecord.PointsForFourTests)} invalid format");
+                Console.WriteLine(rm.GetString("InvalidFormatMessage", CultureInfo.CurrentCulture));
                 return false;
             }
             catch (OverflowException)
             {
-                Console.WriteLine($"{nameof(newRecord.PointsForFourTests)} overflow");
+                Console.WriteLine(rm.GetString("OverflowMessage", CultureInfo.CurrentCulture));
                 return false;
             }
 
-            Console.Write($"Identification Letter: ");
+            Console.Write(rm.GetString("IdentificationLetterMessage", CultureInfo.CurrentCulture));
             enteredData = Console.ReadLine();
             try
             {
@@ -272,11 +281,11 @@ namespace FileCabinetApp
             }
             catch (FormatException)
             {
-                Console.WriteLine($"{nameof(enteredData)} invalid format");
+                Console.WriteLine(rm.GetString("InvalidFormatMessage", CultureInfo.CurrentCulture));
                 return false;
             }
 
-            Console.Write($"Identification Number: ");
+            Console.Write(rm.GetString("IdentificationNumberMessage", CultureInfo.CurrentCulture));
             enteredData = Console.ReadLine();
             try
             {
@@ -284,12 +293,12 @@ namespace FileCabinetApp
             }
             catch (FormatException)
             {
-                Console.WriteLine($"{nameof(newRecord.IdentificationNumber)} invalid format");
+                Console.WriteLine(rm.GetString("InvalidFormatMessage", CultureInfo.CurrentCulture));
                 return false;
             }
             catch (OverflowException)
             {
-                Console.WriteLine($"{nameof(newRecord.IdentificationNumber)} over flow");
+                Console.WriteLine(rm.GetString("OverflowMessage", CultureInfo.CurrentCulture));
                 return false;
             }
 
@@ -300,12 +309,12 @@ namespace FileCabinetApp
         {
             if (records.Length == 0)
             {
-                Console.WriteLine("The list is empty");
+                Console.WriteLine(rm.GetString("EmptyListMessage", CultureInfo.CurrentCulture));
             }
 
             foreach (var record in records)
             {
-                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, (Personal number: {record.IdentificationNumber}{record.IdentificationLetter}, total points: {record.PointsForFourTests})");
+                Console.WriteLine(rm.GetString("RecordInfoString", CultureInfo.CurrentCulture), record.Id, record.FirstName, record.LastName, record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo), record.IdentificationNumber, record.IdentificationLetter, record.PointsForFourTests);
             }
         }
 
@@ -314,7 +323,7 @@ namespace FileCabinetApp
             string[] args = parameters.Split(' ');
             if (args.Length != 2 || !args[1].StartsWith('"') || !args[1].EndsWith('"'))
             {
-                Console.WriteLine("Invalid arguments");
+                Console.WriteLine(rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
                 return;
             }
 
@@ -338,7 +347,7 @@ namespace FileCabinetApp
                     }
                     catch (FormatException)
                     {
-                        Console.WriteLine($"Invalid date format");
+                        Console.WriteLine(rm.GetString("InvalidFormatMessage", CultureInfo.CurrentCulture));
                         return;
                     }
 
@@ -346,18 +355,17 @@ namespace FileCabinetApp
                     break;
 
                 default:
-                    Console.WriteLine("Invalid arguments");
+                    Console.WriteLine(rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
                     return;
             }
 
             if (subList is null)
             {
-                Console.WriteLine("Records was not found");
+                Console.WriteLine(rm.GetString("RecordFindMissMessage", CultureInfo.CurrentCulture));
+                return;
             }
-            else
-            {
-                DisplayRecordList(subList);
-            }
+
+            DisplayRecordList(subList);
         }
 
         private static void Create(string parameters)
@@ -378,12 +386,12 @@ namespace FileCabinetApp
                 Create(parameters);
             }
 
-            Console.WriteLine($"Record #{recordId} is created.");
+            Console.WriteLine(rm.GetString("CreateRecordMessage", CultureInfo.CurrentCulture), recordId);
         }
 
         private static void Exit(string parameters)
         {
-            Console.WriteLine("Exiting an application...");
+            Console.WriteLine(rm.GetString("ExitMessage", CultureInfo.CurrentCulture));
             isRunning = false;
         }
 
@@ -396,17 +404,23 @@ namespace FileCabinetApp
             }
             catch (FormatException)
             {
-                Console.WriteLine("Format error. Enter valid id");
+                Console.WriteLine(rm.GetString("InvalidFormatMessage", CultureInfo.CurrentCulture));
                 return;
             }
             catch (OverflowException)
             {
-                Console.WriteLine("Overflow error. Enter valid id");
+                Console.WriteLine(rm.GetString("OverflowMessage", CultureInfo.CurrentCulture));
                 return;
             }
 
-            if (!EnterRecord(out FileCabinetRecord editRecord))
+            FileCabinetRecord editRecord;
+            try
             {
+                EnterRecord(out editRecord);
+            }
+            catch (ArgumentException exeption)
+            {
+                Console.WriteLine(exeption.Message);
                 return;
             }
 
@@ -421,7 +435,7 @@ namespace FileCabinetApp
                 return;
             }
 
-            Console.WriteLine($"Record #{id} is updated.");
+            Console.WriteLine(rm.GetString("UppdateRecordMessage", CultureInfo.CurrentCulture), id);
         }
     }
 }
