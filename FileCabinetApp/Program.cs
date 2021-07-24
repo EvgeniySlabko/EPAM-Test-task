@@ -15,10 +15,11 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
+        private static string[] dateFormats = { "dd-MM-yyyy", "dd/MM/yyyy", "dd.MM.yyyy" };
         private static ResourceManager rm = new ("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
 
         private static bool isRunning = true;
-        private static FileCabinetService fileCabinetService = new ();
+        private static FileCabinetCustomService fileCabinetService = new ();
 
         private static Tuple<string, Action<string>>[] commands = new Tuple<string, Action<string>>[]
         {
@@ -248,7 +249,7 @@ namespace FileCabinetApp
 
             try
             {
-                newRecord.DateOfBirth = Convert.ToDateTime(enteredData, CultureInfo.CurrentCulture);
+                newRecord.DateOfBirth = DateTime.ParseExact(enteredData, dateFormats, CultureInfo.CurrentCulture);
             }
             catch (FormatException)
             {

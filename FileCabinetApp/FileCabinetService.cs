@@ -5,7 +5,7 @@ using System.Globalization;
 /// <summary>
 /// Service for working with records.
 /// </summary>
-public class FileCabinetService
+public abstract class FileCabinetService
 {
     private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
 
@@ -23,7 +23,16 @@ public class FileCabinetService
     /// <returns>id of the new record.</returns>
     public int CreateRecord(FileCabinetRecord newRecord, bool generateNewId = true)
     {
-        RecordValidityTest(newRecord);
+        if (newRecord is null)
+        {
+            throw new ArgumentNullException(nameof(newRecord));
+        }
+
+        if (!this.ValidateParameters(newRecord))
+        {
+            throw new ArgumentException("Invalide parameters");
+        }
+
         FileCabinetRecord currrentRecord = new FileCabinetRecord
         {
             Id = generateNewId ? this.list.Count + 1 : newRecord.Id,
@@ -113,12 +122,15 @@ public class FileCabinetService
             throw new ArgumentNullException(nameof(newRecord));
         }
 
+        if (!this.ValidateParameters(newRecord))
+        {
+            throw new ArgumentException("Invalide parameters");
+        }
+
         foreach (var record in this.list)
         {
             if (record.Id == newRecord.Id)
             {
-                RecordValidityTest(newRecord);
-
                 this.RemoveRecord(record);
 
                 this.CreateRecord(newRecord, false);
@@ -186,41 +198,11 @@ public class FileCabinetService
     }
 
     /// <summary>
-    /// checks the record for validity.
+    /// Methor for validation given parameters.
     /// </summary>
-    /// <param name="record">Record to check.</param>
-    private static void RecordValidityTest(FileCabinetRecord record)
-    {
-        if (record is null)
-        {
-            throw new ArgumentNullException(nameof(record));
-        }
-
-        if (string.IsNullOrWhiteSpace(record.FirstName) || record.FirstName.Length < 2 || record.FirstName.Length > 60)
-        {
-            throw new ArgumentException($"Invalid {nameof(record.FirstName)}");
-        }
-
-        if (string.IsNullOrWhiteSpace(record.LastName) || record.LastName.Length < 2 || record.LastName.Length > 60)
-        {
-            throw new ArgumentException($"Invalid {nameof(record.LastName)}");
-        }
-
-        if (record.DateOfBirth < new DateTime(1950, 1, 1) || record.DateOfBirth > DateTime.Today)
-        {
-            throw new ArgumentException($"Invalid {nameof(record.DateOfBirth)}");
-        }
-
-        if (!char.IsLetter(record.IdentificationLetter))
-        {
-            throw new ArgumentException($"Invalid {nameof(record.IdentificationLetter)}");
-        }
-
-        if (record.PointsForFourTests > 400 || record.PointsForFourTests < 0)
-        {
-            throw new ArgumentException($"Invalid {nameof(record.PointsForFourTests)}");
-        }
-    }
+    /// <param name="record">Given recor.</param>
+    /// <returns>true if passed validation otherwise false.</returns>
+    protected abstract bool ValidateParameters(FileCabinetRecord record);
 
     /// <summary>
     /// Remove record from list and dictionaries.
