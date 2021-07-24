@@ -17,9 +17,9 @@ namespace FileCabinetApp
         private const int ExplanationHelpIndex = 2;
         private static string[] dateFormats = { "dd-MM-yyyy", "dd/MM/yyyy", "dd.MM.yyyy" };
         private static ResourceManager rm = new ("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
-
+        private static ValidationRule validationRule;
         private static bool isRunning = true;
-        private static FileCabinetCustomService fileCabinetService = new ();
+        private static FileCabinetService fileCabinetService;
 
         private static Tuple<string, Action<string>>[] commands = new Tuple<string, Action<string>>[]
         {
@@ -46,11 +46,12 @@ namespace FileCabinetApp
         /// <summary>
         /// The main method where the work with the console is carried out.
         /// </summary>
-        public static void Main()
+        public static void Main(string[] args)
         {
             CultureInfo.CurrentCulture = new CultureInfo("en-US");
             Console.WriteLine(rm.GetString("WelcomeMessage", CultureInfo.CurrentCulture));
-            Console.WriteLine(rm.GetString("HintMessage", CultureInfo.CurrentCulture));
+            ParseCommandLineArguments(args);
+            DisplayValidationRuleMessage();
             Console.WriteLine();
 
 #if DEBUG
@@ -83,6 +84,19 @@ namespace FileCabinetApp
                 }
             }
             while (isRunning);
+        }
+
+        private static void DisplayValidationRuleMessage()
+        {
+            switch (validationRule)
+            {
+                case ValidationRule.Default:
+                    Console.WriteLine(rm.GetString("ValidationRuleString", CultureInfo.CurrentCulture), "default");
+                    break;
+                case ValidationRule.Custom:
+                    Console.WriteLine(rm.GetString("ValidationRuleString", CultureInfo.CurrentCulture), "custom");
+                    break;
+            }
         }
 
         private static void Stat(string parameters)
@@ -197,6 +211,63 @@ namespace FileCabinetApp
         {
             Console.WriteLine($"There is no '{command}' command.");
             Console.WriteLine();
+        }
+
+        private static void SetValidator(string validator = "default")
+        {
+            switch (validator.ToLower(CultureInfo.CurrentCulture))
+            {
+                case "default":
+                    fileCabinetService = new FileCabinetDefaultService();
+                    validationRule = ValidationRule.Default;
+                    break;
+                case "custom":
+                    fileCabinetService = new FileCabinetCustomService();
+                    validationRule = ValidationRule.Custom;
+                    break;
+                default:
+                    throw new ArgumentException("Unable command line arguments");
+            }
+        }
+
+        private static void ParseCommandLineArguments(string[] args)
+        {
+            if (args is null)
+            {
+                throw new ArgumentNullException(nameof(args));
+            }
+
+            if (args.Length == 0)
+            {
+                SetValidator();
+                return;
+            }
+
+            if (args[0] == "-v")
+            {
+                if (args.Length != 2)
+                {
+                    throw new ArgumentNullException(nameof(args));
+                }
+
+                SetValidator(args[1]);
+            }
+            else
+            {
+                string[] ruleArgument = args[0].Split('=');
+                if (ruleArgument.Length == 2)
+                {
+                    SetValidator(ruleArgument[1]);
+                }
+                else if (ruleArgument[0] == "--validation-rules")
+                {
+                    SetValidator(ruleArgument[1]);
+                }
+                else
+                {
+                    throw new ArgumentException("Unable command line arguments");
+                }
+            }
         }
 
         private static void List(string parameters)
