@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    /// Validator with default rule set.
+    /// </summary>
     public class DefaultValidator : IRecordValidator
     {
         /// <summary>
         /// Validator with default validation rules.
         /// </summary>
         /// <param name="record">Given record.</param>
-        /// <returns></returns>
+        /// <returns>true, if the parameters are valid otherwise false.</returns>
         public bool ValidateParameters(FileCabinetRecord record)
         {
             if (record is null)

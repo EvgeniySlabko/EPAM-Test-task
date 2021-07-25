@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    /// Validator with custom rule set.
+    /// </summary>
     public class CustomValidator : IRecordValidator
     {
         /// <summary>
-        /// Validator with custom validation rules.
+        /// Validator with custom validation rules(reduced rele set).
         /// </summary>
         /// <param name="record">Given record.</param>
-        /// <returns></returns>
+        /// <returns>true, if the parameters are valid otherwise false.</returns>
         public bool ValidateParameters(FileCabinetRecord record)
         {
             if (record is null)

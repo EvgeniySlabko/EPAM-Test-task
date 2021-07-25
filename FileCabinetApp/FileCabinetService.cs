@@ -9,6 +9,8 @@ namespace FileCabinetApp
     /// </summary>
     public abstract class FileCabinetService
     {
+        private readonly IRecordValidator validator;
+
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
 
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
@@ -16,6 +18,15 @@ namespace FileCabinetApp
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
 
         private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateTimeDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileCabinetService"/> class.
+        /// </summary>
+        /// <param name="validator">Given validator.</param>
+        protected FileCabinetService(IRecordValidator validator)
+        {
+            this.validator = validator;
+        }
 
         /// <summary>
         /// Create new record and adds it to list and dictionaries.
@@ -202,7 +213,6 @@ namespace FileCabinetApp
         /// <summary>
         /// Methor for validation given parameters.
         /// </summary>
-        /// <param name="record">Given recor.</param>
         /// <returns>true if passed validation otherwise false.</returns>
         protected abstract IRecordValidator CreateValidator();
 
