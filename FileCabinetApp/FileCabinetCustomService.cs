@@ -11,34 +11,9 @@ namespace FileCabinetApp
     /// </summary>
     public class FileCabinetCustomService : FileCabinetService
     {
-        /// <summary>
-        /// Custom parameters validation method. Records with any date of birth and any number of points for fout tests.
-        /// </summary>
-        /// <param name="record">Given record.</param>
-        /// <returns>true if passed validation otherwise false.</returns>
-        protected override bool ValidateParameters(FileCabinetRecord record)
+        protected override IRecordValidator CreateValidator()
         {
-            if (record is null)
-            {
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(record.FirstName) || record.FirstName.Length < 2 || record.FirstName.Length > 60)
-            {
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(record.LastName) || record.LastName.Length < 2 || record.LastName.Length > 60)
-            {
-                return false;
-            }
-
-            if (!char.IsLetter(record.IdentificationLetter))
-            {
-                return false;
-            }
-
-            return true;
+            return new CustomValidator();
         }
     }
 }

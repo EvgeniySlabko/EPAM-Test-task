@@ -44,8 +44,9 @@ namespace FileCabinetApp
         };
 
         /// <summary>
-        /// The main method where the work with the console is carried out.
+        /// Entry point.
         /// </summary>
+        /// <param name="args">Command line arguments.</param>
         public static void Main(string[] args)
         {
             CultureInfo.CurrentCulture = new CultureInfo("en-US");
