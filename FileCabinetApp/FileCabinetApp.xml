@@ -4,59 +4,42 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
-        <member name="T:FileCabinetRecord">
+        <member name="T:FileCabinetApp.CustomValidator">
             <summary>
-            Record.
+            Validator with custom rule set.
             </summary>
         </member>
-        <member name="P:FileCabinetRecord.Id">
+        <member name="M:FileCabinetApp.CustomValidator.ValidateParameters(FileCabinetRecord)">
             <summary>
-            Gets or sets record id.
+            Validator with custom validation rules(reduced rele set).
             </summary>
-            <value>Record id.</value>
+            <param name="record">Given record.</param>
+            <returns>true, if the parameters are valid otherwise false.</returns>
         </member>
-        <member name="P:FileCabinetRecord.FirstName">
+        <member name="T:FileCabinetApp.DefaultValidator">
             <summary>
-            Gets or sets record first name.
+            Validator with default rule set.
             </summary>
-            <value>Record first name.</value>
         </member>
-        <member name="P:FileCabinetRecord.LastName">
+        <member name="M:FileCabinetApp.DefaultValidator.ValidateParameters(FileCabinetRecord)">
             <summary>
-            Gets or sets record last name.
+            Validator with default validation rules.
             </summary>
-            <value>Record last name.</value>
+            <param name="record">Given record.</param>
+            <returns>true, if the parameters are valid otherwise false.</returns>
         </member>
-        <member name="P:FileCabinetRecord.DateOfBirth">
-            <summary>
-            Gets or sets record date of birthday.
-            </summary>
-            <value>Record date of birthday.</value>
-        </member>
-        <member name="P:FileCabinetRecord.PointsForFourTests">
-            <summary>
-            Gets or sets record points for four tests.
-            </summary>
-            <value>Record points for four tests.</value>
-        </member>
-        <member name="P:FileCabinetRecord.IdentificationNumber">
-            <summary>
-            Gets or sets identification number.
-            </summary>
-            <value>Record identification number.</value>
-        </member>
-        <member name="P:FileCabinetRecord.IdentificationLetter">
-            <summary>
-            Gets or sets identification letter.
-            </summary>
-            <value>Record identification letter.</value>
-        </member>
-        <member name="T:FileCabinetService">
+        <member name="T:FileCabinetApp.FileCabinetService">
             <summary>
             Service for working with records.
             </summary>
         </member>
-        <member name="M:FileCabinetService.CreateRecord(FileCabinetRecord,System.Boolean)">
+        <member name="M:FileCabinetApp.FileCabinetService.#ctor(FileCabinetApp.IRecordValidator)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetService"/> class.
+            </summary>
+            <param name="validator">Given validator.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(FileCabinetRecord,System.Boolean)">
             <summary>
             Create new record and adds it to list and dictionaries.
             </summary>
@@ -64,66 +47,73 @@
             <param name="generateNewId">determines whether a new id needs to be generated.</param>
             <returns>id of the new record.</returns>
         </member>
-        <member name="M:FileCabinetService.GetRecords">
+        <member name="M:FileCabinetApp.FileCabinetService.GetRecords">
             <summary>
             Returns an array with records.
             </summary>
             <returns>array with records.</returns>
         </member>
-        <member name="M:FileCabinetService.GetStat">
+        <member name="M:FileCabinetApp.FileCabinetService.GetStat">
             <summary>
             Returns the number of entries in the list.
             </summary>
             <returns>Number of entries in the list.</returns>
         </member>
-        <member name="M:FileCabinetService.Edit(FileCabinetRecord)">
+        <member name="M:FileCabinetApp.FileCabinetService.Edit(FileCabinetRecord)">
             <summary>
             Edits the record by its id.
             </summary>
             <param name="newRecord">Edited record.</param>
         </member>
-        <member name="M:FileCabinetService.FindByFirstName(System.String)">
+        <member name="M:FileCabinetApp.FileCabinetService.FindByFirstName(System.String)">
             <summary>
             Find record by its first name.
             </summary>
             <param name="firstName">First name to search.</param>
             <returns>Record if found otherwise null.</returns>
         </member>
-        <member name="M:FileCabinetService.FindByLastName(System.String)">
+        <member name="M:FileCabinetApp.FileCabinetService.FindByLastName(System.String)">
             <summary>
             Find record by its last name.
             </summary>
             <param name="lastName">Last name to search.</param>
             <returns>Record if found otherwise null.</returns>
         </member>
-        <member name="M:FileCabinetService.FindByDate(System.DateTime)">
+        <member name="M:FileCabinetApp.FileCabinetService.FindByDate(System.DateTime)">
             <summary>
             Find record by its data of birthday.
             </summary>
             <param name="dataOfBirthday">Вata of birthday to search.</param>
             <returns>Record if found otherwise null.</returns>
         </member>
-        <member name="M:FileCabinetService.RecordValidityTest(FileCabinetRecord)">
-            <summary>
-            checks the record for validity.
-            </summary>
-            <param name="record">Record to check.</param>
-        </member>
-        <member name="M:FileCabinetService.RemoveRecord(FileCabinetRecord)">
+        <member name="M:FileCabinetApp.FileCabinetService.RemoveRecord(FileCabinetRecord)">
             <summary>
             Remove record from list and dictionaries.
             </summary>
             <param name="record">Record to remove.</param>
+        </member>
+        <member name="T:FileCabinetApp.IRecordValidator">
+            <summary>
+            Interface for validators.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.ValidateParameters(FileCabinetRecord)">
+            <summary>
+            Method for parameter validation.
+            </summary>
+            <param name="record">Given parameters.</param>
+            <returns>true, if the parameters are valid otherwise false.</returns>
         </member>
         <member name="T:FileCabinetApp.Program">
             <summary>
             Main class.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.Program.Main">
+        <member name="M:FileCabinetApp.Program.Main(System.String[])">
             <summary>
-            The main method where the work with the console is carried out.
+            Entry point.
             </summary>
+            <param name="args">Command line arguments.</param>
         </member>
         <member name="T:FileCabinetApp.Resource.Strings">
             <summary>
@@ -235,6 +225,68 @@
             <summary>
               Ищет локализованную строку, похожую на File Cabinet Application, developed by.
             </summary>
+        </member>
+        <member name="T:FileCabinetApp.ValidationRule">
+            <summary>
+            Type of validation rule.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.ValidationRule.Default">
+            <summary>
+            Default validation rule.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.ValidationRule.Custom">
+            <summary>
+            Custom validation rule.
+            </summary>
+        </member>
+        <member name="T:FileCabinetRecord">
+            <summary>
+            Record.
+            </summary>
+        </member>
+        <member name="P:FileCabinetRecord.Id">
+            <summary>
+            Gets or sets record id.
+            </summary>
+            <value>Record id.</value>
+        </member>
+        <member name="P:FileCabinetRecord.FirstName">
+            <summary>
+            Gets or sets record first name.
+            </summary>
+            <value>Record first name.</value>
+        </member>
+        <member name="P:FileCabinetRecord.LastName">
+            <summary>
+            Gets or sets record last name.
+            </summary>
+            <value>Record last name.</value>
+        </member>
+        <member name="P:FileCabinetRecord.DateOfBirth">
+            <summary>
+            Gets or sets record date of birthday.
+            </summary>
+            <value>Record date of birthday.</value>
+        </member>
+        <member name="P:FileCabinetRecord.PointsForFourTests">
+            <summary>
+            Gets or sets record points for four tests.
+            </summary>
+            <value>Record points for four tests.</value>
+        </member>
+        <member name="P:FileCabinetRecord.IdentificationNumber">
+            <summary>
+            Gets or sets identification number.
+            </summary>
+            <value>Record identification number.</value>
+        </member>
+        <member name="P:FileCabinetRecord.IdentificationLetter">
+            <summary>
+            Gets or sets identification letter.
+            </summary>
+            <value>Record identification letter.</value>
         </member>
     </members>
 </doc>

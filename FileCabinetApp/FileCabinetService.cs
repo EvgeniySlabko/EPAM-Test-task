@@ -7,7 +7,7 @@ namespace FileCabinetApp
     /// <summary>
     /// Service for working with records.
     /// </summary>
-    public abstract class FileCabinetService
+    public class FileCabinetService
     {
         private readonly IRecordValidator validator;
 
@@ -23,7 +23,7 @@ namespace FileCabinetApp
         /// Initializes a new instance of the <see cref="FileCabinetService"/> class.
         /// </summary>
         /// <param name="validator">Given validator.</param>
-        protected FileCabinetService(IRecordValidator validator)
+        public FileCabinetService(IRecordValidator validator)
         {
             this.validator = validator;
         }
@@ -41,7 +41,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(newRecord));
             }
 
-            if (!this.CreateValidator().ValidateParameters(newRecord))
+            if (!this.validator.ValidateParameters(newRecord))
             {
                 throw new ArgumentException("Invalide parameters");
             }
@@ -135,7 +135,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(newRecord));
             }
 
-            if (!this.CreateValidator().ValidateParameters(newRecord))
+            if (!this.validator.ValidateParameters(newRecord))
             {
                 throw new ArgumentException("Invalide parameters");
             }
@@ -209,12 +209,6 @@ namespace FileCabinetApp
 
             return null;
         }
-
-        /// <summary>
-        /// Methor for validation given parameters.
-        /// </summary>
-        /// <returns>true if passed validation otherwise false.</returns>
-        protected abstract IRecordValidator CreateValidator();
 
         /// <summary>
         /// Remove record from list and dictionaries.

@@ -214,21 +214,31 @@ namespace FileCabinetApp
             Console.WriteLine();
         }
 
-        private static void SetValidator(string validator = "default")
+        private static void SetValidator(string validator = null)
         {
-            switch (validator.ToLower(CultureInfo.CurrentCulture))
+            IRecordValidator currentValidator;
+            if (validator is null)
             {
-                case "default":
-                    fileCabinetService = new FileCabinetDefaultService();
-                    validationRule = ValidationRule.Default;
-                    break;
-                case "custom":
-                    fileCabinetService = new FileCabinetCustomService();
-                    validationRule = ValidationRule.Custom;
-                    break;
-                default:
-                    throw new ArgumentException("Unable command line arguments");
+                currentValidator = new DefaultValidator();
             }
+            else
+            {
+                switch (validator.ToLower(CultureInfo.CurrentCulture))
+                {
+                    case "default":
+                        currentValidator = new DefaultValidator();
+                        validationRule = ValidationRule.Default;
+                        break;
+                    case "custom":
+                        currentValidator = new DefaultValidator();
+                        validationRule = ValidationRule.Custom;
+                        break;
+                    default:
+                        throw new ArgumentException("Unable command line arguments");
+                }
+            }
+
+            fileCabinetService = new FileCabinetService(currentValidator);
         }
 
         private static void ParseCommandLineArguments(string[] args)
