@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reflection;
 using System.Resources;
-using System.Threading;
 
 namespace FileCabinetApp
 {
@@ -283,7 +283,7 @@ namespace FileCabinetApp
 
         private static void List(string parameters)
         {
-            FileCabinetRecord[] list = fileCabinetService.GetRecords();
+            var list = fileCabinetService.GetRecords();
             DisplayRecordList(list);
         }
 
@@ -388,9 +388,9 @@ namespace FileCabinetApp
             return true;
         }
 
-        private static void DisplayRecordList(FileCabinetRecord[] records)
+        private static void DisplayRecordList(ReadOnlyCollection<FileCabinetRecord> records)
         {
-            if (records.Length == 0)
+            if (records.Count == 0)
             {
                 Console.WriteLine(rm.GetString("EmptyListMessage", CultureInfo.CurrentCulture));
             }
@@ -411,7 +411,7 @@ namespace FileCabinetApp
             }
 
             args[1] = args[1][1..^1];
-            FileCabinetRecord[] subList;
+            ReadOnlyCollection<FileCabinetRecord> subList;
             switch (args[0])
             {
                 case "firstname":
