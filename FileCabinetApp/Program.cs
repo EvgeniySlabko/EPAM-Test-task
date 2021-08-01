@@ -15,12 +15,11 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
-        private static string[] dateFormats = { "dd-MM-yyyy", "dd/MM/yyyy", "dd.MM.yyyy" };
         private static ResourceManager rm = new ("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
         private static ValidationRule validationRule;
         private static bool isRunning = true;
-        private static FileCabinetService fileCabinetService;
-
+        private static IFileCabinetService fileCabinetService;
+        private static ValidationRuleSet validationRuleSet;
         private static Tuple<string, Action<string>>[] commands = new Tuple<string, Action<string>>[]
         {
             new Tuple<string, Action<string>>("help", PrintHelp),
@@ -104,6 +103,32 @@ namespace FileCabinetApp
         {
             var recordsCount = Program.fileCabinetService.GetStat();
             Console.WriteLine($"{recordsCount} record(s).");
+        }
+
+        private static void MakeDefaultValidationSet()
+        {
+            validationRuleSet = new ValidationRuleSet
+            {
+                DateValidator = new DateValidator(new DateTime(1960), DateTime.Now),
+                FirstNameVAidator = new StringValidator(40, 2),
+                LastNameValidator = new StringValidator(40, 2),
+                PointsForFourTestsValidator = new ShortValidator(0, 400),
+                IdentificationNumberValidator = new DecimalValidator(0, decimal.MaxValue),
+                IdentificationLetterValidator = new CharValidator((c) => char.IsLetter(c)),
+            };
+        }
+
+        private static void MakeCustomValidationSet()
+        {
+            validationRuleSet = new ValidationRuleSet
+            {
+                DateValidator = new DateValidator(new DateTime(1960), DateTime.Now),
+                FirstNameVAidator = null,
+                LastNameValidator = null,
+                PointsForFourTestsValidator = new ShortValidator(0, 400),
+                IdentificationNumberValidator = null,
+                IdentificationLetterValidator = new CharValidator((c) => char.IsLetter(c)),
+            };
         }
 
         private static void AddSomeRecords()
@@ -216,21 +241,21 @@ namespace FileCabinetApp
 
         private static void SetValidator(string validator = null)
         {
-            IRecordValidator currentValidator;
             if (validator is null)
             {
-                currentValidator = new DefaultValidator();
+                MakeDefaultValidationSet();
             }
             else
             {
                 switch (validator.ToLower(CultureInfo.CurrentCulture))
                 {
                     case "default":
-                        currentValidator = new DefaultValidator();
+
+                        MakeDefaultValidationSet();
                         validationRule = ValidationRule.Default;
                         break;
                     case "custom":
-                        currentValidator = new DefaultValidator();
+                        MakeCustomValidationSet();
                         validationRule = ValidationRule.Custom;
                         break;
                     default:
@@ -238,7 +263,7 @@ namespace FileCabinetApp
                 }
             }
 
-            fileCabinetService = new FileCabinetService(currentValidator);
+            fileCabinetService = new FileCabinetService(new ServiceValidator(validationRuleSet));
         }
 
         private static void ParseCommandLineArguments(string[] args)
@@ -314,78 +339,27 @@ namespace FileCabinetApp
             Console.WriteLine();
         }
 
-        private static bool EnterRecord(out FileCabinetRecord newRecord)
+        private static void EnterRecord(out FileCabinetRecord newRecord)
         {
             newRecord = new FileCabinetRecord();
-            string enteredData;
-
             Console.WriteLine();
             Console.Write(rm.GetString("FirstNameMessage", CultureInfo.CurrentCulture));
-            newRecord.FirstName = Console.ReadLine();
+            newRecord.FirstName = ReadInput(new StringConverter().GetDelegate(), validationRuleSet.FirstNameVAidator.GetDelegate());
 
             Console.Write(rm.GetString("LastNameMessage", CultureInfo.CurrentCulture));
-            newRecord.LastName = Console.ReadLine();
+            newRecord.LastName = ReadInput(new StringConverter().GetDelegate(), validationRuleSet.LastNameValidator.GetDelegate());
 
             Console.Write(rm.GetString("DateOfBirthMessage", CultureInfo.CurrentCulture));
-            enteredData = Console.ReadLine();
-
-            try
-            {
-                newRecord.DateOfBirth = DateTime.ParseExact(enteredData, dateFormats, CultureInfo.CurrentCulture);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine(rm.GetString("InvalidFormatMessage", CultureInfo.CurrentCulture));
-                return false;
-            }
-
-            Console.Write(rm.GetString("PointsForFourTestsMessage", CultureInfo.CurrentCulture));
-            enteredData = Console.ReadLine();
-            try
-            {
-                newRecord.PointsForFourTests = short.Parse(enteredData, CultureInfo.CurrentCulture);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine(rm.GetString("InvalidFormatMessage", CultureInfo.CurrentCulture));
-                return false;
-            }
-            catch (OverflowException)
-            {
-                Console.WriteLine(rm.GetString("OverflowMessage", CultureInfo.CurrentCulture));
-                return false;
-            }
-
-            Console.Write(rm.GetString("IdentificationLetterMessage", CultureInfo.CurrentCulture));
-            enteredData = Console.ReadLine();
-            try
-            {
-                newRecord.IdentificationLetter = char.Parse(enteredData);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine(rm.GetString("InvalidFormatMessage", CultureInfo.CurrentCulture));
-                return false;
-            }
+            newRecord.DateOfBirth = ReadInput(new DateTimeConverter().GetDelegate(), validationRuleSet.DateValidator.GetDelegate());
 
             Console.Write(rm.GetString("IdentificationNumberMessage", CultureInfo.CurrentCulture));
-            enteredData = Console.ReadLine();
-            try
-            {
-                newRecord.IdentificationNumber = decimal.Parse(enteredData, CultureInfo.CurrentCulture);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine(rm.GetString("InvalidFormatMessage", CultureInfo.CurrentCulture));
-                return false;
-            }
-            catch (OverflowException)
-            {
-                Console.WriteLine(rm.GetString("OverflowMessage", CultureInfo.CurrentCulture));
-                return false;
-            }
+            newRecord.IdentificationNumber = ReadInput(new DecimalConverter().GetDelegate(), validationRuleSet.IdentificationNumberValidator.GetDelegate());
 
-            return true;
+            Console.Write(rm.GetString("IdentificationLetterMessage", CultureInfo.CurrentCulture));
+            newRecord.IdentificationLetter = ReadInput(new CharConverter().GetDelegate(), validationRuleSet.IdentificationLetterValidator.GetDelegate());
+
+            Console.Write(rm.GetString("PointsForFourTestsMessage", CultureInfo.CurrentCulture));
+            newRecord.PointsForFourTests = ReadInput(new ShortConverter().GetDelegate(), validationRuleSet.PointsForFourTestsValidator.GetDelegate());
         }
 
         private static void DisplayRecordList(ReadOnlyCollection<FileCabinetRecord> records)
@@ -453,11 +427,7 @@ namespace FileCabinetApp
 
         private static void Create(string parameters)
         {
-            if (!EnterRecord(out FileCabinetRecord newRecord))
-            {
-                return;
-            }
-
+            EnterRecord(out FileCabinetRecord newRecord);
             int recordId = -1;
             try
             {
@@ -519,6 +489,35 @@ namespace FileCabinetApp
             }
 
             Console.WriteLine(rm.GetString("UppdateRecordMessage", CultureInfo.CurrentCulture), id);
+        }
+
+        private static T ReadInput<T>(Func<string, Tuple<bool, string, T>> converter, Func<T, Tuple<bool, string>> validator)
+        {
+            do
+            {
+                T value;
+
+                var input = Console.ReadLine();
+                var conversionResult = converter(input);
+
+                if (!conversionResult.Item1)
+                {
+                    Console.WriteLine($"Conversion failed: {conversionResult.Item2}. Please, correct your input.");
+                    continue;
+                }
+
+                value = conversionResult.Item3;
+
+                var validationResult = validator(value);
+                if (!validationResult.Item1)
+                {
+                    Console.WriteLine($"Validation failed: {validationResult.Item2}. Please, correct your input.");
+                    continue;
+                }
+
+                return value;
+            }
+            while (true);
         }
     }
 }

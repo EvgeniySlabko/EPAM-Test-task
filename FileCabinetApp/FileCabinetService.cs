@@ -12,13 +12,13 @@ namespace FileCabinetApp
     {
         private readonly IRecordValidator validator;
 
-        private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
+        private readonly List<FileCabinetRecord> list = new ();
 
-        private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+        private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new ();
 
-        private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+        private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new ();
 
-        private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateTimeDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
+        private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateTimeDictionary = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetService"/> class.
@@ -47,7 +47,7 @@ namespace FileCabinetApp
                 throw new ArgumentException("Invalide parameters");
             }
 
-            FileCabinetRecord currrentRecord = new FileCabinetRecord
+            FileCabinetRecord currrentRecord = new ()
             {
                 Id = generateNewId ? this.list.Count + 1 : newRecord.Id,
                 FirstName = newRecord.FirstName,

@@ -4,29 +4,128 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
-        <member name="T:FileCabinetApp.CustomValidator">
+        <member name="T:FileCabinetApp.CharConverter">
             <summary>
-            Validator with custom rule set.
+            Char conversion class.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.CustomValidator.ValidateParameters(FileCabinetRecord)">
+        <member name="M:FileCabinetApp.CharConverter.Convert(System.String)">
             <summary>
-            Validator with custom validation rules(reduced rele set).
+            converts a string to a value of char type.
             </summary>
-            <param name="record">Given record.</param>
-            <returns>true, if the parameters are valid otherwise false.</returns>
+            <param name="inputString">Given string.</param>
+            <returns>Result tupple. bool value - validation result. string value - message string. T value - result of conversion.</returns>
         </member>
-        <member name="T:FileCabinetApp.DefaultValidator">
+        <member name="M:FileCabinetApp.CharConverter.GetDelegate">
             <summary>
-            Validator with default rule set.
+            Gets the delegate.
+            </summary>
+            <returns>Gets delegate for Conversion method.</returns>
+        </member>
+        <member name="T:FileCabinetApp.DateTimeConverter">
+            <summary>
+            Convertor for DateTime type.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.DefaultValidator.ValidateParameters(FileCabinetRecord)">
+        <member name="M:FileCabinetApp.DateTimeConverter.Convert(System.String)">
             <summary>
-            Validator with default validation rules.
+            converts a string to a value of char type.
             </summary>
-            <param name="record">Given record.</param>
-            <returns>true, if the parameters are valid otherwise false.</returns>
+            <param name="inputString">Given string.</param>
+            <returns>Result tupple. bool value - validation result. string value - message string. DateTime value - result of conversion.</returns>
+        </member>
+        <member name="M:FileCabinetApp.DateTimeConverter.GetDelegate">
+            <summary>
+            Gets the delegate.
+            </summary>
+            <returns>Gets delegate for conversion method.</returns>
+        </member>
+        <member name="T:FileCabinetApp.DecimalConverter">
+            <summary>
+            Convertor for decimal type.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.DecimalConverter.Convert(System.String)">
+            <summary>
+            Converts a string to a value of decimal type.
+            </summary>
+            <param name="inputString">Given string.</param>
+            <returns>Result tupple. bool value - validation result. string value - message string. Decimal value - result of conversion.</returns>
+        </member>
+        <member name="M:FileCabinetApp.DecimalConverter.GetDelegate">
+            <summary>
+            Gets the delegate.
+            </summary>
+            <returns>Gets delegate for conversion method.</returns>
+        </member>
+        <member name="T:FileCabinetApp.IConverter`1">
+            <summary>
+            Interface for all validators.
+            </summary>
+            <typeparam name="T">Validation variable type.</typeparam>
+        </member>
+        <member name="M:FileCabinetApp.IConverter`1.Convert(System.String)">
+            <summary>
+            converts a string to a value of T type.
+            </summary>
+            <param name="inputString">Given string.</param>
+            <returns>Result tupple. bool value - validation result. string value - message string. T value - result of convertation.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IConverter`1.GetDelegate">
+            <summary>
+            Gets convert method delegate.
+            </summary>
+            <returns>Convert method delegate.</returns>
+        </member>
+        <member name="T:FileCabinetApp.IntConverter">
+            <summary>
+            Validator for int type.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.IntConverter.Convert(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:FileCabinetApp.IntConverter.GetDelegate">
+            <summary>
+            Gets the delegate.
+            </summary>
+            <returns>Gets delegate for conversion method.</returns>
+        </member>
+        <member name="T:FileCabinetApp.ShortConverter">
+            <summary>
+            Short conversion class.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.ShortConverter.Convert(System.String)">
+            <summary>
+            Converts a string to a value of short type.
+            </summary>
+            <param name="inputString">Given string.</param>
+            <returns>Result tupple. bool value - validation result. string value - message string. Short value - result of conversion.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ShortConverter.GetDelegate">
+            <summary>
+            Gets the delegate.
+            </summary>
+            <returns>Gets delegate for conversion method.</returns>
+        </member>
+        <member name="T:FileCabinetApp.StringConverter">
+            <summary>
+            String conversion class.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.StringConverter.Convert(System.String)">
+            <summary>
+            Plug for string conversion method.
+            </summary>
+            <param name="inputString">Given string.</param>
+            <returns>Result tupple. bool value - validation result. string value - message string. string value - result of conversion.</returns>
+        </member>
+        <member name="M:FileCabinetApp.StringConverter.GetDelegate">
+            <summary>
+            Gets the delegate.
+            </summary>
+            <returns>Gets delegate for conversion method.</returns>
         </member>
         <member name="T:FileCabinetApp.FileCabinetService">
             <summary>
@@ -91,6 +190,58 @@
             Remove record from list and dictionaries.
             </summary>
             <param name="record">Record to remove.</param>
+        </member>
+        <member name="T:FileCabinetApp.IFileCabinetService">
+            <summary>
+            Service for working with records.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.CreateRecord(FileCabinetRecord,System.Boolean)">
+            <summary>
+            Create new record and adds it to list and dictionaries.
+            </summary>
+            <param name="newRecord">Record to add.</param>
+            <param name="generateNewId">determines whether a new id needs to be generated.</param>
+            <returns>id of the new record.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.Edit(FileCabinetRecord)">
+            <summary>
+            Edits the record by its id.
+            </summary>
+            <param name="newRecord">Edited record.</param>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.FindByDate(System.DateTime)">
+            <summary>
+            Find record by its data of birthday.
+            </summary>
+            <param name="dataOfBirthday">Вata of birthday to search.</param>
+            <returns>Record if found otherwise null.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.FindByFirstName(System.String)">
+            <summary>
+            Find record by its first name.
+            </summary>
+            <param name="firstName">First name to search.</param>
+            <returns>Record if found otherwise null.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.FindByLastName(System.String)">
+            <summary>
+            Find record by its last name.
+            </summary>
+            <param name="lastName">Last name to search.</param>
+            <returns>Record if found otherwise null.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.GetRecords">
+            <summary>
+            Returns an array with records.
+            </summary>
+            <returns>array with records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.GetStat">
+            <summary>
+            Returns the number of entries in the list.
+            </summary>
+            <returns>Number of entries in the list.</returns>
         </member>
         <member name="T:FileCabinetApp.IRecordValidator">
             <summary>
@@ -226,6 +377,24 @@
               Ищет локализованную строку, похожую на File Cabinet Application, developed by.
             </summary>
         </member>
+        <member name="T:FileCabinetApp.ServiceValidator">
+            <summary>
+            Validator with default rule set.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.ServiceValidator.#ctor(FileCabinetApp.ValidationRuleSet)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.ServiceValidator"/> class.
+            </summary>
+            <param name="validationRuleSet">Given validation rule set.</param>
+        </member>
+        <member name="M:FileCabinetApp.ServiceValidator.ValidateParameters(FileCabinetRecord)">
+            <summary>
+            Validator with default validation rules.
+            </summary>
+            <param name="record">Given record.</param>
+            <returns>true, if the parameters are valid otherwise false.</returns>
+        </member>
         <member name="T:FileCabinetApp.ValidationRule">
             <summary>
             Type of validation rule.
@@ -240,6 +409,232 @@
             <summary>
             Custom validation rule.
             </summary>
+        </member>
+        <member name="T:FileCabinetApp.ValidationRuleSet">
+            <summary>
+            Set of rules for validation.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRuleSet.FirstNameVAidator">
+            <summary>
+            Gets or sets first name validator deleate.
+            </summary>
+            <value>First name vaidator delegate.</value>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRuleSet.LastNameValidator">
+            <summary>
+            Gets or sets last name validator deleate.
+            </summary>
+            <value>Last name vaidator delegate.</value>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRuleSet.Id">
+            <summary>
+            Gets or sets id validator deleate.
+            </summary>
+            <value>Id vaidator delegate.</value>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRuleSet.DateValidator">
+            <summary>
+            Gets or sets Date validator deleate.
+            </summary>
+            <value>Date vaidator delegate.</value>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRuleSet.PointsForFourTestsValidator">
+            <summary>
+            Gets or sets points for four tests validator deleate.
+            </summary>
+            <value>Points for four tests vaidator delegate.</value>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRuleSet.IdentificationNumberValidator">
+            <summary>
+            Gets or sets identification number validator deleate.
+            </summary>
+            <value>Identification number vaidator delegate.</value>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRuleSet.IdentificationLetterValidator">
+            <summary>
+            Gets or sets identification letter validator deleate.
+            </summary>
+            <value>Identification letter vaidator delegate.</value>
+        </member>
+        <member name="T:FileCabinetApp.CharValidator">
+            <summary>
+            Vaidator for char type.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.CharValidator.#ctor(System.Predicate{System.Char})">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.CharValidator"/> class.
+            </summary>
+            <param name="predicate">Predicate for validate char character.</param>
+        </member>
+        <member name="M:FileCabinetApp.CharValidator.#ctor(System.Collections.Generic.List{System.Predicate{System.Char}})">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.CharValidator"/> class.
+            </summary>
+            <param name="predicateList">List of predicates for validate char character.</param>
+        </member>
+        <member name="M:FileCabinetApp.CharValidator.GetDelegate">
+            <summary>
+            Gets the delegate.
+            </summary>
+            <returns>Gets delegate for Validate method.</returns>
+        </member>
+        <member name="M:FileCabinetApp.CharValidator.Validate(System.Char)">
+            <summary>
+            String validation.
+            </summary>
+            <param name="inputValue">Given char character.</param>
+            <returns>Result tupple. bool value - validation result. string value - message string.</returns>
+        </member>
+        <member name="T:FileCabinetApp.DateValidator">
+            <summary>
+            Vaidator for DateTime type.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.DateValidator.#ctor(System.DateTime,System.DateTime)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.DateValidator"/> class.
+            String validator constructor.
+            </summary>
+            <param name="maxDateOfBirth">Maximum date of birth.</param>
+            <param name="minDateOfBirth">Minimal date of birth.</param>
+        </member>
+        <member name="M:FileCabinetApp.DateValidator.GetDelegate">
+            <summary>
+            Gets the delegate.
+            </summary>
+            <returns>Gets delegate for Validate mrthod.</returns>
+        </member>
+        <member name="M:FileCabinetApp.DateValidator.Validate(System.DateTime)">
+            <summary>
+            String validation.
+            </summary>
+            <param name="inputDateOfBirth">Given string.</param>
+            <returns>Result tupple. bool value - validation result. string value - message string.</returns>
+        </member>
+        <member name="T:FileCabinetApp.DecimalValidator">
+            <summary>
+            Vaidator for decimal type.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.DecimalValidator.#ctor(System.Decimal,System.Decimal)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.DecimalValidator"/> class.
+            String validator constructor.
+            </summary>
+            <param name="maxValue">Maximum value.</param>
+            <param name="minValue">Minimal value length.</param>
+        </member>
+        <member name="M:FileCabinetApp.DecimalValidator.GetDelegate">
+            <summary>
+            Gets the delegate.
+            </summary>
+            <returns>Gets delegate for Validate mrthod.</returns>
+        </member>
+        <member name="M:FileCabinetApp.DecimalValidator.Validate(System.Decimal)">
+            <summary>
+            Given value.
+            </summary>
+            <param name="inputValue">Given decimal value.</param>
+            <returns>Result tupple. bool value - validation result. string value - message string.</returns>
+        </member>
+        <member name="T:FileCabinetApp.IntValidator">
+            <summary>
+            Vaidator for int type.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.IntValidator.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.IntValidator"/> class.
+            String validator constructor.
+            </summary>
+            <param name="maxValue">Maximum value.</param>
+            <param name="minValue">Minimal value length.</param>
+        </member>
+        <member name="M:FileCabinetApp.IntValidator.GetDelegate">
+            <summary>
+            Gets the delegate.
+            </summary>
+            <returns>Gets delegate for Validate mrthod.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IntValidator.Validate(System.Int32)">
+            <summary>
+            String validation.
+            </summary>
+            <param name="inputValue">Given string.</param>
+            <returns>Result tupple. bool value - validation result. string value - message string.</returns>
+        </member>
+        <member name="T:FileCabinetApp.IValidator`1">
+            <summary>
+            Interface for all validators.
+            </summary>
+            <typeparam name="T">The type of the variable to be validated.</typeparam>
+        </member>
+        <member name="M:FileCabinetApp.IValidator`1.Validate(`0)">
+            <summary>
+            Validation method.
+            </summary>
+            <param name="value">Given value or validation.</param>
+            <returns>True if the value is valid otherwise false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IValidator`1.GetDelegate">
+            <summary>
+            Gets the delegate.
+            </summary>
+            <returns>True if the value is valid otherwise false.</returns>
+        </member>
+        <member name="T:FileCabinetApp.StringValidator">
+            <summary>
+            Vaidator for string type.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.StringValidator.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.StringValidator"/> class.
+            String validator constructor.
+            </summary>
+            <param name="maxLen">Maximum string length.</param>
+            <param name="minLen">Minimal string length.</param>
+        </member>
+        <member name="M:FileCabinetApp.StringValidator.GetDelegate">
+            <summary>
+            Gets the delegate.
+            </summary>
+            <returns>Gets delegate for Validate mrthod.</returns>
+        </member>
+        <member name="M:FileCabinetApp.StringValidator.Validate(System.String)">
+            <summary>
+            String validation.
+            </summary>
+            <param name="inputStr">Given string.</param>
+            <returns>Result tupple. bool value - validation result. string value - message string.</returns>
+        </member>
+        <member name="T:FileCabinetApp.ShortValidator">
+            <summary>
+            Vaidator for Short type.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.ShortValidator.#ctor(System.Int16,System.Int16)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.ShortValidator"/> class.
+            String validator constructor.
+            </summary>
+            <param name="maxValue">Maximum string length.</param>
+            <param name="minValue">Minimal string length.</param>
+        </member>
+        <member name="M:FileCabinetApp.ShortValidator.GetDelegate">
+            <summary>
+            Gets the delegate.
+            </summary>
+            <returns>Gets delegate for Validate method.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ShortValidator.Validate(System.Int16)">
+            <summary>
+            String validation.
+            </summary>
+            <param name="inputValue">Given string.</param>
+            <returns>Result tupple. bool value - validation result. string value - message string.</returns>
         </member>
         <member name="T:FileCabinetRecord">
             <summary>
