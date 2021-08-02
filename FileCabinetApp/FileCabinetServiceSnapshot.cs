@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace FileCabinetApp
 {
@@ -34,6 +35,26 @@ namespace FileCabinetApp
             foreach (var record in this.records)
             {
                 csvWriter.Write(record);
+            }
+        }
+
+        /// <summary>
+        /// Save records to XML file.
+        /// </summary>
+        /// <param name="writer">Given StreamWriter object.</param>
+        public void SaveToXml(StreamWriter writer)
+        {
+            var sts = new XmlWriterSettings()
+            {
+                Indent = true,
+            };
+
+            using var xmlWriter = XmlWriter.Create(writer, sts);
+            var fileCabinetRecordXmlWriter = new FileCabinetRecordXmlWriter(xmlWriter);
+
+            foreach (var record in this.records)
+            {
+                fileCabinetRecordXmlWriter.Write(record);
             }
         }
     }

@@ -150,6 +150,28 @@
             </summary>
             <param name="record">Record to write.</param>
         </member>
+        <member name="T:FileCabinetApp.FileCabinetRecordXmlWriter">
+            <summary>
+            Writes records to cvc File.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordXmlWriter.#ctor(System.Xml.XmlWriter)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetRecordXmlWriter"/> class.
+            </summary>
+            <param name="writer">Given XmltWriter instance.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordXmlWriter.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:FileCabinetApp.FileCabinetRecordXmlWriter"/> class.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordXmlWriter.Write(FileCabinetRecord)">
+            <summary>
+            Write record.
+            </summary>
+            <param name="record">Record to write.</param>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetService">
             <summary>
             Service for working with records.
@@ -234,6 +256,12 @@
         <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToCsv(System.IO.StreamWriter)">
             <summary>
             Save records to CSV file.
+            </summary>
+            <param name="writer">Given StreamWriter object.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToXml(System.IO.StreamWriter)">
+            <summary>
+            Save records to XML file.
             </summary>
             <param name="writer">Given StreamWriter object.</param>
         </member>

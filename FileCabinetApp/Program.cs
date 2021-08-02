@@ -473,7 +473,8 @@ namespace FileCabinetApp
                 return;
             }
 
-            if (separateParameters[0].ToLower(CultureInfo.CurrentCulture).Equals("csv"))
+            string secondParameter = separateParameters[0].ToLower(CultureInfo.CurrentCulture);
+            if (secondParameter.Equals("csv"))
             {
                 try
                 {
@@ -491,6 +492,28 @@ namespace FileCabinetApp
                     Console.WriteLine(Rm.GetString("ErrorWriteToFileMessage", CultureInfo.CurrentCulture), separateParameters[1]);
                 }
             }
+            else if (secondParameter.Equals("xml"))
+            {
+                try
+                {
+                    using var writer = new StreamWriter(separateParameters[1]);
+                    FileCabinetServiceSnapshot snapshot = fileCabinetService.MakeSnapshot();
+                    snapshot.SaveToXml(writer);
+                    Console.WriteLine(Rm.GetString("SuccessfulWriteToFileMessage", CultureInfo.CurrentCulture), separateParameters[1]);
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    Console.WriteLine(Rm.GetString("ErrorWriteToFileMessage", CultureInfo.CurrentCulture), separateParameters[1]);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Console.WriteLine(Rm.GetString("ErrorWriteToFileMessage", CultureInfo.CurrentCulture), separateParameters[1]);
+                }
+            }
+            else
+            {
+                Console.WriteLine(Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture), separateParameters[1]);
+            }
         }
 
         private static bool RevriteFileDialod(string fileName)
@@ -498,7 +521,7 @@ namespace FileCabinetApp
             var reqestMessage = new StringBuilder();
             reqestMessage.Append("File is exist - rewrite ");
             reqestMessage.Append(fileName);
-            reqestMessage.Append(" \\?");
+            reqestMessage.Append(" ?");
             reqestMessage.Append("[Y/n]");
             return YesOrNoDialog(reqestMessage.ToString());
         }
