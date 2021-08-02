@@ -1,32 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Reflection;
+using System.Resources;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    /// Main class.
+    /// </summary>
     public static class Program
     {
-        private const string DeveloperName = "Evgeniy Slabko";
-        private const string HintMessage = "Enter your command, or enter 'help' to get help.";
+        private const int NameMaxLength = 40;
+        private const int NameMinLength = 2;
+        private const int MinPointsForFourTests = 0;
+        private const int MaxPointsForFourTests = 400;
+        private const decimal MinIdentificationNumber = 0;
+        private const decimal MaxIdentificationNumber = decimal.MaxValue;
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
+        private const string ConsoleStartSymbol = ">";
 
-        private static bool isRunning = true;
-        private static FileCabinetService fileCabinetService = new ();
-
-        private static Tuple<string, Action<string>>[] commands = new Tuple<string, Action<string>>[]
-        {
-            new Tuple<string, Action<string>>("help", PrintHelp),
-            new Tuple<string, Action<string>>("exit", Exit),
-            new Tuple<string, Action<string>>("_stat_", Stat),
-            new Tuple<string, Action<string>>("create", Create),
-            new Tuple<string, Action<string>>("_list_", List),
-            new Tuple<string, Action<string>>("edit", Edit),
-            new Tuple<string, Action<string>>("find", Find),
-        };
-
-        private static string[][] helpMessages = new string[][]
+        private static readonly string[][] HelpMessages = new string[][]
         {
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
@@ -37,10 +33,34 @@ namespace FileCabinetApp
             new string[] { "find", "find existing record", "The 'find' find existing record." },
         };
 
+        private static readonly DateTime MinDateOfBirth = new (1960, 1, 1);
+        private static readonly ResourceManager Rm = new ("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
+        private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
+        {
+            new Tuple<string, Action<string>>("help", PrintHelp),
+            new Tuple<string, Action<string>>("exit", Exit),
+            new Tuple<string, Action<string>>("_stat_", Stat),
+            new Tuple<string, Action<string>>("create", Create),
+            new Tuple<string, Action<string>>("_list_", List),
+            new Tuple<string, Action<string>>("edit", Edit),
+            new Tuple<string, Action<string>>("find", Find),
+        };
+
+        private static IFileCabinetService fileCabinetService;
+        private static ValidationRule validationRule;
+        private static ValidationRuleSet validationRuleSet;
+        private static bool isRunning = true;
+
+        /// <summary>
+        /// Entry point.
+        /// </summary>
+        /// <param name="args">Command line arguments.</param>
         public static void Main(string[] args)
         {
-            Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
-            Console.WriteLine(Program.HintMessage);
+            CultureInfo.CurrentCulture = new CultureInfo("en-US");
+            Console.WriteLine(Rm.GetString("WelcomeMessage", CultureInfo.CurrentCulture));
+            ParseCommandLineArguments(args);
+            DisplayValidationRuleMessage();
             Console.WriteLine();
 
 #if DEBUG
@@ -49,23 +69,23 @@ namespace FileCabinetApp
 
             do
             {
-                Console.Write("> ");
+                Console.Write(ConsoleStartSymbol);
                 var inputs = Console.ReadLine().Split(' ', 2);
                 const int commandIndex = 0;
                 var command = inputs[commandIndex];
 
                 if (string.IsNullOrEmpty(command))
                 {
-                    Console.WriteLine(Program.HintMessage);
+                    Console.WriteLine(Rm.GetString("HintMessage", CultureInfo.CurrentCulture));
                     continue;
                 }
 
-                var index = Array.FindIndex(commands, 0, commands.Length, i => i.Item1.Equals(command, StringComparison.InvariantCultureIgnoreCase));
+                var index = Array.FindIndex(Commands, 0, Commands.Length, i => i.Item1.Equals(command, StringComparison.InvariantCultureIgnoreCase));
                 if (index >= 0)
                 {
                     const int parametersIndex = 1;
                     var parameters = inputs.Length > 1 ? inputs[parametersIndex] : string.Empty;
-                    commands[index].Item2(parameters);
+                    Commands[index].Item2(parameters);
                 }
                 else
                 {
@@ -75,15 +95,54 @@ namespace FileCabinetApp
             while (isRunning);
         }
 
+        private static void DisplayValidationRuleMessage()
+        {
+            switch (validationRule)
+            {
+                case ValidationRule.Default:
+                    Console.WriteLine(Rm.GetString("ValidationRuleString", CultureInfo.CurrentCulture), "default");
+                    break;
+                case ValidationRule.Custom:
+                    Console.WriteLine(Rm.GetString("ValidationRuleString", CultureInfo.CurrentCulture), "custom");
+                    break;
+            }
+        }
+
         private static void Stat(string parameters)
         {
             var recordsCount = Program.fileCabinetService.GetStat();
-            Console.WriteLine($"{recordsCount} record(s).");
+            Console.WriteLine(Rm.GetString("StatMessage", CultureInfo.CurrentCulture), recordsCount);
+        }
+
+        private static void MakeDefaultValidationSet()
+        {
+            validationRuleSet = new ValidationRuleSet
+            {
+                DateValidator = new DateValidator(MinDateOfBirth, DateTime.Now),
+                FirstNameVAidator = new StringValidator(NameMaxLength, NameMinLength),
+                LastNameValidator = new StringValidator(NameMaxLength, NameMinLength),
+                PointsForFourTestsValidator = new ShortValidator(MinPointsForFourTests, MaxPointsForFourTests),
+                IdentificationNumberValidator = new DecimalValidator(MinIdentificationNumber, MaxIdentificationNumber),
+                IdentificationLetterValidator = new CharValidator(c => char.IsLetter(c)),
+            };
+        }
+
+        private static void MakeCustomValidationSet()
+        {
+            validationRuleSet = new ValidationRuleSet
+            {
+                DateValidator = new DateValidator(MinDateOfBirth, DateTime.Now),
+                FirstNameVAidator = null,
+                LastNameValidator = null,
+                PointsForFourTestsValidator = new ShortValidator(MinPointsForFourTests, MaxPointsForFourTests),
+                IdentificationNumberValidator = null,
+                IdentificationLetterValidator = new CharValidator((c) => char.IsLetter(c)),
+            };
         }
 
         private static void AddSomeRecords()
         {
-            FileCabinetRecord[] records = new FileCabinetRecord[]
+            var records = new FileCabinetRecord[]
             {
                 new FileCabinetRecord
                 {
@@ -185,144 +244,156 @@ namespace FileCabinetApp
 
         private static void PrintMissedCommandInfo(string command)
         {
-            Console.WriteLine($"There is no '{command}' command.");
+            Console.WriteLine(Rm.GetString("MissedCommandInfoMessage", CultureInfo.CurrentCulture), command);
             Console.WriteLine();
+        }
+
+        private static void SetValidator(string validator = null)
+        {
+            if (validator is null)
+            {
+                MakeDefaultValidationSet();
+            }
+            else
+            {
+                switch (validator.ToLower(CultureInfo.CurrentCulture))
+                {
+                    case "default":
+
+                        MakeDefaultValidationSet();
+                        validationRule = ValidationRule.Default;
+                        break;
+                    case "custom":
+                        MakeCustomValidationSet();
+                        validationRule = ValidationRule.Custom;
+                        break;
+                    default:
+                        throw new ArgumentException("Unable command line arguments");
+                }
+            }
+
+            fileCabinetService = new FileCabinetService(new ServiceValidator(validationRuleSet));
+        }
+
+        private static void ParseCommandLineArguments(string[] args)
+        {
+            if (args is null)
+            {
+                throw new ArgumentNullException(nameof(args));
+            }
+
+            if (args.Length.Equals(0))
+            {
+                SetValidator();
+                return;
+            }
+
+            if (args[0].Equals("-v"))
+            {
+                if (args.Length != 2)
+                {
+                    throw new ArgumentNullException(nameof(args));
+                }
+
+                SetValidator(args[1]);
+            }
+            else
+            {
+                string[] ruleArgument = args[0].Split('=');
+                if (ruleArgument.Length.Equals(2))
+                {
+                    SetValidator(ruleArgument[1]);
+                }
+                else if (ruleArgument[0].Equals("--validation-rules"))
+                {
+                    SetValidator(ruleArgument[1]);
+                }
+                else
+                {
+                    throw new ArgumentException("Unable command line arguments");
+                }
+            }
         }
 
         private static void List(string parameters)
         {
-            FileCabinetRecord[] list = fileCabinetService.GetRecords();
-            foreach (var record in list)
-            {
-                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, (Personal number: {record.IdentificationNumber}{record.IdentificationLetter}, total points: {record.PointsForFourTests})");
-            }
+            DisplayRecordList(fileCabinetService.GetRecords());
         }
 
         private static void PrintHelp(string parameters)
         {
             if (!string.IsNullOrEmpty(parameters))
             {
-                var index = Array.FindIndex(helpMessages, 0, helpMessages.Length, i => string.Equals(i[Program.CommandHelpIndex], parameters, StringComparison.InvariantCultureIgnoreCase));
+                var index = Array.FindIndex(HelpMessages, 0, HelpMessages.Length, i => string.Equals(i[Program.CommandHelpIndex], parameters, StringComparison.InvariantCultureIgnoreCase));
                 if (index >= 0)
                 {
-                    Console.WriteLine(helpMessages[index][Program.ExplanationHelpIndex]);
+                    Console.WriteLine(HelpMessages[index][Program.ExplanationHelpIndex]);
                 }
                 else
                 {
-                    Console.WriteLine($"There is no explanation for '{parameters}' command.");
+                    Console.WriteLine(Rm.GetString("CommandExplanationMessage", CultureInfo.CurrentCulture), parameters);
                 }
             }
             else
             {
-                Console.WriteLine("Available commands:");
+                Console.WriteLine(Rm.GetString("AvailableCommandsMessage", CultureInfo.CurrentCulture));
 
-                foreach (var helpMessage in helpMessages)
+                foreach (var helpMessage in HelpMessages)
                 {
-                    Console.WriteLine("\t{0}\t- {1}", helpMessage[Program.CommandHelpIndex], helpMessage[Program.DescriptionHelpIndex]);
+                    Console.WriteLine(Rm.GetString("HelpMessageTemplate", CultureInfo.CurrentCulture), helpMessage[Program.CommandHelpIndex], helpMessage[Program.DescriptionHelpIndex]);
                 }
             }
 
             Console.WriteLine();
         }
 
-        private static bool EnterRecord(out FileCabinetRecord inputRecord)
+        private static void EnterRecord(out FileCabinetRecord newRecord)
         {
-            inputRecord = new FileCabinetRecord();
-            string enteredData;
-
+            newRecord = new FileCabinetRecord();
             Console.WriteLine();
-            Console.Write($"First name: ");
-            inputRecord.FirstName = Console.ReadLine();
+            Console.Write(Rm.GetString("FirstNameMessage", CultureInfo.CurrentCulture));
+            newRecord.FirstName = ReadInput(new StringConverter().GetDelegate(), validationRuleSet.FirstNameVAidator.GetDelegate());
 
-            Console.Write($"Last name: ");
-            inputRecord.LastName = Console.ReadLine();
+            Console.Write(Rm.GetString("LastNameMessage", CultureInfo.CurrentCulture));
+            newRecord.LastName = ReadInput(new StringConverter().GetDelegate(), validationRuleSet.LastNameValidator.GetDelegate());
 
-            Console.Write($"Date of birth: ");
-            enteredData = Console.ReadLine();
+            Console.Write(Rm.GetString("DateOfBirthMessage", CultureInfo.CurrentCulture));
+            newRecord.DateOfBirth = ReadInput(new DateTimeConverter().GetDelegate(), validationRuleSet.DateValidator.GetDelegate());
 
-            try
-            {
-                inputRecord.DateOfBirth = Convert.ToDateTime(enteredData, CultureInfo.CurrentCulture);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine($"Invalid date format");
-                return false;
-            }
+            Console.Write(Rm.GetString("IdentificationNumberMessage", CultureInfo.CurrentCulture));
+            newRecord.IdentificationNumber = ReadInput(new DecimalConverter().GetDelegate(), validationRuleSet.IdentificationNumberValidator.GetDelegate());
 
-            Console.Write($"Points For Four Tests: ");
-            enteredData = Console.ReadLine();
-            try
-            {
-                inputRecord.PointsForFourTests = short.Parse(enteredData, CultureInfo.CurrentCulture);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine($"{nameof(inputRecord.PointsForFourTests)} invalid format");
-                return false;
-            }
-            catch (OverflowException)
-            {
-                Console.WriteLine($"{nameof(inputRecord.PointsForFourTests)} overflow");
-                return false;
-            }
+            Console.Write(Rm.GetString("IdentificationLetterMessage", CultureInfo.CurrentCulture));
+            newRecord.IdentificationLetter = ReadInput(new CharConverter().GetDelegate(), validationRuleSet.IdentificationLetterValidator.GetDelegate());
 
-            Console.Write($"Identification Letter: ");
-            enteredData = Console.ReadLine();
-            try
-            {
-                inputRecord.IdentificationLetter = char.Parse(enteredData);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine($"{nameof(enteredData)} invalid format");
-                return false;
-            }
-
-            Console.Write($"Identification Number: ");
-            enteredData = Console.ReadLine();
-            try
-            {
-                inputRecord.IdentificationNumber = decimal.Parse(enteredData, CultureInfo.CurrentCulture);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine($"{nameof(inputRecord.IdentificationNumber)} invalid format");
-                return false;
-            }
-            catch (OverflowException)
-            {
-                Console.WriteLine($"{nameof(inputRecord.IdentificationNumber)} over flow");
-                return false;
-            }
-
-            return true;
+            Console.Write(Rm.GetString("PointsForFourTestsMessage", CultureInfo.CurrentCulture));
+            newRecord.PointsForFourTests = ReadInput(new ShortConverter().GetDelegate(), validationRuleSet.PointsForFourTestsValidator.GetDelegate());
         }
 
-        private static void DisplayList(FileCabinetRecord[] records)
+        private static void DisplayRecordList(ReadOnlyCollection<FileCabinetRecord> records)
         {
-            if (records.Length == 0)
+            if (records.Count.Equals(0))
             {
-                Console.WriteLine("The list is empty");
+                Console.WriteLine(Rm.GetString("EmptyListMessage", CultureInfo.CurrentCulture));
             }
 
             foreach (var record in records)
             {
-                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, (Personal number: {record.IdentificationNumber}{record.IdentificationLetter}, total points: {record.PointsForFourTests})");
+                Console.WriteLine(Rm.GetString("RecordInfoString", CultureInfo.CurrentCulture), record.Id, record.FirstName, record.LastName, record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo), record.IdentificationNumber, record.IdentificationLetter, record.PointsForFourTests);
             }
         }
 
         private static void Find(string parameters)
         {
-            string[] args = parameters.Split(' ');
-            if (args.Length != 2 || !args[1].StartsWith('"') || !args[1].EndsWith('"'))
+            var args = parameters.Split(' ');
+            if (!args.Length.Equals(2) || !args[1].StartsWith('"') || !args[1].EndsWith('"'))
             {
-                Console.WriteLine("Invalid arguments");
+                Console.WriteLine(Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
                 return;
             }
 
             args[1] = args[1][1..^1];
-            FileCabinetRecord[] subList;
+            ReadOnlyCollection<FileCabinetRecord> subList;
             switch (args[0])
             {
                 case "firstname":
@@ -341,7 +412,7 @@ namespace FileCabinetApp
                     }
                     catch (FormatException)
                     {
-                        Console.WriteLine($"Invalid date format");
+                        Console.WriteLine(Rm.GetString("InvalidFormatMessage", CultureInfo.CurrentCulture));
                         return;
                     }
 
@@ -349,44 +420,39 @@ namespace FileCabinetApp
                     break;
 
                 default:
-                    Console.WriteLine("Invalid arguments");
+                    Console.WriteLine(Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
                     return;
             }
 
             if (subList is null)
             {
-                Console.WriteLine("Records was not found");
+                Console.WriteLine(Rm.GetString("RecordFindMissMessage", CultureInfo.CurrentCulture));
+                return;
             }
-            else
-            {
-                DisplayList(subList);
-            }
+
+            DisplayRecordList(subList);
         }
 
         private static void Create(string parameters)
         {
-            if (!EnterRecord(out FileCabinetRecord inputRecord))
-            {
-                return;
-            }
-
+            EnterRecord(out FileCabinetRecord newRecord);
             int recordId = -1;
             try
             {
-                recordId = fileCabinetService.CreateRecord(inputRecord);
+                recordId = fileCabinetService.CreateRecord(newRecord);
             }
             catch (ArgumentException exeption)
             {
-                Console.Write(exeption);
-                Create(string.Empty);
+                Console.Write(exeption.Message);
+                Create(parameters);
             }
 
-            Console.WriteLine($"Record #{recordId} is created.");
+            Console.WriteLine(Rm.GetString("CreateRecordMessage", CultureInfo.CurrentCulture), recordId);
         }
 
         private static void Exit(string parameters)
         {
-            Console.WriteLine("Exiting an application...");
+            Console.WriteLine(Rm.GetString("ExitMessage", CultureInfo.CurrentCulture));
             isRunning = false;
         }
 
@@ -399,17 +465,23 @@ namespace FileCabinetApp
             }
             catch (FormatException)
             {
-                Console.WriteLine("Format error. Enter valid id");
+                Console.WriteLine(Rm.GetString("InvalidFormatMessage", CultureInfo.CurrentCulture));
                 return;
             }
             catch (OverflowException)
             {
-                Console.WriteLine("Overflow error. Enter valid id");
+                Console.WriteLine(Rm.GetString("OverflowMessage", CultureInfo.CurrentCulture));
                 return;
             }
 
-            if (!EnterRecord(out FileCabinetRecord editRecord))
+            FileCabinetRecord editRecord;
+            try
             {
+                EnterRecord(out editRecord);
+            }
+            catch (ArgumentException exeption)
+            {
+                Console.WriteLine(exeption.Message);
                 return;
             }
 
@@ -418,13 +490,42 @@ namespace FileCabinetApp
             {
                 fileCabinetService.Edit(editRecord);
             }
-            catch (ArgumentException e)
+            catch (ArgumentException exeption)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(exeption.Message);
                 return;
             }
 
-            Console.WriteLine("Record #{id} is updated.");
+            Console.WriteLine(Rm.GetString("UppdateRecordMessage", CultureInfo.CurrentCulture), id);
+        }
+
+        private static T ReadInput<T>(Func<string, Tuple<bool, string, T>> converter, Func<T, Tuple<bool, string>> validator)
+        {
+            do
+            {
+                T value;
+
+                var input = Console.ReadLine();
+                var conversionResult = converter(input);
+
+                if (!conversionResult.Item1)
+                {
+                    Console.WriteLine(Rm.GetString("ConversationFailedMessage", CultureInfo.CurrentCulture), conversionResult.Item2);
+                    continue;
+                }
+
+                value = conversionResult.Item3;
+
+                var validationResult = validator(value);
+                if (!validationResult.Item1)
+                {
+                    Console.WriteLine(Rm.GetString("ValidationFailedMessage", CultureInfo.CurrentCulture), validationResult.Item2);
+                    continue;
+                }
+
+                return value;
+            }
+            while (true);
         }
     }
 }
