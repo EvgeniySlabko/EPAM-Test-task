@@ -23,6 +23,12 @@ namespace FileCabinetApp
         void Edit(FileCabinetRecord newRecord);
 
         /// <summary>
+        /// Takes a snapshot of the current list of records.
+        /// </summary>
+        /// <returns>Snapshot of the current list of records.</returns>
+        FileCabinetServiceSnapshot MakeSnapshot();
+
+        /// <summary>
         /// Find record by its data of birthday.
         /// </summary>
         /// <param name="dataOfBirthday">Вata of birthday to search.</param>

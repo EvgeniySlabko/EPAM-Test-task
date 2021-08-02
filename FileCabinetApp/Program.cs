@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
 using System.Reflection;
 using System.Resources;
+using System.Text;
 
 namespace FileCabinetApp
 {
@@ -31,6 +33,7 @@ namespace FileCabinetApp
             new string[] { "_list_", "display list of records", "The '_list_' display list of records." },
             new string[] { "edit", "edit existing record", "The 'edit' edit existing record." },
             new string[] { "find", "find existing record", "The 'find' find existing record." },
+            new string[] { "export", "Export in CSV file", "The 'export' export records in CSV file." },
         };
 
         private static readonly DateTime MinDateOfBirth = new (1960, 1, 1);
@@ -44,6 +47,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("_list_", List),
             new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("find", Find),
+            new Tuple<string, Action<string>>("export", Export),
         };
 
         private static IFileCabinetService fileCabinetService;
@@ -383,6 +387,11 @@ namespace FileCabinetApp
             }
         }
 
+        private static string[] SplitParameterString(string parameters)
+        {
+            return parameters.Split(' ');
+        }
+
         private static void Find(string parameters)
         {
             var args = parameters.Split(' ');
@@ -450,10 +459,74 @@ namespace FileCabinetApp
             Console.WriteLine(Rm.GetString("CreateRecordMessage", CultureInfo.CurrentCulture), recordId);
         }
 
+        private static void Export(string parameters)
+        {
+            string[] separateParameters = SplitParameterString(parameters);
+            if (!separateParameters.Length.Equals(2))
+            {
+                Console.WriteLine(Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
+                return;
+            }
+
+            if (File.Exists(separateParameters[1]) && !RevriteFileDialod(separateParameters[1]))
+            {
+                return;
+            }
+
+            if (separateParameters[0].ToLower(CultureInfo.CurrentCulture).Equals("csv"))
+            {
+                try
+                {
+                    using var writer = new StreamWriter(separateParameters[1]);
+                    FileCabinetServiceSnapshot snapshot = fileCabinetService.MakeSnapshot();
+                    snapshot.SaveToCsv(writer);
+                    Console.WriteLine(Rm.GetString("SuccessfulWriteToFileMessage", CultureInfo.CurrentCulture), separateParameters[1]);
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    Console.WriteLine(Rm.GetString("ErrorWriteToFileMessage", CultureInfo.CurrentCulture), separateParameters[1]);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Console.WriteLine(Rm.GetString("ErrorWriteToFileMessage", CultureInfo.CurrentCulture), separateParameters[1]);
+                }
+            }
+        }
+
+        private static bool RevriteFileDialod(string fileName)
+        {
+            var reqestMessage = new StringBuilder();
+            reqestMessage.Append("File is exist - rewrite ");
+            reqestMessage.Append(fileName);
+            reqestMessage.Append(" \\?");
+            reqestMessage.Append("[Y/n]");
+            return YesOrNoDialog(reqestMessage.ToString());
+        }
+
         private static void Exit(string parameters)
         {
             Console.WriteLine(Rm.GetString("ExitMessage", CultureInfo.CurrentCulture));
             isRunning = false;
+        }
+
+        private static bool YesOrNoDialog(string message)
+        {
+            Console.WriteLine(message, " [Y/n]");
+            string answer = Console.ReadLine();
+            if (answer.Length.Equals(1))
+            {
+                char answerLetter = answer.ToLower(CultureInfo.CurrentCulture)[0];
+                if (answerLetter.Equals('y'))
+                {
+                    return true;
+                }
+                else if (answerLetter.Equals('n'))
+                {
+                    return false;
+                }
+            }
+
+            return YesOrNoDialog(message);
         }
 
         private static void Edit(string parameters)

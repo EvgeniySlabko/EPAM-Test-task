@@ -127,6 +127,29 @@
             </summary>
             <returns>Gets delegate for conversion method.</returns>
         </member>
+        <member name="T:FileCabinetApp.FileCabinetRecordCsvWriter">
+            <summary>
+            Writes records to cvc File.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordCsvWriter.#ctor(System.IO.TextWriter)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetRecordCsvWriter"/> class.
+            </summary>
+            <param name="writer">Given TextWriter instance.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordCsvWriter.Write(System.String)">
+            <summary>
+            Write string.
+            </summary>
+            <param name="str">String to write.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordCsvWriter.Write(FileCabinetRecord)">
+            <summary>
+            Write record.
+            </summary>
+            <param name="record">Record to write.</param>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetService">
             <summary>
             Service for working with records.
@@ -164,6 +187,12 @@
             </summary>
             <param name="newRecord">Edited record.</param>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetService.MakeSnapshot">
+            <summary>
+            Takes a snapshot of the current state of the list of records.
+            </summary>
+            <returns>Snapshot of the current list of records.</returns>
+        </member>
         <member name="M:FileCabinetApp.FileCabinetService.FindByFirstName(System.String)">
             <summary>
             Find record by its first name.
@@ -191,6 +220,23 @@
             </summary>
             <param name="record">Record to remove.</param>
         </member>
+        <member name="T:FileCabinetApp.FileCabinetServiceSnapshot">
+            <summary>
+            Snapshot class. Stores the state of the list of records file cabinet service.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.#ctor(FileCabinetRecord[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/> class.
+            </summary>
+            <param name="records">Given records.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToCsv(System.IO.StreamWriter)">
+            <summary>
+            Save records to CSV file.
+            </summary>
+            <param name="writer">Given StreamWriter object.</param>
+        </member>
         <member name="T:FileCabinetApp.IFileCabinetService">
             <summary>
             Service for working with records.
@@ -209,6 +255,12 @@
             Edits the record by its id.
             </summary>
             <param name="newRecord">Edited record.</param>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.MakeSnapshot">
+            <summary>
+            Takes a snapshot of the current list of records.
+            </summary>
+            <returns>Snapshot of the current list of records.</returns>
         </member>
         <member name="M:FileCabinetApp.IFileCabinetService.FindByDate(System.DateTime)">
             <summary>

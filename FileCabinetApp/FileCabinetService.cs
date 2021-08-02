@@ -112,6 +112,16 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Takes a snapshot of the current state of the list of records.
+        /// </summary>
+        /// <returns>Snapshot of the current list of records.</returns>
+        public FileCabinetServiceSnapshot MakeSnapshot()
+        {
+            var copy = (FileCabinetRecord[])this.list.ToArray().Clone();
+            return new FileCabinetServiceSnapshot(copy);
+        }
+
+        /// <summary>
         /// Find record by its first name.
         /// </summary>
         /// <param name="firstName">First name to search.</param>
