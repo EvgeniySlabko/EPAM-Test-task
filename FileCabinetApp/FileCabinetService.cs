@@ -47,7 +47,7 @@ namespace FileCabinetApp
                 throw new ArgumentException("Invalide parameters");
             }
 
-            FileCabinetRecord currrentRecord = new ()
+            FileCabinetRecord currrentRecord = new()
             {
                 Id = generateNewId ? this.list.Count + 1 : newRecord.Id,
                 FirstName = newRecord.FirstName,
@@ -59,6 +59,11 @@ namespace FileCabinetApp
                 PointsForFourTests = newRecord.PointsForFourTests,
             };
 
+            return AddRecordToDictionaries(currrentRecord);
+        }
+
+        private int AddRecordToDictionaries(FileCabinetRecord currrentRecord)
+        {
             // Add record in main list
             this.list.Add(currrentRecord);
 
