@@ -490,6 +490,21 @@
             Custom validation rule.
             </summary>
         </member>
+        <member name="T:FileCabinetApp.ServiceType">
+            <summary>
+            Service type.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.ServiceType.MemoryService">
+            <summary>
+            Records are stored in a Memory.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.ServiceType.FileService">
+            <summary>
+            Records are stored in a file.
+            </summary>
+        </member>
         <member name="T:FileCabinetApp.ValidationRuleSet">
             <summary>
             Set of rules for validation.

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
@@ -13,16 +14,18 @@ namespace FileCabinetApp
     /// </summary>
     public static class Program
     {
+        private const int CommandHelpIndex = 0;
+        private const int DescriptionHelpIndex = 1;
+        private const int ExplanationHelpIndex = 2;
+        private const string ConsoleStartSymbol = ">";
+
         private const int NameMaxLength = 40;
         private const int NameMinLength = 2;
         private const int MinPointsForFourTests = 0;
         private const int MaxPointsForFourTests = 400;
         private const decimal MinIdentificationNumber = 0;
         private const decimal MaxIdentificationNumber = decimal.MaxValue;
-        private const int CommandHelpIndex = 0;
-        private const int DescriptionHelpIndex = 1;
-        private const int ExplanationHelpIndex = 2;
-        private const string ConsoleStartSymbol = ">";
+        private static readonly DateTime MinDateOfBirth = new (1960, 1, 1);
 
         private static readonly string[][] HelpMessages = new string[][]
         {
@@ -36,8 +39,6 @@ namespace FileCabinetApp
             new string[] { "export", "Export in CSV file", "The 'export' export records in CSV file." },
         };
 
-        private static readonly DateTime MinDateOfBirth = new (1960, 1, 1);
-        private static readonly ResourceManager Rm = new ("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
         private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
         {
             new Tuple<string, Action<string>>("help", PrintHelp),
@@ -50,8 +51,17 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("export", Export),
         };
 
+        private static readonly Tuple<string, string, Tuple<string, Action>[]>[] CommandLineArguments = new Tuple<string, string, Tuple<string, Action>[]>[]
+        {
+            new Tuple<string, string, Tuple<string, Action>[]>("--validation-rules", "-v", new Tuple<string, Action>[] { new Tuple<string, Action>("default", () => validationRule = ValidationRule.Default), new Tuple<string, Action>("custom", () => validationRule = ValidationRule.Custom), }),
+
+            new Tuple<string, string, Tuple<string, Action>[]>("--storage", "-s", new Tuple<string, Action>[] { new Tuple<string, Action>("file", () => serviceType = ServiceType.FileService), new Tuple<string, Action>("memory", () => serviceType = ServiceType.MemoryService), }),
+        };
+
+        private static readonly ResourceManager Rm = new ("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
         private static IFileCabinetService fileCabinetService;
-        private static ValidationRule validationRule;
+        private static ValidationRule validationRule = ValidationRule.Default;
+        private static ServiceType serviceType = ServiceType.MemoryService;
         private static ValidationRuleSet validationRuleSet;
         private static bool isRunning = true;
 
@@ -252,33 +262,6 @@ namespace FileCabinetApp
             Console.WriteLine();
         }
 
-        private static void SetValidator(string validator = null)
-        {
-            if (validator is null)
-            {
-                MakeDefaultValidationSet();
-            }
-            else
-            {
-                switch (validator.ToLower(CultureInfo.CurrentCulture))
-                {
-                    case "default":
-
-                        MakeDefaultValidationSet();
-                        validationRule = ValidationRule.Default;
-                        break;
-                    case "custom":
-                        MakeCustomValidationSet();
-                        validationRule = ValidationRule.Custom;
-                        break;
-                    default:
-                        throw new ArgumentException("Unable command line arguments");
-                }
-            }
-
-            fileCabinetService = new FileCabinetService(new ServiceValidator(validationRuleSet));
-        }
-
         private static void ParseCommandLineArguments(string[] args)
         {
             if (args is null)
@@ -288,35 +271,55 @@ namespace FileCabinetApp
 
             if (args.Length.Equals(0))
             {
-                SetValidator();
                 return;
             }
 
-            if (args[0].Equals("-v"))
+            bool wasArgumentType = false;
+            int argumentIndex = 0;
+            foreach (var arg in args)
             {
-                if (args.Length != 2)
+                var lowerArg = arg.ToLower(CultureInfo.CurrentCulture);
+                if (wasArgumentType)
                 {
-                    throw new ArgumentNullException(nameof(args));
+                    var index = Array.FindIndex(CommandLineArguments[argumentIndex].Item3, 0, CommandLineArguments[argumentIndex].Item3.Length, i => i.Item1.Equals(lowerArg, StringComparison.CurrentCulture));
+                    if (index != -1)
+                    {
+                        wasArgumentType = false;
+                        CommandLineArguments[argumentIndex].Item3[index].Item2();
+                        continue;
+                    }
+                }
+                else if (lowerArg.StartsWith("--", StringComparison.CurrentCulture) && !wasArgumentType)
+                {
+                    var splitedArg = lowerArg.Split('=');
+                    if (splitedArg.Length == 2)
+                    {
+                        var index = Array.FindIndex(CommandLineArguments, 0, CommandLineArguments.Length, i => i.Item1.Equals(splitedArg[0], StringComparison.CurrentCulture));
+                        if (index != -1)
+                        {
+                            var index2 = Array.FindIndex(CommandLineArguments[index].Item3, 0, CommandLineArguments[index].Item3.Length, i => i.Item1.Equals(splitedArg[1], StringComparison.CurrentCulture));
+                            if (index2 != -1)
+                            {
+                                CommandLineArguments[index].Item3[index].Item2();
+                                continue;
+                            }
+                        }
+                    }
+                }
+                else if (lowerArg.StartsWith("-", StringComparison.CurrentCulture) && !wasArgumentType)
+                {
+                    argumentIndex = Array.FindIndex(CommandLineArguments, 0, CommandLineArguments.Length, i => i.Item2.Equals(lowerArg, StringComparison.CurrentCulture));
+                    if (argumentIndex != -1)
+                    {
+                        wasArgumentType = true;
+                        continue;
+                    }
                 }
 
-                SetValidator(args[1]);
+                throw new ArgumentException(Rm.GetString("UnableCommandLineArgumentsMessage", CultureInfo.CurrentCulture));
             }
-            else
-            {
-                string[] ruleArgument = args[0].Split('=');
-                if (ruleArgument.Length.Equals(2))
-                {
-                    SetValidator(ruleArgument[1]);
-                }
-                else if (ruleArgument[0].Equals("--validation-rules"))
-                {
-                    SetValidator(ruleArgument[1]);
-                }
-                else
-                {
-                    throw new ArgumentException("Unable command line arguments");
-                }
-            }
+
+            ApplyCommandLineArguments();
         }
 
         private static void List(string parameters)
@@ -550,6 +553,32 @@ namespace FileCabinetApp
             }
 
             return YesOrNoDialog(message);
+        }
+
+        private static void ApplyCommandLineArguments()
+        {
+            switch (validationRule)
+            {
+                case ValidationRule.Default:
+                    MakeDefaultValidationSet();
+                    break;
+
+                case ValidationRule.Custom:
+                    MakeCustomValidationSet();
+                    break;
+            }
+
+            var serviceValidator = new ServiceValidator(validationRuleSet);
+            switch (serviceType)
+            {
+                case ServiceType.MemoryService:
+                    fileCabinetService = new FileCabinetService(serviceValidator);
+                    break;
+
+                case ServiceType.FileService:
+                    throw new NotImplementedException();
+                    break;
+            }
         }
 
         private static void Edit(string parameters)

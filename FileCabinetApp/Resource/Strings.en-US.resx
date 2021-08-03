@@ -186,6 +186,9 @@
   <data name="SuccessfulWriteToFileMessage" xml:space="preserve">
     <value>All records are exported to file{0}</value>
   </data>
+  <data name="UnableCommandLineArgumentsMessage" xml:space="preserve">
+    <value>Unable command line arguments</value>
+  </data>
   <data name="UppdateRecordMessage" xml:space="preserve">
     <value>Record #{0} is updated.</value>
   </data>
