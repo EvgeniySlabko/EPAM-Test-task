@@ -311,7 +311,7 @@ namespace FileCabinetApp
                             var index2 = Array.FindIndex(CommandLineArguments[index].Item3, 0, CommandLineArguments[index].Item3.Length, i => i.Item1.Equals(splitedArg[1], StringComparison.CurrentCulture));
                             if (index2 != -1)
                             {
-                                CommandLineArguments[index].Item3[index].Item2();
+                                CommandLineArguments[index].Item3[index2].Item2();
                                 continue;
                             }
                         }
@@ -587,7 +587,8 @@ namespace FileCabinetApp
                     break;
 
                 case ServiceType.FileService:
-                    throw new NotImplementedException();
+                    fileCabinetService = new FileCabinetFilesystemService(serviceValidator);
+                    break;
             }
         }
 
