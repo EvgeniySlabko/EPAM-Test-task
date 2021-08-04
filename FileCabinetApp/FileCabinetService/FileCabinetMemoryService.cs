@@ -10,7 +10,7 @@ namespace FileCabinetApp
     /// </summary>
     public class FileCabinetMemoryService : IFileCabinetService
     {
-        private readonly IRecordValidator validator;
+        private readonly IRecordValidator recordValidator;
 
         private readonly List<FileCabinetRecord> list = new ();
 
@@ -23,10 +23,10 @@ namespace FileCabinetApp
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetMemoryService"/> class.
         /// </summary>
-        /// <param name="validator">Given validator.</param>
-        public FileCabinetMemoryService(IRecordValidator validator)
+        /// <param name="recordValidator">Given validator.</param>
+        public FileCabinetMemoryService(IRecordValidator recordValidator)
         {
-            this.validator = validator;
+            this.recordValidator = recordValidator;
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(newRecord));
             }
 
-            if (!this.validator.ValidateParameters(newRecord))
+            if (!this.recordValidator.ValidateParameters(newRecord))
             {
                 throw new ArgumentException("Invalide parameters");
             }
@@ -91,7 +91,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(newRecord));
             }
 
-            if (!this.validator.ValidateParameters(newRecord))
+            if (!this.recordValidator.ValidateParameters(newRecord))
             {
                 throw new ArgumentException("Invalide parameters");
             }
@@ -109,16 +109,6 @@ namespace FileCabinetApp
             }
 
             throw new ArgumentException("Id was not found");
-        }
-
-        /// <summary>
-        /// Takes a snapshot of the current state of the list of records.
-        /// </summary>
-        /// <returns>Snapshot of the current list of records.</returns>
-        public FileCabinetServiceSnapshot MakeSnapshot()
-        {
-            var copy = (FileCabinetRecord[])this.list.ToArray().Clone();
-            return new FileCabinetServiceSnapshot(copy);
         }
 
         /// <summary>
@@ -177,6 +167,16 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Takes a snapshot of the current state of the list of records.
+        /// </summary>
+        /// <returns>Snapshot of the current list of records.</returns>
+        public FileCabinetServiceSnapshot MakeSnapshot()
+        {
+            var copy = (FileCabinetRecord[])this.list.ToArray().Clone();
+            return new FileCabinetServiceSnapshot(copy);
+        }
+
+        /// <summary>
         /// Remove record from list and dictionaries.
         /// </summary>
         /// <param name="record">Record to remove.</param>
@@ -194,6 +194,10 @@ namespace FileCabinetApp
             this.list.Remove(record);
         }
 
+        /// <summary>
+        /// Takes a snapshot of the current state of the list of records.
+        /// </summary>
+        /// <returns>Snapshot of the current list of records.</returns>
         private int AddRecordToDictionaries(FileCabinetRecord currrentRecord)
         {
             // Add record in main list

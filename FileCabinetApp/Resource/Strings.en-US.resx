@@ -192,6 +192,9 @@
   <data name="UppdateRecordMessage" xml:space="preserve">
     <value>Record #{0} is updated.</value>
   </data>
+  <data name="ValidationFailedMessage" xml:space="preserve">
+    <value>Validation error</value>
+  </data>
   <data name="ValidationRuleString" xml:space="preserve">
     <value>Using {0} validation rules.</value>
   </data>
