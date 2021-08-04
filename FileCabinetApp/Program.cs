@@ -53,10 +53,20 @@ namespace FileCabinetApp
 
         private static readonly Tuple<string, string, Tuple<string, Action>[]>[] CommandLineArguments = new Tuple<string, string, Tuple<string, Action>[]>[]
         {
-            new Tuple<string, string, Tuple<string, Action>[]>("--validation-rules", "-v", new Tuple<string, Action>[] { new Tuple<string, Action>("default", () => validationRule = ValidationRule.Default), new Tuple<string, Action>("custom", () => validationRule = ValidationRule.Custom), }),
+#pragma warning disable SA1118 // Parameter should not span multiple lines
+            new Tuple<string, string, Tuple<string, Action>[]>("--validation-rules", "-v", new Tuple<string, Action>[]
+            {
+                new Tuple<string, Action>("default", () => validationRule = ValidationRule.Default),
+                new Tuple<string, Action>("custom", () => validationRule = ValidationRule.Custom),
+            }),
 
-            new Tuple<string, string, Tuple<string, Action>[]>("--storage", "-s", new Tuple<string, Action>[] { new Tuple<string, Action>("file", () => serviceType = ServiceType.FileService), new Tuple<string, Action>("memory", () => serviceType = ServiceType.MemoryService), }),
+            new Tuple<string, string, Tuple<string, Action>[]>("--storage", "-s", new Tuple<string, Action>[]
+            {
+                new Tuple<string, Action>("file", () => serviceType = ServiceType.FileService),
+                new Tuple<string, Action>("memory", () => serviceType = ServiceType.MemoryService),
+            }),
         };
+#pragma warning restore SA1118 // Parameter should not span multiple lines
 
         private static readonly ResourceManager Rm = new ("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
         private static IFileCabinetService fileCabinetService;
@@ -143,14 +153,15 @@ namespace FileCabinetApp
 
         private static void MakeCustomValidationSet()
         {
+            var predicateCharValidationList = new List<Predicate<char>> { (c) => char.IsLetter(c), (c) => char.IsLower(c), };
             validationRuleSet = new ValidationRuleSet
             {
                 DateValidator = new DateValidator(MinDateOfBirth, DateTime.Now),
-                FirstNameVAidator = null,
-                LastNameValidator = null,
+                FirstNameVAidator = new StringValidator(NameMaxLength, NameMinLength),
+                LastNameValidator = new StringValidator(NameMaxLength, NameMinLength),
                 PointsForFourTestsValidator = new ShortValidator(MinPointsForFourTests, MaxPointsForFourTests),
-                IdentificationNumberValidator = null,
-                IdentificationLetterValidator = new CharValidator((c) => char.IsLetter(c)),
+                IdentificationNumberValidator = new DecimalValidator(MinIdentificationNumber, MaxIdentificationNumber),
+                IdentificationLetterValidator = new CharValidator(predicateCharValidationList),
             };
         }
 
@@ -572,12 +583,11 @@ namespace FileCabinetApp
             switch (serviceType)
             {
                 case ServiceType.MemoryService:
-                    fileCabinetService = new FileCabinetService(serviceValidator);
+                    fileCabinetService = new FileCabinetMemoryService(serviceValidator);
                     break;
 
                 case ServiceType.FileService:
                     throw new NotImplementedException();
-                    break;
             }
         }
 
