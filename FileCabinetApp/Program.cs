@@ -88,7 +88,7 @@ namespace FileCabinetApp
             Console.WriteLine();
 
 #if DEBUG
-            AddSomeRecords();
+            // AddSomeRecords();
 #endif
 
             do
@@ -429,14 +429,15 @@ namespace FileCabinetApp
 
                 case "dateofbirth":
                     DateTime tmpDate = new ();
-                    try
+
+                    var result = new DateTimeConverter().Convert(args[1]);
+                    if (result.Item1)
                     {
-                        tmpDate = Convert.ToDateTime(args[1], CultureInfo.CurrentCulture);
+                        tmpDate = result.Item3;
                     }
-                    catch (FormatException)
+                    else
                     {
                         Console.WriteLine(Rm.GetString("InvalidFormatMessage", CultureInfo.CurrentCulture));
-                        return;
                     }
 
                     subList = fileCabinetService.FindByDate(tmpDate);

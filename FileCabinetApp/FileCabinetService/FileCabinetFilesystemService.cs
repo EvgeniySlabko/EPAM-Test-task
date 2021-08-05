@@ -92,9 +92,25 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="dataOfBirthday">Вata of birthday to search.</param>
         /// <returns>Record if found otherwise null.</returns>
-        ReadOnlyCollection<FileCabinetRecord> IFileCabinetService.FindByDate(DateTime dataOfBirthday)
+        public ReadOnlyCollection<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
         {
-            throw new NotImplementedException();
+            var subList = new List<FileCabinetRecord>();
+            this.GoToStart();
+            while (true)
+            {
+                var record = this.GetNext();
+                if (record is null)
+                {
+                    break;
+                }
+                else if (record.DateOfBirth.Equals(dataOfBirthday))
+                {
+                    subList.Add(record);
+                }
+            }
+
+            this.GoToStart();
+            return new ReadOnlyCollection<FileCabinetRecord>(subList);
         }
 
         /// <summary>
@@ -102,9 +118,30 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="firstName">First name to search.</param>
         /// <returns>Record if found otherwise null.</returns>
-        ReadOnlyCollection<FileCabinetRecord> IFileCabinetService.FindByFirstName(string firstName)
+        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
         {
-            throw new NotImplementedException();
+            if (firstName is null)
+            {
+                throw new ArgumentNullException(nameof(firstName));
+            }
+
+            var subList = new List<FileCabinetRecord>();
+            this.GoToStart();
+            while (true)
+            {
+                var record = this.GetNext();
+                if (record is null)
+                {
+                    break;
+                }
+                else if (record.FirstName.ToLower(CultureInfo.CurrentCulture).Equals(firstName.ToLower(CultureInfo.CurrentCulture)))
+                {
+                    subList.Add(record);
+                }
+            }
+
+            this.GoToStart();
+            return new ReadOnlyCollection<FileCabinetRecord>(subList);
         }
 
         /// <summary>
@@ -112,9 +149,30 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="lastName">Last name to search.</param>
         /// <returns>Record if found otherwise null.</returns>
-        ReadOnlyCollection<FileCabinetRecord> IFileCabinetService.FindByLastName(string lastName)
+        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
         {
-            throw new NotImplementedException();
+            if (lastName is null)
+            {
+                throw new ArgumentNullException(nameof(lastName));
+            }
+
+            var subList = new List<FileCabinetRecord>();
+            this.GoToStart();
+            while (true)
+            {
+                var record = this.GetNext();
+                if (record is null)
+                {
+                    break;
+                }
+                else if (record.LastName.ToLower(CultureInfo.CurrentCulture).Equals(lastName.ToLower(CultureInfo.CurrentCulture)))
+                {
+                    subList.Add(record);
+                }
+            }
+
+            this.GoToStart();
+            return new ReadOnlyCollection<FileCabinetRecord>(subList);
         }
 
         /// <summary>
@@ -189,7 +247,7 @@ namespace FileCabinetApp
             int position = index * RecordSize;
             if (position >= this.binaryReader.BaseStream.Length)
             {
-                throw new ArgumentOutOfRangeException(nameof(index));
+                return null;
             }
 
             this.binaryReader.BaseStream.Position = position;
@@ -210,15 +268,7 @@ namespace FileCabinetApp
 
         private FileCabinetRecord GetNext()
         {
-            try
-            {
-                return this.GetRecord(this.iterationIndex++);
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                this.iterationIndex--;
-                throw;
-            }
+            return this.GetRecord(this.iterationIndex++);
         }
 
         private void GoToStart()
@@ -231,20 +281,19 @@ namespace FileCabinetApp
             int higherId = 0;
             while (true)
             {
-                try
-                {
-                    var currentId = this.GetNext().Id;
-                    if (currentId > higherId)
-                    {
-                        higherId = currentId;
-                    }
-                }
-                catch (ArgumentOutOfRangeException)
+                var record = this.GetNext();
+                if (record is null)
                 {
                     this.GoToStart();
-                    return higherId;
+                    break;
+                }
+                else if (record.Id > higherId)
+                {
+                    higherId = record.Id;
                 }
             }
+
+            return higherId;
         }
     }
 }
