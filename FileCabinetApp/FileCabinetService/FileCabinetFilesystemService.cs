@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -10,14 +12,16 @@ namespace FileCabinetApp
     /// </summary>
     public class FileCabinetFilesystemService : IFileCabinetService, IDisposable
     {
-        private readonly IRecordValidator recordValidator;
-
         private const int RecordSize = 277;
         private const int MaxNameLength = 120;
+        private readonly IRecordValidator recordValidator;
 
         private FileStream fileStrieam;
         private BinaryWriter binaryWriter;
         private BinaryReader binaryReader;
+
+        private int id;
+        private int iterationIndex;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetFilesystemService"/> class.
@@ -29,6 +33,7 @@ namespace FileCabinetApp
             this.binaryReader = new BinaryReader(this.fileStrieam);
             this.binaryWriter = new BinaryWriter(this.fileStrieam);
             this.recordValidator = recordValidator;
+            this.id = this.GetHigherId() + 1;
         }
 
         /// <summary>
@@ -49,16 +54,11 @@ namespace FileCabinetApp
                 throw new ArgumentException("Invalide parameters");
             }
 
-            short reservedShortVariable = 0;
-            this.binaryWriter.Write(reservedShortVariable);
-
-            // ReWrite generation id.
-            int id = generateNewId ? 0 : record.Id;
+            this.binaryWriter.Write((short)0);
+            int id = generateNewId ? this.id++ : record.Id;
             this.binaryWriter.Write(record.Id);
-
             this.WriteANSIIStringToFile(record.FirstName);
             this.WriteANSIIStringToFile(record.LastName);
-
             this.binaryWriter.Write(record.DateOfBirth.Year);
             this.binaryWriter.Write(record.DateOfBirth.Month);
             this.binaryWriter.Write(record.DateOfBirth.Day);
@@ -166,6 +166,69 @@ namespace FileCabinetApp
 
             Array.Copy(nameBytes, 0, stringBuffer, 0, stringLength);
             this.binaryWriter.Write(stringBuffer);
+        }
+
+        private FileCabinetRecord GetRecord(int index)
+        {
+            int position = index * RecordSize;
+            if (position >= this.binaryReader.BaseStream.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
+            this.binaryReader.BaseStream.Position = position;
+            this.binaryReader.ReadUInt16();
+            var record = new FileCabinetRecord()
+            {
+                Id = this.binaryReader.ReadInt32(),
+                FirstName = Encoding.ASCII.GetString(this.binaryReader.ReadBytes(MaxNameLength), 0, MaxNameLength).Trim('\0'),
+                LastName = Encoding.ASCII.GetString(this.binaryReader.ReadBytes(MaxNameLength), 0, MaxNameLength).Trim('\0'),
+                DateOfBirth = DateTime.Parse($"{this.binaryReader.ReadInt32()}/{this.binaryReader.ReadInt32()}/{this.binaryReader.ReadInt32()}", CultureInfo.InvariantCulture),
+                IdentificationNumber = this.binaryReader.ReadDecimal(),
+                PointsForFourTests = this.binaryReader.ReadInt16(),
+                IdentificationLetter = this.binaryReader.ReadChar(),
+            };
+
+            return record;
+        }
+
+        private FileCabinetRecord GetNext()
+        {
+            try
+            {
+                return this.GetRecord(this.iterationIndex++);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                this.iterationIndex--;
+                throw;
+            }
+        }
+
+        private void GoToStart()
+        {
+            this.iterationIndex = 0;
+        }
+
+        private int GetHigherId()
+        {
+            int higherId = 0;
+            while (true)
+            {
+                try
+                {
+                    var currentId = this.GetNext().Id;
+                    if (currentId > higherId)
+                    {
+                        higherId = currentId;
+                    }
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    this.GoToStart();
+                    return higherId;
+                }
+            }
         }
     }
 }
