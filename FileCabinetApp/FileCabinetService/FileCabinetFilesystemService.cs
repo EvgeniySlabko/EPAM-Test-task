@@ -130,9 +130,25 @@ namespace FileCabinetApp
         /// Returns the number of records in the list.
         /// </summary>
         /// <returns>Number of entries in the list.</returns>
-        int IFileCabinetService.GetStat()
+        public int GetStat()
         {
-            throw new NotImplementedException();
+            int i = 0;
+            this.GoToStart();
+            while (true)
+            {
+                try
+                {
+                    this.GetNext();
+                    i++;
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    this.GoToStart();
+                    break;
+                }
+            }
+
+            return i;
         }
 
         /// <summary>

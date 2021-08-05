@@ -183,6 +183,9 @@
   <data name="RecordInfoString" xml:space="preserve">
     <value>#{0}, {1}, {2}, {3}, (Personal number: {4}{5}, total points: {6})</value>
   </data>
+  <data name="StatMessage" xml:space="preserve">
+    <value>"{0} record(s)."</value>
+  </data>
   <data name="SuccessfulWriteToFileMessage" xml:space="preserve">
     <value>All records are exported to file{0}</value>
   </data>
