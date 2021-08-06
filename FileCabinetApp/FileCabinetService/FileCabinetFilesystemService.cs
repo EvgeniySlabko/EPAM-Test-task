@@ -33,6 +33,7 @@ namespace FileCabinetApp
             this.binaryReader = new BinaryReader(this.fileStrieam);
             this.binaryWriter = new BinaryWriter(this.fileStrieam);
             this.recordValidator = recordValidator;
+
             this.id = this.GetHigherId() + 1;
         }
 
@@ -54,18 +55,8 @@ namespace FileCabinetApp
                 throw new ArgumentException("Invalide parameters");
             }
 
-            this.binaryWriter.Write((short)0);
             int id = generateNewId ? this.id++ : record.Id;
-            this.binaryWriter.Write(record.Id);
-            this.WriteANSIIStringToFile(record.FirstName);
-            this.WriteANSIIStringToFile(record.LastName);
-            this.binaryWriter.Write(record.DateOfBirth.Year);
-            this.binaryWriter.Write(record.DateOfBirth.Month);
-            this.binaryWriter.Write(record.DateOfBirth.Day);
-            this.binaryWriter.Write(record.IdentificationNumber);
-            this.binaryWriter.Write(record.PointsForFourTests);
-            this.binaryWriter.Write(record.IdentificationLetter);
-            this.binaryWriter.Flush();
+            this.Write(record);
             return id;
         }
 
@@ -146,21 +137,20 @@ namespace FileCabinetApp
         public int GetStat()
         {
             int i = 0;
-            this.GoToStart();
             while (true)
             {
-                try
+                var record = this.GetNext();
+                if (record is null)
                 {
-                    this.GetNext();
-                    i++;
-                }
-                catch (ArgumentOutOfRangeException)
-                {
-                    this.GoToStart();
                     break;
+                }
+                else
+                {
+                    i++;
                 }
             }
 
+            this.GoToStart();
             return i;
         }
 
@@ -185,6 +175,27 @@ namespace FileCabinetApp
                 this.binaryWriter.Close();
                 this.fileStrieam.Close();
             }
+        }
+
+        private void Write(FileCabinetRecord record, int index)
+        {
+            this.binaryWriter.BaseStream.Position = index * RecordSize;
+            this.binaryWriter.Write((short)0);
+            this.binaryWriter.Write(record.Id);
+            this.WriteANSIIStringToFile(record.FirstName);
+            this.WriteANSIIStringToFile(record.LastName);
+            this.binaryWriter.Write(record.DateOfBirth.Year);
+            this.binaryWriter.Write(record.DateOfBirth.Month);
+            this.binaryWriter.Write(record.DateOfBirth.Day);
+            this.binaryWriter.Write(record.IdentificationNumber);
+            this.binaryWriter.Write(record.PointsForFourTests);
+            this.binaryWriter.Write(record.IdentificationLetter);
+            this.binaryWriter.Flush();
+        }
+
+        private void Write(FileCabinetRecord record)
+        {
+            this.Write(record, (int)this.binaryWriter.BaseStream.Length / RecordSize);
         }
 
         private void WriteANSIIStringToFile(string str)
