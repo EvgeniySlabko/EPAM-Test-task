@@ -72,10 +72,28 @@ namespace FileCabinetApp
         /// <summary>
         /// Edits the record by its id.
         /// </summary>
-        /// <param name="newRecord">Edited record.</param>
-        void IFileCabinetService.Edit(FileCabinetRecord newRecord)
+        /// <param name="record">Edited record.</param>
+        public void Edit(FileCabinetRecord record)
         {
-            throw new NotImplementedException();
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            this.GoToStart();
+            while (true)
+            {
+                var currentRecord = this.GetNext();
+                if (currentRecord is null)
+                {
+                    throw new ArgumentException($"record with id {record.Id} not found");
+                }
+                else if (record.Id == currentRecord.Id)
+                {
+                    this.Write(record, this.iterationIndex - 1);
+                    break;
+                }
+            }
         }
 
         /// <summary>

@@ -595,45 +595,27 @@ namespace FileCabinetApp
 
         private static void Edit(string parameters)
         {
-            int id;
-            try
+            var result = new IntConverter().Convert(parameters);
+
+            if (!result.Item1)
             {
-                id = int.Parse(parameters, CultureInfo.CurrentCulture);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine(Rm.GetString("InvalidFormatMessage", CultureInfo.CurrentCulture));
-                return;
-            }
-            catch (OverflowException)
-            {
-                Console.WriteLine(Rm.GetString("OverflowMessage", CultureInfo.CurrentCulture));
+                Console.WriteLine(result.Item2);
                 return;
             }
 
-            FileCabinetRecord editRecord;
+            EnterRecord(out FileCabinetRecord record);
+            record.Id = result.Item3;
             try
             {
-                EnterRecord(out editRecord);
+                fileCabinetService.Edit(record);
             }
-            catch (ArgumentException exeption)
+            catch (ArgumentException ex)
             {
-                Console.WriteLine(exeption.Message);
+                Console.WriteLine(ex.Message);
                 return;
             }
 
-            editRecord.Id = id;
-            try
-            {
-                fileCabinetService.Edit(editRecord);
-            }
-            catch (ArgumentException exeption)
-            {
-                Console.WriteLine(exeption.Message);
-                return;
-            }
-
-            Console.WriteLine(Rm.GetString("UppdateRecordMessage", CultureInfo.CurrentCulture), id);
+            Console.WriteLine(Rm.GetString("UppdateRecordMessage", CultureInfo.CurrentCulture), record.Id);
         }
 
         private static T ReadInput<T>(Func<string, Tuple<bool, string, T>> converter, Func<T, Tuple<bool, string>> validator)
