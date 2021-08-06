@@ -125,9 +125,25 @@ namespace FileCabinetApp
         /// Returns all records.
         /// </summary>
         /// <returns>array with records.</returns>
-        ReadOnlyCollection<FileCabinetRecord> IFileCabinetService.GetRecords()
+        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
         {
-            throw new NotImplementedException();
+            var records = new List<FileCabinetRecord>();
+            this.GoToStart();
+            while (true)
+            {
+                var record = this.GetNext();
+                if (record is null)
+                {
+                    this.GoToStart();
+                    break;
+                }
+                else
+                {
+                    records.Add(record);
+                }
+            }
+
+            return new ReadOnlyCollection<FileCabinetRecord>(records);
         }
 
         /// <summary>
