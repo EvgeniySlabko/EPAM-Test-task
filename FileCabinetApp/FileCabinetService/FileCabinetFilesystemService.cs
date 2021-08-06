@@ -55,9 +55,9 @@ namespace FileCabinetApp
                 throw new ArgumentException("Invalide parameters");
             }
 
-            int id = generateNewId ? this.id++ : record.Id;
+            record.Id = generateNewId ? this.id++ : record.Id;
             this.Write(record);
-            return id;
+            return record.Id;
         }
 
         /// <summary>
