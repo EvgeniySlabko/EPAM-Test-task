@@ -16,9 +16,9 @@ namespace FileCabinetApp
         private const int MaxNameLength = 120;
         private readonly IRecordValidator recordValidator;
 
-        private FileStream fileStrieam;
-        private BinaryWriter binaryWriter;
-        private BinaryReader binaryReader;
+        private readonly FileStream fileStrieam;
+        private readonly BinaryWriter binaryWriter;
+        private readonly BinaryReader binaryReader;
 
         private int id;
         private int iterationIndex;
@@ -192,9 +192,12 @@ namespace FileCabinetApp
         /// Takes a snapshot of the current state of the list of records.
         /// </summary>
         /// <returns>Snapshot of the current list of records.</returns>
-        FileCabinetServiceSnapshot IFileCabinetService.MakeSnapshot()
+        public FileCabinetServiceSnapshot MakeSnapshot()
         {
-            throw new NotImplementedException();
+            var records = this.GetRecords();
+            var recordsArray = new FileCabinetRecord[records.Count];
+            records.CopyTo(recordsArray, 0);
+            return new FileCabinetServiceSnapshot(recordsArray);
         }
 
         /// <summary>

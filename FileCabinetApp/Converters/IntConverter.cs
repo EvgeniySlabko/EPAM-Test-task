@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.Converters
 {
-
     /// <summary>
     /// Int conversion class.
     /// </summary>
@@ -48,6 +47,5 @@ namespace FileCabinetApp.Converters
         {
             return this.Convert;
         }
-
     }
 }
