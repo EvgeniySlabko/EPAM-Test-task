@@ -94,23 +94,8 @@ namespace FileCabinetApp
         /// <returns>Record if found otherwise null.</returns>
         public ReadOnlyCollection<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
         {
-            var subList = new List<FileCabinetRecord>();
-            this.GoToStart();
-            while (true)
-            {
-                var record = this.GetNext();
-                if (record is null)
-                {
-                    break;
-                }
-                else if (record.DateOfBirth.Equals(dataOfBirthday))
-                {
-                    subList.Add(record);
-                }
-            }
-
-            this.GoToStart();
-            return new ReadOnlyCollection<FileCabinetRecord>(subList);
+            Predicate<FileCabinetRecord> comparator = record => record.DateOfBirth == dataOfBirthday;
+            return this.FindBy(comparator);
         }
 
         /// <summary>
@@ -125,23 +110,8 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(firstName));
             }
 
-            var subList = new List<FileCabinetRecord>();
-            this.GoToStart();
-            while (true)
-            {
-                var record = this.GetNext();
-                if (record is null)
-                {
-                    break;
-                }
-                else if (record.FirstName.ToLower(CultureInfo.CurrentCulture).Equals(firstName.ToLower(CultureInfo.CurrentCulture)))
-                {
-                    subList.Add(record);
-                }
-            }
-
-            this.GoToStart();
-            return new ReadOnlyCollection<FileCabinetRecord>(subList);
+            Predicate<FileCabinetRecord> comparator = record => record.FirstName.ToLower(CultureInfo.CurrentCulture) == firstName.ToLower(CultureInfo.CurrentCulture);
+            return this.FindBy(comparator);
         }
 
         /// <summary>
@@ -156,23 +126,8 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(lastName));
             }
 
-            var subList = new List<FileCabinetRecord>();
-            this.GoToStart();
-            while (true)
-            {
-                var record = this.GetNext();
-                if (record is null)
-                {
-                    break;
-                }
-                else if (record.LastName.ToLower(CultureInfo.CurrentCulture).Equals(lastName.ToLower(CultureInfo.CurrentCulture)))
-                {
-                    subList.Add(record);
-                }
-            }
-
-            this.GoToStart();
-            return new ReadOnlyCollection<FileCabinetRecord>(subList);
+            Predicate<FileCabinetRecord> comparator = record => record.LastName.ToLower(CultureInfo.CurrentCulture) == lastName.ToLower(CultureInfo.CurrentCulture);
+            return this.FindBy(comparator);
         }
 
         /// <summary>
@@ -274,6 +229,27 @@ namespace FileCabinetApp
         private void GoToStart()
         {
             this.iterationIndex = 0;
+        }
+
+        private ReadOnlyCollection<FileCabinetRecord> FindBy(Predicate<FileCabinetRecord> comparator)
+        {
+            var subList = new List<FileCabinetRecord>();
+            this.GoToStart();
+            while (true)
+            {
+                var record = this.GetNext();
+                if (record is null)
+                {
+                    break;
+                }
+                else if (comparator(record))
+                {
+                    subList.Add(record);
+                }
+            }
+
+            this.GoToStart();
+            return new ReadOnlyCollection<FileCabinetRecord>(subList);
         }
 
         private int GetHigherId()
