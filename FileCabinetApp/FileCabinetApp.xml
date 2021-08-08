@@ -4,6 +4,25 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
+        <member name="T:FileCabinetApp.CommandLineParser">
+            <summary>
+            Common parser for command line arguments.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.CommandLineParser.AddCommandLineArgumentDescription(System.String,System.String,System.Action{System.String})">
+            <summary>
+            Add command line argument description.
+            </summary>
+            <param name="fullArgumentName">Full argument name.</param>
+            <param name="shortArgumentName">Short argument name.</param>
+            <param name="argumentAction">Action for argument.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandLineParser.ParseCommandLineArguments(System.String[])">
+            <summary>
+            Parse command line arguments.
+            </summary>
+            <param name="args">Given command line arguments.</param>
+        </member>
         <member name="T:FileCabinetApp.CharConverter">
             <summary>
             Char conversion class.
@@ -91,6 +110,24 @@
             </summary>
             <returns>Gets delegate for conversion method.</returns>
         </member>
+        <member name="T:FileCabinetApp.Converters.IntConverter">
+            <summary>
+            Int conversion class.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Converters.IntConverter.Convert(System.String)">
+            <summary>
+            converts a string to a value of char type.
+            </summary>
+            <param name="inputString">Given string.</param>
+            <returns>Result tupple. bool value - validation result. string value - message string. T value - result of conversion.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Converters.IntConverter.GetDelegate">
+            <summary>
+            Gets the delegate.
+            </summary>
+            <returns>Gets delegate for Conversion method.</returns>
+        </member>
         <member name="T:FileCabinetApp.ShortConverter">
             <summary>
             Short conversion class.
@@ -151,34 +188,34 @@
             Implementation IDisposable.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.FileCabinetApp#IFileCabinetService#Edit(FileCabinetRecord)">
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.Edit(FileCabinetRecord)">
             <summary>
             Edits the record by its id.
             </summary>
-            <param name="newRecord">Edited record.</param>
+            <param name="record">Edited record.</param>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.FileCabinetApp#IFileCabinetService#FindByDate(System.DateTime)">
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.FindByDate(System.DateTime)">
             <summary>
             Find record by its data of birthday.
             </summary>
             <param name="dataOfBirthday">Вata of birthday to search.</param>
             <returns>Record if found otherwise null.</returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.FileCabinetApp#IFileCabinetService#FindByFirstName(System.String)">
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.FindByFirstName(System.String)">
             <summary>
             Find record by its first name.
             </summary>
             <param name="firstName">First name to search.</param>
             <returns>Record if found otherwise null.</returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.FileCabinetApp#IFileCabinetService#FindByLastName(System.String)">
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.FindByLastName(System.String)">
             <summary>
             Find record by its last name.
             </summary>
             <param name="lastName">Last name to search.</param>
             <returns>Record if found otherwise null.</returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.FileCabinetApp#IFileCabinetService#GetRecords">
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetRecords">
             <summary>
             Returns all records.
             </summary>
@@ -190,7 +227,7 @@
             </summary>
             <returns>Number of entries in the list.</returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.FileCabinetApp#IFileCabinetService#MakeSnapshot">
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.MakeSnapshot">
             <summary>
             Takes a snapshot of the current state of the list of records.
             </summary>
@@ -632,6 +669,23 @@
             Gets or sets identification letter validator deleate.
             </summary>
             <value>Identification letter vaidator delegate.</value>
+        </member>
+        <member name="T:FileCabinetApp.ValidationRuleSetMaker">
+            <summary>
+            Validation rule set creator.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.ValidationRuleSetMaker.MakeDefaultValidationSet">
+            <summary>
+            Returns default rule set.
+            </summary>
+            <returns>Default rule set.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ValidationRuleSetMaker.MakeCustomValidationSet">
+            <summary>
+            Returns custom rule set.
+            </summary>
+            <returns>Custom rule set.</returns>
         </member>
         <member name="T:FileCabinetApp.CharValidator">
             <summary>

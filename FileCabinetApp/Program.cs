@@ -19,13 +19,6 @@ namespace FileCabinetApp
         private const int ExplanationHelpIndex = 2;
         private const string ConsoleStartSymbol = ">";
 
-        private const int NameMaxLength = 40;
-        private const int NameMinLength = 2;
-        private const int MinPointsForFourTests = 0;
-        private const int MaxPointsForFourTests = 400;
-        private const decimal MinIdentificationNumber = 0;
-        private const decimal MaxIdentificationNumber = decimal.MaxValue;
-        private static readonly DateTime MinDateOfBirth = new (1960, 1, 1);
 
         private static readonly string[][] HelpMessages = new string[][]
         {
@@ -136,33 +129,6 @@ namespace FileCabinetApp
         {
             var recordsCount = Program.fileCabinetService.GetStat();
             Console.WriteLine(Rm.GetString("StatMessage", CultureInfo.CurrentCulture), recordsCount);
-        }
-
-        private static void MakeDefaultValidationSet()
-        {
-            validationRuleSet = new ValidationRuleSet
-            {
-                DateValidator = new DateValidator(MinDateOfBirth, DateTime.Now),
-                FirstNameVAidator = new StringValidator(NameMaxLength, NameMinLength),
-                LastNameValidator = new StringValidator(NameMaxLength, NameMinLength),
-                PointsForFourTestsValidator = new ShortValidator(MinPointsForFourTests, MaxPointsForFourTests),
-                IdentificationNumberValidator = new DecimalValidator(MinIdentificationNumber, MaxIdentificationNumber),
-                IdentificationLetterValidator = new CharValidator(c => char.IsLetter(c)),
-            };
-        }
-
-        private static void MakeCustomValidationSet()
-        {
-            var predicateCharValidationList = new List<Predicate<char>> { (c) => char.IsLetter(c), (c) => char.IsLower(c), };
-            validationRuleSet = new ValidationRuleSet
-            {
-                DateValidator = new DateValidator(MinDateOfBirth, DateTime.Now),
-                FirstNameVAidator = new StringValidator(NameMaxLength, NameMinLength),
-                LastNameValidator = new StringValidator(NameMaxLength, NameMinLength),
-                PointsForFourTestsValidator = new ShortValidator(MinPointsForFourTests, MaxPointsForFourTests),
-                IdentificationNumberValidator = new DecimalValidator(MinIdentificationNumber, MaxIdentificationNumber),
-                IdentificationLetterValidator = new CharValidator(predicateCharValidationList),
-            };
         }
 
         private static void AddSomeRecords()
@@ -572,11 +538,11 @@ namespace FileCabinetApp
             switch (validationRule)
             {
                 case ValidationRule.Default:
-                    MakeDefaultValidationSet();
+                    validationRuleSet = ValidationRuleSetMaker.MakeDefaultValidationSet();
                     break;
 
                 case ValidationRule.Custom:
-                    MakeCustomValidationSet();
+                    validationRuleSet = ValidationRuleSetMaker.MakeCustomValidationSet();
                     break;
             }
 
