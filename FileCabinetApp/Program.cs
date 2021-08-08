@@ -23,9 +23,9 @@ namespace FileCabinetApp
         {
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
-            new string[] { "_stat_", "prints the record statistics", "The '_stat_' command prints the record statistics." },
+            new string[] { "stat", "prints the record statistics", "The '_stat_' command prints the record statistics." },
             new string[] { "create", "create a new record", "The 'create' command create a new record." },
-            new string[] { "_list_", "display list of records", "The '_list_' display list of records." },
+            new string[] { "list", "display list of records", "The '_list_' display list of records." },
             new string[] { "edit", "edit existing record", "The 'edit' edit existing record." },
             new string[] { "find", "find existing record", "The 'find' find existing record." },
             new string[] { "export", "Export in CSV file", "The 'export' export records in CSV file." },
@@ -35,9 +35,9 @@ namespace FileCabinetApp
         {
             new Tuple<string, Action<string>>("help", PrintHelp),
             new Tuple<string, Action<string>>("exit", Exit),
-            new Tuple<string, Action<string>>("_stat_", Stat),
+            new Tuple<string, Action<string>>("stat", Stat),
             new Tuple<string, Action<string>>("create", Create),
-            new Tuple<string, Action<string>>("_list_", List),
+            new Tuple<string, Action<string>>("list", List),
             new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("find", Find),
             new Tuple<string, Action<string>>("export", Export),
