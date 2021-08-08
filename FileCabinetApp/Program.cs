@@ -43,23 +43,6 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("export", Export),
         };
 
-        private static readonly Tuple<string, string, Tuple<string, Action>[]>[] CommandLineArguments = new Tuple<string, string, Tuple<string, Action>[]>[]
-        {
-#pragma warning disable SA1118 // Parameter should not span multiple lines
-            new Tuple<string, string, Tuple<string, Action>[]>("--validation-rules", "-v", new Tuple<string, Action>[]
-            {
-                new Tuple<string, Action>("default", () => validationRule = ValidationRule.Default),
-                new Tuple<string, Action>("custom", () => validationRule = ValidationRule.Custom),
-            }),
-
-            new Tuple<string, string, Tuple<string, Action>[]>("--storage", "-s", new Tuple<string, Action>[]
-            {
-                new Tuple<string, Action>("file", () => serviceType = ServiceType.FileService),
-                new Tuple<string, Action>("memory", () => serviceType = ServiceType.MemoryService),
-            }),
-        };
-#pragma warning restore SA1118 // Parameter should not span multiple lines
-
         private static readonly ResourceManager Rm = new ("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
         private static IFileCabinetService fileCabinetService;
         private static ValidationRule validationRule = ValidationRule.Default;
@@ -240,61 +223,43 @@ namespace FileCabinetApp
 
         private static void ParseCommandLineArguments(string[] args)
         {
-            if (args is null)
+            var parser = new CommandLineParser();
+            static void ValidationRuleAction(string arg)
             {
-                throw new ArgumentNullException(nameof(args));
+                if (arg.Equals("custom"))
+                {
+                    validationRule = ValidationRule.Custom;
+                }
+                else if (arg.Equals("default"))
+                {
+                    validationRule = ValidationRule.Default;
+                }
+                else
+                {
+                    throw new ArgumentException(Rm.GetString("UnableCommandLineArgumentsMessage", CultureInfo.CurrentCulture));
+                }
             }
 
-            if (args.Length.Equals(0))
+            static void StorageRuleAction(string arg)
             {
-                return;
+                if (arg.Equals("file"))
+                {
+                    serviceType = ServiceType.FileService;
+                }
+                else if (arg.Equals("memory"))
+                {
+                    serviceType = ServiceType.MemoryService;
+                }
+                else
+                {
+                    throw new ArgumentException(Rm.GetString("UnableCommandLineArgumentsMessage", CultureInfo.CurrentCulture));
+                }
             }
 
-            bool wasArgumentType = false;
-            int argumentIndex = 0;
-            foreach (var arg in args)
-            {
-                var lowerArg = arg.ToLower(CultureInfo.CurrentCulture);
-                if (wasArgumentType)
-                {
-                    var index = Array.FindIndex(CommandLineArguments[argumentIndex].Item3, 0, CommandLineArguments[argumentIndex].Item3.Length, i => i.Item1.Equals(lowerArg, StringComparison.CurrentCulture));
-                    if (index != -1)
-                    {
-                        wasArgumentType = false;
-                        CommandLineArguments[argumentIndex].Item3[index].Item2();
-                        continue;
-                    }
-                }
-                else if (lowerArg.StartsWith("--", StringComparison.CurrentCulture) && !wasArgumentType)
-                {
-                    var splitedArg = lowerArg.Split('=');
-                    if (splitedArg.Length == 2)
-                    {
-                        var index = Array.FindIndex(CommandLineArguments, 0, CommandLineArguments.Length, i => i.Item1.Equals(splitedArg[0], StringComparison.CurrentCulture));
-                        if (index != -1)
-                        {
-                            var index2 = Array.FindIndex(CommandLineArguments[index].Item3, 0, CommandLineArguments[index].Item3.Length, i => i.Item1.Equals(splitedArg[1], StringComparison.CurrentCulture));
-                            if (index2 != -1)
-                            {
-                                CommandLineArguments[index].Item3[index2].Item2();
-                                continue;
-                            }
-                        }
-                    }
-                }
-                else if (lowerArg.StartsWith("-", StringComparison.CurrentCulture) && !wasArgumentType)
-                {
-                    argumentIndex = Array.FindIndex(CommandLineArguments, 0, CommandLineArguments.Length, i => i.Item2.Equals(lowerArg, StringComparison.CurrentCulture));
-                    if (argumentIndex != -1)
-                    {
-                        wasArgumentType = true;
-                        continue;
-                    }
-                }
+            parser.AddCommandLineArgumentDescription("--validation-rules", "-v", ValidationRuleAction);
+            parser.AddCommandLineArgumentDescription("--storage", "-s", StorageRuleAction);
 
-                throw new ArgumentException(Rm.GetString("UnableCommandLineArgumentsMessage", CultureInfo.CurrentCulture));
-            }
-
+            parser.ParseCommandLineArguments(args);
             ApplyCommandLineArguments();
         }
 
