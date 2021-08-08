@@ -8,8 +8,6 @@ namespace FileCabinetApp
     /// </summary>
     public class DecimalValidator : IValidator<decimal>
     {
-        private readonly decimal minValue;
-        private readonly decimal maxValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DecimalValidator"/> class.
@@ -19,9 +17,13 @@ namespace FileCabinetApp
         /// <param name="minValue">Minimal value length.</param>
         public DecimalValidator(decimal minValue, decimal maxValue)
         {
-            this.minValue = minValue;
-            this.maxValue = maxValue;
+            this.MinValue = minValue;
+            this.MaxValue = maxValue;
         }
+
+        private decimal MinValue { get; }
+
+        private decimal MaxValue { get; }
 
         /// <summary>
         /// Gets the delegate.
@@ -41,7 +43,7 @@ namespace FileCabinetApp
         {
             bool valid;
             string message;
-            if (inputValue < this.maxValue && inputValue > this.minValue)
+            if (inputValue < this.MaxValue && inputValue > this.MinValue)
             {
                 message = "Succesful";
                 valid = true;

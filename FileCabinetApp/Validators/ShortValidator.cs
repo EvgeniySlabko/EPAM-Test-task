@@ -8,9 +8,6 @@ namespace FileCabinetApp
     /// </summary>
     public class ShortValidator : IValidator<short>
     {
-        private readonly short minValue;
-        private readonly short maxValue;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ShortValidator"/> class.
         /// String validator constructor.
@@ -19,9 +16,13 @@ namespace FileCabinetApp
         /// <param name="minValue">Minimal string length.</param>
         public ShortValidator(short minValue, short maxValue)
         {
-            this.minValue = minValue;
-            this.maxValue = maxValue;
+            this.MinValue = minValue;
+            this.MaxValue = maxValue;
         }
+
+        private short MinValue { get; }
+
+        private short MaxValue { get; }
 
         /// <summary>
         /// Gets the delegate.
@@ -41,7 +42,7 @@ namespace FileCabinetApp
         {
             bool valid;
             string message;
-            if (inputValue < this.maxValue && inputValue > this.minValue)
+            if (inputValue < this.MaxValue && inputValue > this.MinValue)
             {
                 message = "Succesful";
                 valid = true;

@@ -8,9 +8,6 @@ namespace FileCabinetApp
     /// </summary>
     public class DateValidator : IValidator<DateTime>
     {
-        private readonly DateTime minDateOfBirth;
-        private readonly DateTime maxDateOfBirth;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DateValidator"/> class.
         /// String validator constructor.
@@ -19,9 +16,13 @@ namespace FileCabinetApp
         /// <param name="minDateOfBirth">Minimal date of birth.</param>
         public DateValidator(DateTime minDateOfBirth, DateTime maxDateOfBirth)
         {
-            this.minDateOfBirth = minDateOfBirth;
-            this.maxDateOfBirth = maxDateOfBirth;
+            this.MinDateOfBirth = minDateOfBirth;
+            this.MaxDateOfBirth = maxDateOfBirth;
         }
+
+        private DateTime MinDateOfBirth { get; }
+
+        private DateTime MaxDateOfBirth { get; }
 
         /// <summary>
         /// Gets the delegate.
@@ -41,7 +42,7 @@ namespace FileCabinetApp
         {
             bool valid;
             string message;
-            if (inputDateOfBirth < this.maxDateOfBirth && inputDateOfBirth > this.minDateOfBirth)
+            if (inputDateOfBirth < this.MaxDateOfBirth && inputDateOfBirth > this.MinDateOfBirth)
             {
                 message = "Succesful";
                 valid = true;

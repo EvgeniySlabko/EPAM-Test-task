@@ -28,9 +28,6 @@ namespace FileCabinetApp
     /// </summary>
     public class StringValidator : IValidator<string>
     {
-        private readonly int maxLen;
-        private readonly int minLen;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="StringValidator"/> class.
         /// String validator constructor.
@@ -39,9 +36,13 @@ namespace FileCabinetApp
         /// <param name="minLen">Minimal string length.</param>
         public StringValidator(int maxLen, int minLen)
         {
-            this.maxLen = maxLen;
-            this.minLen = minLen;
+            this.MaxLen = maxLen;
+            this.MinLen = minLen;
         }
+
+        private int MaxLen { get; }
+
+        private int MinLen { get; }
 
         /// <summary>
         /// Gets the delegate.
@@ -66,7 +67,7 @@ namespace FileCabinetApp
 
             bool valid;
             string message;
-            if (inputStr.Length < this.maxLen && inputStr.Length > this.minLen)
+            if (inputStr.Length < this.MaxLen && inputStr.Length > this.MinLen)
             {
                 message = "Succesful";
                 valid = true;
