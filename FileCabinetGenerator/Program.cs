@@ -1,5 +1,7 @@
 ﻿using FileCabinetApp;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -43,6 +45,31 @@ namespace FileCabinetGenerator
             parser.ParseCommandLineArguments(args);
         }
 
+        private static ReadOnlyCollection<FileCabinetRecord> GenerateRandomRecords()
+        {
+            ValidationRuleSet defaultRuleSet = ValidationRuleSetMaker.MakeDefaultValidationSet();
+            var records = new List<FileCabinetRecord>();
+            var random = new Random();
+            for (int i = 0; i < amountOfGeneratedRecords; i++)
+            {
+                var year = random.Next(random.Next(defaultRuleSet.DateValidator.MinDateOfBirth.Year, defaultRuleSet.DateValidator.MaxDateOfBirth.Year));
+                var month = random.Next(random.Next(defaultRuleSet.DateValidator.MinDateOfBirth.Month, defaultRuleSet.DateValidator.MaxDateOfBirth.Month));
+                var day = random.Next(random.Next(defaultRuleSet.DateValidator.MinDateOfBirth.Day, defaultRuleSet.DateValidator.MaxDateOfBirth.Day));
+                var pointForFourTests = (short)random.Next(random.Next(defaultRuleSet.PointsForFourTestsValidator.MinValue, defaultRuleSet.PointsForFourTestsValidator.MaxValue));
+                var IdentificationNumber = (decimal)random.Next(random.Next((int)defaultRuleSet.IdentificationNumberValidator.MinValue, (int)defaultRuleSet.IdentificationNumberValidator.MaxValue));
+
+                FileCabinetRecord newRecord = new FileCabinetRecord();
+                newRecord.Id = firstIdValue + i;
+                newRecord.FirstName = GetRandomString(defaultRuleSet.FirstNameVAidator.MaxLen / 2);
+                newRecord.LastName = GetRandomString(defaultRuleSet.FirstNameVAidator.MaxLen / 2);
+                newRecord.DateOfBirth = new DateTime(year, month, day);
+                newRecord.PointsForFourTests = pointForFourTests;
+                newRecord.IdentificationNumber = IdentificationNumber;
+                newRecord.IdentificationLetter = 'f';
+                records.Add(newRecord);
+            }
+            return new ReadOnlyCollection<FileCabinetRecord>(records);
+        }
 
         private static string GetRandomString(int length)
         {
