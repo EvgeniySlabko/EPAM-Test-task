@@ -59,7 +59,7 @@ namespace FileCabinetApp
             CultureInfo.CurrentCulture = new CultureInfo("en-US");
             Console.WriteLine(Rm.GetString("WelcomeMessage", CultureInfo.CurrentCulture));
             ParseCommandLineArguments(args);
-            DisplayValidationRuleMessage();
+            DisplayInfoMessage();
             Console.WriteLine();
 
 #if DEBUG
@@ -94,17 +94,11 @@ namespace FileCabinetApp
             while (isRunning);
         }
 
-        private static void DisplayValidationRuleMessage()
+        private static void DisplayInfoMessage()
         {
-            switch (validationRule)
-            {
-                case ValidationRule.Default:
-                    Console.WriteLine(Rm.GetString("ValidationRuleString", CultureInfo.CurrentCulture), "default");
-                    break;
-                case ValidationRule.Custom:
-                    Console.WriteLine(Rm.GetString("ValidationRuleString", CultureInfo.CurrentCulture), "custom");
-                    break;
-            }
+            string validationRuleString = (validationRule == ValidationRule.Default) ? "default" : "custom";
+            string serviceTypeString = (serviceType == ServiceType.FileService) ? "file" : "memory";
+            Console.WriteLine(Rm.GetString("InfoMessage", CultureInfo.CurrentCulture), validationRuleString, serviceTypeString);
         }
 
         private static void Stat(string parameters)
