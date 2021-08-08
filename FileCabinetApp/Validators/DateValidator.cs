@@ -20,9 +20,17 @@ namespace FileCabinetApp
             this.MaxDateOfBirth = maxDateOfBirth;
         }
 
-        private DateTime MinDateOfBirth { get; }
+        /// <summary>
+        /// Gets minimum date of birth.
+        /// </summary>
+        /// <value>Minimum date of birth.</value>
+        public DateTime MinDateOfBirth { get; }
 
-        private DateTime MaxDateOfBirth { get; }
+        /// <summary>
+        /// Gets maximum date of birth.
+        /// </summary>
+        /// <value>Maximum date of birth.</value>
+        public DateTime MaxDateOfBirth { get; }
 
         /// <summary>
         /// Gets the delegate.

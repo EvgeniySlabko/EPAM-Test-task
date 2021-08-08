@@ -20,9 +20,17 @@ namespace FileCabinetApp
             this.MaxValue = maxValue;
         }
 
-        private short MinValue { get; }
+        /// <summary>
+        /// Gets minimum value.
+        /// </summary>
+        /// <value>Minimum value.</value>
+        public short MinValue { get; }
 
-        private short MaxValue { get; }
+        /// <summary>
+        /// Gets maximum value.
+        /// </summary>
+        /// <value>Maximum value.</value>
+        public short MaxValue { get; }
 
         /// <summary>
         /// Gets the delegate.
