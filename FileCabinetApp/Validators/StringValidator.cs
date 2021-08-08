@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FileCabinetApp.Validators
+namespace FileCabinetApp
 {
     /// <summary>
     /// Vaidator for string type.

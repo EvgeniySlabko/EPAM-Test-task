@@ -50,7 +50,7 @@ namespace FileCabinetApp
         {
             bool valid;
             string message;
-            if (inputValue < this.maxValue && inputValue > this.minValue)
+            if (inputValue < this.MaxValue && inputValue > this.MinValue)
             {
                 message = "Succesful";
                 valid = true;

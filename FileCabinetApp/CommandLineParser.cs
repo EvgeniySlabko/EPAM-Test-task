@@ -12,8 +12,7 @@ namespace FileCabinetApp
     /// </summary>
     public class CommandLineParser
     {
-
-        private List<Tuple<string, string, Action<string>>> commandLineArgumentDescriptions = new ();
+        private readonly List<Tuple<string, string, Action<string>>> commandLineArgumentDescriptions = new ();
 
         /// <summary>
         /// Add command line argument description.

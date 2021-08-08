@@ -103,8 +103,8 @@ namespace FileCabinetApp
         /// <returns>Record if found otherwise null.</returns>
         public ReadOnlyCollection<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
         {
-            Predicate<FileCabinetRecord> comparator = record => record.DateOfBirth == dataOfBirthday;
-            return this.FindBy(comparator);
+            bool Comparator(FileCabinetRecord record) => record.DateOfBirth == dataOfBirthday;
+            return this.FindBy(Comparator);
         }
 
         /// <summary>
@@ -119,8 +119,8 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(firstName));
             }
 
-            Predicate<FileCabinetRecord> comparator = record => record.FirstName.ToLower(CultureInfo.CurrentCulture) == firstName.ToLower(CultureInfo.CurrentCulture);
-            return this.FindBy(comparator);
+            bool Comparator(FileCabinetRecord record) => record.FirstName.ToLower(CultureInfo.CurrentCulture) == firstName.ToLower(CultureInfo.CurrentCulture);
+            return this.FindBy(Comparator);
         }
 
         /// <summary>
@@ -135,8 +135,8 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(lastName));
             }
 
-            Predicate<FileCabinetRecord> comparator = record => record.LastName.ToLower(CultureInfo.CurrentCulture) == lastName.ToLower(CultureInfo.CurrentCulture);
-            return this.FindBy(comparator);
+            bool Comparator(FileCabinetRecord record) => record.LastName.ToLower(CultureInfo.CurrentCulture) == lastName.ToLower(CultureInfo.CurrentCulture);
+            return this.FindBy(Comparator);
         }
 
         /// <summary>

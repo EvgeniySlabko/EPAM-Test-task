@@ -8,7 +8,6 @@ namespace FileCabinetApp
     /// </summary>
     public class DecimalValidator : IValidator<decimal>
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DecimalValidator"/> class.
         /// String validator constructor.

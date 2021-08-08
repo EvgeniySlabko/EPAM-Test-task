@@ -19,7 +19,6 @@ namespace FileCabinetApp
         private const int ExplanationHelpIndex = 2;
         private const string ConsoleStartSymbol = ">";
 
-
         private static readonly string[][] HelpMessages = new string[][]
         {
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
@@ -81,7 +80,7 @@ namespace FileCabinetApp
             Console.WriteLine();
 
 #if DEBUG
-            // AddSomeRecords();
+             // AddSomeRecords();
 #endif
 
             do
