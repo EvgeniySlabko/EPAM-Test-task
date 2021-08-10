@@ -29,6 +29,7 @@ namespace FileCabinetApp
             new string[] { "edit", "edit existing record", "The 'edit' edit existing record." },
             new string[] { "find", "find existing record", "The 'find' find existing record." },
             new string[] { "export", "Export in CSV file", "The 'export' export records in CSV file." },
+            new string[] { "import", "Import records from file", "The 'import' import records from file." },
         };
 
         private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
@@ -41,6 +42,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("find", Find),
             new Tuple<string, Action<string>>("export", Export),
+            new Tuple<string, Action<string>>("import", Import),
         };
 
         private static readonly ResourceManager Rm = new ("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
@@ -396,6 +398,16 @@ namespace FileCabinetApp
             }
 
             Console.WriteLine(Rm.GetString("CreateRecordMessage", CultureInfo.CurrentCulture), recordId);
+        }
+
+        private static void Import(string parameters)
+        {
+            if (!File.Exists(parameters))
+            {
+                Console.WriteLine(Rm.GetString("FileDoesNotExistMessage", CultureInfo.CurrentCulture));
+            }
+
+            Console.WriteLine(Rm.GetString("RecordsWereImport", CultureInfo.CurrentCulture));
         }
 
         private static void Export(string parameters)
