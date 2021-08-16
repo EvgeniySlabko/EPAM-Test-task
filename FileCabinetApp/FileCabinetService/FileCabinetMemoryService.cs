@@ -167,6 +167,32 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Restore records from snapshot.
+        /// </summary>
+        /// <param name="snapshot">Given snapshot.</param>
+        public void Restore(FileCabinetServiceSnapshot snapshot)
+        {
+            if (snapshot is null)
+            {
+                throw new ArgumentNullException(nameof(snapshot));
+            }
+
+            foreach (var newRecord in snapshot.Records)
+            {
+                for (int i = 0; i < this.list.Count; i++)
+                {
+                    if (newRecord.Id == this.list[i].Id)
+                    {
+                        this.list[i] = newRecord;
+                        continue;
+                    }
+                }
+
+                this.list.Add(newRecord);
+            }
+        }
+
+        /// <summary>
         /// Takes a snapshot of the current state of the list of records.
         /// </summary>
         /// <returns>Snapshot of the current list of records.</returns>

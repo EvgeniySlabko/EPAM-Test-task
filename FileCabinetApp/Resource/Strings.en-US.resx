@@ -213,4 +213,7 @@
   <data name="WelcomeMessage" xml:space="preserve">
     <value>File Cabinet Application, developed by Slabko Evgeniy Igorevich</value>
   </data>
+  <data name="СouldТotOpenFile" xml:space="preserve">
+    <value>Сould not open file</value>
+  </data>
 </root>

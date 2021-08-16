@@ -201,6 +201,37 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Restore records from snapshot.
+        /// </summary>
+        /// <param name="snapshot">Given snapshot.</param>
+        public void Restore(FileCabinetServiceSnapshot snapshot)
+        {
+            if (snapshot is null)
+            {
+                throw new ArgumentNullException(nameof(snapshot));
+            }
+
+            foreach (var newRecord in snapshot.Records)
+            {
+                this.GoToStart();
+                int i = 0;
+                while (true)
+                {
+                    var record = this.GetNext();
+                    if (record is null || record.Id == newRecord.Id)
+                    {
+                        this.Write(newRecord, i);
+                        break;
+                    }
+
+                    i++;
+                }
+
+                this.GoToStart();
+            }
+        }
+
+        /// <summary>
         /// Implementation IDisposable.
         /// </summary>
         /// <param name="disposing">Flag for disposing.</param>
@@ -248,7 +279,7 @@ namespace FileCabinetApp
         private FileCabinetRecord GetRecord(int index)
         {
             int position = index * RecordSize;
-            if (position >= this.binaryReader.BaseStream.Length)
+            if (position + RecordSize > this.binaryReader.BaseStream.Length)
             {
                 return null;
             }

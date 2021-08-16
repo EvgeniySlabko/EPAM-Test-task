@@ -65,7 +65,7 @@ namespace FileCabinetApp
             Console.WriteLine();
 
 #if DEBUG
-             // AddSomeRecords();
+            // AddSomeRecords();
 #endif
 
             do
@@ -402,9 +402,53 @@ namespace FileCabinetApp
 
         private static void Import(string parameters)
         {
-            if (!File.Exists(parameters))
+            string[] separateParameters = SplitParameterString(parameters);
+            if (!separateParameters.Length.Equals(2))
+            {
+                Console.WriteLine(Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
+                return;
+            }
+
+            var snapshot = new FileCabinetServiceSnapshot();
+            string firstParameter = separateParameters[0].ToLower(CultureInfo.CurrentCulture);
+            Action<FileStream> reader;
+            if (firstParameter == "csv")
+            {
+                reader = snapshot.LoadFromCsv;
+            }
+            else if (firstParameter == "xml")
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                Console.WriteLine(Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
+                return;
+            }
+
+            FileStream stream;
+            try
+            {
+                using (stream = new FileStream(separateParameters[1], FileMode.Open))
+                {
+                    reader(stream);
+                    fileCabinetService.Restore(snapshot);
+                }
+            }
+            catch (FileNotFoundException)
             {
                 Console.WriteLine(Rm.GetString("FileDoesNotExistMessage", CultureInfo.CurrentCulture));
+                return;
+            }
+            catch (ArgumentException)
+            {
+                Console.WriteLine(Rm.GetString("СouldТotOpenFile", CultureInfo.CurrentCulture));
+                return;
+            }
+            catch (IOException)
+            {
+                Console.WriteLine(Rm.GetString("СouldТotOpenFile", CultureInfo.CurrentCulture));
+                return;
             }
 
             Console.WriteLine(Rm.GetString("RecordsWereImport", CultureInfo.CurrentCulture));
