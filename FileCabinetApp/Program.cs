@@ -418,7 +418,7 @@ namespace FileCabinetApp
             }
             else if (firstParameter == "xml")
             {
-                throw new NotImplementedException();
+                reader = snapshot.LoadFromXml;
             }
             else
             {

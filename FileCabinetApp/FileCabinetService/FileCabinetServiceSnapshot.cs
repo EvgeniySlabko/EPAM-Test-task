@@ -49,6 +49,16 @@ namespace FileCabinetApp
         /// Load records from Csv file.
         /// </summary>
         /// <param name="stream">Given stream.</param>
+        public void LoadFromXml(FileStream stream)
+        {
+            using var reader = new StreamReader(stream);
+            this.records = new FileCabinerXmlReader(reader).ReadAll().ToArray();
+        }
+
+        /// <summary>
+        /// Load records from Csv file.
+        /// </summary>
+        /// <param name="stream">Given stream.</param>
         public void LoadFromCsv(FileStream stream)
         {
             using var reader = new FileCabinetRecordCsvReader(stream);

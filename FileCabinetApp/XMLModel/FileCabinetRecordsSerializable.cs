@@ -10,6 +10,7 @@ namespace FileCabinetApp
     /// <summary>
     /// Model for serialization record.
     /// </summary>
+    [Serializable]
     [XmlRoot(ElementName ="records")]
     public class FileCabinetRecordsSerializable
     {
@@ -18,6 +19,7 @@ namespace FileCabinetApp
         /// </summary>
         public FileCabinetRecordsSerializable()
         {
+            this.Records = new List<FileCabinetRecordSerializable>();
         }
 
         /// <summary>
@@ -25,13 +27,13 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="fileCabinetRecords">Records.</param>
         public FileCabinetRecordsSerializable(IEnumerable<FileCabinetRecord> fileCabinetRecords)
+            : this()
         {
             if (fileCabinetRecords is null)
             {
                 throw new ArgumentNullException(nameof(fileCabinetRecords));
             }
 
-            this.Records = new List<FileCabinetRecordSerializable>();
             foreach (var record in fileCabinetRecords)
             {
                 this.Records.Add(new FileCabinetRecordSerializable(record));
