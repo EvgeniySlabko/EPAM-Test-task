@@ -112,14 +112,26 @@ namespace FileCabinetApp
 
         private static void Remove(string parameters)
         {
+            if (string.IsNullOrEmpty(parameters))
+            {
+                Console.WriteLine(Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
+            }
+
             var result = new IntConverter().Convert(parameters);
             if (result.Item1)
             {
-                fileCabinetService.Remove(result.Item3);
+                try
+                {
+                    fileCabinetService.Remove(result.Item3);
+                }
+                catch (ArgumentException)
+                {
+                    Console.WriteLine(Rm.GetString("RecordIsRemoved", CultureInfo.CurrentCulture), result.Item3);
+                }
             }
             else
             {
-                Console.WriteLine(Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
+                Console.WriteLine(Rm.GetString("RecordDoesNotExists", CultureInfo.CurrentCulture));
             }
         }
 
