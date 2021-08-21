@@ -75,9 +75,9 @@ namespace FileCabinetApp
         /// Returns the number of entries in the list.
         /// </summary>
         /// <returns>Number of entries in the list.</returns>
-        public int GetStat()
+        public Tuple<int, int> GetStat()
         {
-            return this.list.Count;
+            return new Tuple<int, int>(this.list.Count, 0);
         }
 
         /// <summary>

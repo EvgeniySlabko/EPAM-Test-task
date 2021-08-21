@@ -168,24 +168,30 @@ namespace FileCabinetApp
         /// Returns the number of records in the list.
         /// </summary>
         /// <returns>Number of entries in the list.</returns>
-        public int GetStat()
+        public Tuple<int, int> GetStat()
         {
-            int i = 0;
+            int existsCount = 0;
+            int deletedCount = 0;
             while (true)
             {
-                var record = this.GetNext();
+                var record = this.GetNextAny();
                 if (record is null)
                 {
                     break;
                 }
+
+                if ((record.ServiceInormation & 4) != 4)
+                {
+                    existsCount++;
+                }
                 else
                 {
-                    i++;
+                    deletedCount++;
                 }
             }
 
             this.GoToStart();
-            return i;
+            return new Tuple<int, int>(existsCount, deletedCount);
         }
 
         /// <inheritdoc/>

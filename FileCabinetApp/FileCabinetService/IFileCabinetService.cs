@@ -54,7 +54,7 @@ namespace FileCabinetApp
         /// Returns the number of records in the list.
         /// </summary>
         /// <returns>Number of entries in the list.</returns>
-        int GetStat();
+        Tuple<int, int> GetStat();
 
         /// <summary>
         /// Takes a snapshot of the current state of the list of records.

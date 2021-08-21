@@ -107,8 +107,8 @@ namespace FileCabinetApp
 
         private static void Stat(string parameters)
         {
-            var recordsCount = Program.fileCabinetService.GetStat();
-            Console.WriteLine(Rm.GetString("StatMessage", CultureInfo.CurrentCulture), recordsCount);
+            var result = Program.fileCabinetService.GetStat();
+            Console.WriteLine(Rm.GetString("StatMessage", CultureInfo.CurrentCulture), result.Item1, result.Item2);
         }
 
         private static void Remove(string parameters)

@@ -202,7 +202,7 @@
     <value>Records were loaded from file</value>
   </data>
   <data name="StatMessage" xml:space="preserve">
-    <value>"{0} record(s)."</value>
+    <value>"{0} exists record(s). {1} deleted."</value>
   </data>
   <data name="SuccessfulWriteToFileMessage" xml:space="preserve">
     <value>All records are exported to file{0}</value>
