@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ namespace FileCabinetApp
     /// </summary>
     public class FileCabinetServiceSnapshot
     {
-        private readonly FileCabinetRecord[] records;
+        private FileCabinetRecord[] records;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetServiceSnapshot"/> class.
@@ -22,6 +23,46 @@ namespace FileCabinetApp
         public FileCabinetServiceSnapshot(FileCabinetRecord[] records)
         {
             this.records = records;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileCabinetServiceSnapshot"/> class.
+        /// </summary>
+        public FileCabinetServiceSnapshot()
+        {
+            this.records = Array.Empty<FileCabinetRecord>();
+        }
+
+        /// <summary>
+        /// Gets records.
+        /// </summary>
+        /// <value>Read records.</value>
+        public IReadOnlyCollection<FileCabinetRecord> Records
+        {
+            get
+            {
+                return new ReadOnlyCollection<FileCabinetRecord>(this.records);
+            }
+        }
+
+        /// <summary>
+        /// Load records from Csv file.
+        /// </summary>
+        /// <param name="stream">Given stream.</param>
+        public void LoadFromXml(FileStream stream)
+        {
+            using var reader = new StreamReader(stream);
+            this.records = new FileCabinerXmlReader(reader).ReadAll().ToArray();
+        }
+
+        /// <summary>
+        /// Load records from Csv file.
+        /// </summary>
+        /// <param name="stream">Given stream.</param>
+        public void LoadFromCsv(FileStream stream)
+        {
+            using var reader = new FileCabinetRecordCsvReader(stream);
+            this.records = reader.ReadAll().ToArray();
         }
 
         /// <summary>

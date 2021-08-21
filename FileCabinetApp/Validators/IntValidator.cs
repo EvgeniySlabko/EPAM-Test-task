@@ -8,9 +8,6 @@ namespace FileCabinetApp
     /// </summary>
     public class IntValidator : IValidator<int>
     {
-        private readonly int minValue;
-        private readonly int maxValue;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="IntValidator"/> class.
         /// String validator constructor.
@@ -19,9 +16,21 @@ namespace FileCabinetApp
         /// <param name="minValue">Minimal value length.</param>
         public IntValidator(int minValue, int maxValue)
         {
-            this.minValue = minValue;
-            this.maxValue = maxValue;
+            this.MinValue = minValue;
+            this.MaxValue = maxValue;
         }
+
+        /// <summary>
+        /// Gets minimum value.
+        /// </summary>
+        /// <value>Minimum value.</value>
+        public int MinValue { get; }
+
+        /// <summary>
+        /// Gets maximum value.
+        /// </summary>
+        /// <value>Maximum value.</value>
+        public int MaxValue { get; }
 
         /// <summary>
         /// Gets the delegate.
@@ -41,7 +50,7 @@ namespace FileCabinetApp
         {
             bool valid;
             string message;
-            if (inputValue < this.maxValue && inputValue > this.minValue)
+            if (inputValue < this.MaxValue && inputValue > this.MinValue)
             {
                 message = "Succesful";
                 valid = true;

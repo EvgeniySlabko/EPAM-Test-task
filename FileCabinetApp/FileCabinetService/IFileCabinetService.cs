@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace FileCabinetApp
 {
@@ -23,12 +24,6 @@ namespace FileCabinetApp
         void Edit(FileCabinetRecord newRecord);
 
         /// <summary>
-        /// Takes a snapshot of the current list of records.
-        /// </summary>
-        /// <returns>Snapshot of the current list of records.</returns>
-        FileCabinetServiceSnapshot MakeSnapshot();
-
-        /// <summary>
         /// Find record by its data of birthday.
         /// </summary>
         /// <param name="dataOfBirthday">Вata of birthday to search.</param>
@@ -50,15 +45,27 @@ namespace FileCabinetApp
         ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName);
 
         /// <summary>
-        /// Returns an array with records.
+        /// Returns all records.
         /// </summary>
         /// <returns>array with records.</returns>
         ReadOnlyCollection<FileCabinetRecord> GetRecords();
 
         /// <summary>
-        /// Returns the number of entries in the list.
+        /// Returns the number of records in the list.
         /// </summary>
         /// <returns>Number of entries in the list.</returns>
         int GetStat();
+
+        /// <summary>
+        /// Takes a snapshot of the current state of the list of records.
+        /// </summary>
+        /// <returns>Snapshot of the current list of records.</returns>
+        public FileCabinetServiceSnapshot MakeSnapshot();
+
+        /// <summary>
+        /// Restore records.
+        /// </summary>
+        /// <param name="snapshot">Given snapshot.</param>
+        public void Restore(FileCabinetServiceSnapshot snapshot);
     }
 }

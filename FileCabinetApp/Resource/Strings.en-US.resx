@@ -120,6 +120,9 @@
   <data name="AvailableCommandsMessage" xml:space="preserve">
     <value>Available commands: </value>
   </data>
+  <data name="ConversationFailedMessage" xml:space="preserve">
+    <value>Conversation failed</value>
+  </data>
   <data name="CreateRecordMessage" xml:space="preserve">
     <value>Record #{0} is created.</value>
   </data>
@@ -141,6 +144,9 @@
   <data name="ExitMessage" xml:space="preserve">
     <value>Exiting an application...</value>
   </data>
+  <data name="FileDoesNotExistMessage" xml:space="preserve">
+    <value>File does not exist</value>
+  </data>
   <data name="FirstNameMessage" xml:space="preserve">
     <value>First name: </value>
   </data>
@@ -155,6 +161,9 @@
   </data>
   <data name="IdentificationNumberMessage" xml:space="preserve">
     <value>Identification Number:</value>
+  </data>
+  <data name="InfoMessage" xml:space="preserve">
+    <value>Using {0} validation rules. Storage - {1}</value>
   </data>
   <data name="Invalid arguments message" xml:space="preserve">
     <value>Invalid arguments</value>
@@ -183,16 +192,28 @@
   <data name="RecordInfoString" xml:space="preserve">
     <value>#{0}, {1}, {2}, {3}, (Personal number: {4}{5}, total points: {6})</value>
   </data>
+  <data name="RecordsWereImport" xml:space="preserve">
+    <value>Records were loaded from file</value>
+  </data>
+  <data name="StatMessage" xml:space="preserve">
+    <value>"{0} record(s)."</value>
+  </data>
   <data name="SuccessfulWriteToFileMessage" xml:space="preserve">
     <value>All records are exported to file{0}</value>
+  </data>
+  <data name="UnableCommandLineArgumentsMessage" xml:space="preserve">
+    <value>Unable command line arguments</value>
   </data>
   <data name="UppdateRecordMessage" xml:space="preserve">
     <value>Record #{0} is updated.</value>
   </data>
-  <data name="ValidationRuleString" xml:space="preserve">
-    <value>Using {0} validation rules.</value>
+  <data name="ValidationFailedMessage" xml:space="preserve">
+    <value>Validation error</value>
   </data>
   <data name="WelcomeMessage" xml:space="preserve">
-    <value>File Cabinet Application, developed by</value>
+    <value>File Cabinet Application, developed by Slabko Evgeniy Igorevich</value>
+  </data>
+  <data name="СouldТotOpenFile" xml:space="preserve">
+    <value>Сould not open file</value>
   </data>
 </root>
