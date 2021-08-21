@@ -231,6 +231,12 @@ namespace FileCabinetApp
             }
         }
 
+        /// <inheritdoc/>
+        public void Remove(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Implementation IDisposable.
         /// </summary>

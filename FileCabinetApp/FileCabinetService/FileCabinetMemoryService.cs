@@ -202,6 +202,12 @@ namespace FileCabinetApp
             return new FileCabinetServiceSnapshot(copy);
         }
 
+        /// <inheritdoc/>
+        public void Remove(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Remove record from list and dictionaries.
         /// </summary>

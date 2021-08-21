@@ -43,6 +43,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("find", Find),
             new Tuple<string, Action<string>>("export", Export),
             new Tuple<string, Action<string>>("import", Import),
+            new Tuple<string, Action<string>>("remove", Remove),
         };
 
         private static readonly ResourceManager Rm = new ("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
@@ -107,6 +108,19 @@ namespace FileCabinetApp
         {
             var recordsCount = Program.fileCabinetService.GetStat();
             Console.WriteLine(Rm.GetString("StatMessage", CultureInfo.CurrentCulture), recordsCount);
+        }
+
+        private static void Remove(string parameters)
+        {
+            var result = new IntConverter().Convert(parameters);
+            if (result.Item1)
+            {
+                fileCabinetService.Remove(result.Item3);
+            }
+            else
+            {
+                Console.WriteLine(Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
+            }
         }
 
         private static void AddSomeRecords()
