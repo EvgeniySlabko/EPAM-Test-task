@@ -75,9 +75,9 @@ namespace FileCabinetApp
         /// Returns the number of entries in the list.
         /// </summary>
         /// <returns>Number of entries in the list.</returns>
-        public int GetStat()
+        public Tuple<int, int> GetStat()
         {
-            return this.list.Count;
+            return new Tuple<int, int>(this.list.Count, 0);
         }
 
         /// <summary>
@@ -200,6 +200,29 @@ namespace FileCabinetApp
         {
             var copy = (FileCabinetRecord[])this.list.ToArray().Clone();
             return new FileCabinetServiceSnapshot(copy);
+        }
+
+        /// <inheritdoc/>
+        public void Remove(int id)
+        {
+            var record = this.list.Find(f => f.Id == id);
+            if (record is not null)
+            {
+                this.list.Remove(record);
+                this.firstNameDictionary.Remove(record.FirstName);
+                this.lastNameDictionary.Remove(record.LastName);
+                this.dateTimeDictionary.Remove(record.DateOfBirth);
+            }
+            else
+            {
+                throw new ArgumentException($"Record {id} does not exists.");
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Purge()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

@@ -54,7 +54,7 @@ namespace FileCabinetApp
         /// Returns the number of records in the list.
         /// </summary>
         /// <returns>Number of entries in the list.</returns>
-        int GetStat();
+        Tuple<int, int> GetStat();
 
         /// <summary>
         /// Takes a snapshot of the current state of the list of records.
@@ -67,5 +67,16 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="snapshot">Given snapshot.</param>
         public void Restore(FileCabinetServiceSnapshot snapshot);
+
+        /// <summary>
+        /// Remove record from service.
+        /// </summary>
+        /// <param name="id">The id of the deleted entry.</param>
+        public void Remove(int id);
+
+        /// <summary>
+        /// Purge.
+        /// </summary>
+        public void Purge();
     }
 }

@@ -186,17 +186,23 @@
   <data name="PointsForFourTestsMessage" xml:space="preserve">
     <value>Points for four tests:</value>
   </data>
+  <data name="RecordDoesNotExists" xml:space="preserve">
+    <value>Record #{0} doesn't exists.</value>
+  </data>
   <data name="RecordFindMissMessage" xml:space="preserve">
     <value>Records were not found</value>
   </data>
   <data name="RecordInfoString" xml:space="preserve">
     <value>#{0}, {1}, {2}, {3}, (Personal number: {4}{5}, total points: {6})</value>
   </data>
+  <data name="RecordIsRemoved" xml:space="preserve">
+    <value>Record #{0} is removed.</value>
+  </data>
   <data name="RecordsWereImport" xml:space="preserve">
     <value>Records were loaded from file</value>
   </data>
   <data name="StatMessage" xml:space="preserve">
-    <value>"{0} record(s)."</value>
+    <value>"{0} exists record(s). {1} deleted."</value>
   </data>
   <data name="SuccessfulWriteToFileMessage" xml:space="preserve">
     <value>All records are exported to file{0}</value>

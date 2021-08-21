@@ -43,6 +43,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("find", Find),
             new Tuple<string, Action<string>>("export", Export),
             new Tuple<string, Action<string>>("import", Import),
+            new Tuple<string, Action<string>>("remove", Remove),
         };
 
         private static readonly ResourceManager Rm = new ("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
@@ -94,6 +95,7 @@ namespace FileCabinetApp
                 }
             }
             while (isRunning);
+            fileCabinetService.Purge();
         }
 
         private static void DisplayInfoMessage()
@@ -105,8 +107,34 @@ namespace FileCabinetApp
 
         private static void Stat(string parameters)
         {
-            var recordsCount = Program.fileCabinetService.GetStat();
-            Console.WriteLine(Rm.GetString("StatMessage", CultureInfo.CurrentCulture), recordsCount);
+            var result = Program.fileCabinetService.GetStat();
+            Console.WriteLine(Rm.GetString("StatMessage", CultureInfo.CurrentCulture), result.Item1, result.Item2);
+        }
+
+        private static void Remove(string parameters)
+        {
+            if (string.IsNullOrEmpty(parameters))
+            {
+                Console.WriteLine(Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
+            }
+
+            var result = new IntConverter().Convert(parameters);
+            if (result.Item1)
+            {
+                try
+                {
+                    fileCabinetService.Remove(result.Item3);
+                    Console.WriteLine(Rm.GetString("RecordIsRemoved", CultureInfo.CurrentCulture), result.Item3);
+                }
+                catch (ArgumentException)
+                {
+                    Console.WriteLine(Rm.GetString("RecordDoesNotExists", CultureInfo.CurrentCulture), result.Item3);
+                }
+            }
+            else
+            {
+                Console.WriteLine(Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
+            }
         }
 
         private static void AddSomeRecords()

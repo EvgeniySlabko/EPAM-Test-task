@@ -84,11 +84,11 @@ namespace FileCabinetApp
             while (true)
             {
                 var currentRecord = this.GetNext();
-                if (currentRecord is null)
+                if (record is null)
                 {
-                    throw new ArgumentException($"record with id {record.Id} not found");
+                    throw new ArgumentException($"record with id {currentRecord.Id} not found");
                 }
-                else if (record.Id == currentRecord.Id)
+                else if (currentRecord.Id == record.Id)
                 {
                     this.Write(record, this.iterationIndex - 1);
                     break;
@@ -168,24 +168,60 @@ namespace FileCabinetApp
         /// Returns the number of records in the list.
         /// </summary>
         /// <returns>Number of entries in the list.</returns>
-        public int GetStat()
+        public Tuple<int, int> GetStat()
         {
-            int i = 0;
+            int existsCount = 0;
+            int deletedCount = 0;
             while (true)
             {
-                var record = this.GetNext();
+                var record = this.GetNextAny();
                 if (record is null)
                 {
                     break;
                 }
+
+                if ((record.ServiceInormation & 4) != 4)
+                {
+                    existsCount++;
+                }
                 else
                 {
-                    i++;
+                    deletedCount++;
                 }
             }
 
             this.GoToStart();
-            return i;
+            return new Tuple<int, int>(existsCount, deletedCount);
+        }
+
+        /// <inheritdoc/>
+        public void Purge()
+        {
+            this.GoToStart();
+            int offset = 0;
+            int avalibleRecordCounter = 0;
+            while (true)
+            {
+                var record = this.GetNextAny();
+                if (record is null)
+                {
+                    this.fileStrieam.SetLength(avalibleRecordCounter * RecordSize);
+                    break;
+                }
+                else if ((record.ServiceInormation & 4) != 0)
+                {
+                    offset++;
+                    continue;
+                }
+                else if (offset != 0)
+                {
+                    this.Write(record, this.iterationIndex - offset - 1);
+                }
+
+                avalibleRecordCounter++;
+            }
+
+            this.GoToStart();
         }
 
         /// <summary>
@@ -231,6 +267,31 @@ namespace FileCabinetApp
             }
         }
 
+        /// <inheritdoc/>
+        public void Remove(int id)
+        {
+            int i = 0;
+            this.GoToStart();
+            while (true)
+            {
+                var record = this.GetNextAny();
+                if (record is null)
+                {
+                    throw new ArgumentException($"Record {id} does not exists.");
+                }
+                else if (record.Record.Id.Equals(id) && (record.ServiceInormation & 4) == 0)
+                {
+                    record.ServiceInormation |= 4;
+                    this.Write(record, this.iterationIndex - 1);
+                    break;
+                }
+
+                i++;
+            }
+
+            this.GoToStart();
+        }
+
         /// <summary>
         /// Implementation IDisposable.
         /// </summary>
@@ -247,23 +308,40 @@ namespace FileCabinetApp
 
         private void Write(FileCabinetRecord record, int index)
         {
-            this.binaryWriter.BaseStream.Position = index * RecordSize;
-            this.binaryWriter.Write((short)0);
-            this.binaryWriter.Write(record.Id);
-            this.WriteANSIIStringToFile(record.FirstName);
-            this.WriteANSIIStringToFile(record.LastName);
-            this.binaryWriter.Write(record.DateOfBirth.Year);
-            this.binaryWriter.Write(record.DateOfBirth.Month);
-            this.binaryWriter.Write(record.DateOfBirth.Day);
-            this.binaryWriter.Write(record.IdentificationNumber);
-            this.binaryWriter.Write(record.PointsForFourTests);
-            this.binaryWriter.Write(record.IdentificationLetter);
-            this.binaryWriter.Flush();
+            var fileSystemRecord = new FileCabonetFilesystemRecord
+            {
+                ServiceInormation = 0,
+                Record = record,
+            };
+
+            this.Write(fileSystemRecord, index);
         }
 
         private void Write(FileCabinetRecord record)
         {
-            this.Write(record, (int)this.binaryWriter.BaseStream.Length / RecordSize);
+            var fileSystemRecord = new FileCabonetFilesystemRecord
+            {
+                ServiceInormation = 0,
+                Record = record,
+            };
+
+            this.Write(fileSystemRecord, (int)this.binaryWriter.BaseStream.Length / RecordSize);
+        }
+
+        private void Write(FileCabonetFilesystemRecord record, int index)
+        {
+            this.binaryWriter.BaseStream.Position = index * RecordSize;
+            this.binaryWriter.Write(record.ServiceInormation);
+            this.binaryWriter.Write(record.Record.Id);
+            this.WriteANSIIStringToFile(record.Record.FirstName);
+            this.WriteANSIIStringToFile(record.Record.LastName);
+            this.binaryWriter.Write(record.Record.DateOfBirth.Year);
+            this.binaryWriter.Write(record.Record.DateOfBirth.Month);
+            this.binaryWriter.Write(record.Record.DateOfBirth.Day);
+            this.binaryWriter.Write(record.Record.IdentificationNumber);
+            this.binaryWriter.Write(record.Record.PointsForFourTests);
+            this.binaryWriter.Write(record.Record.IdentificationLetter);
+            this.binaryWriter.Flush();
         }
 
         private void WriteANSIIStringToFile(string str)
@@ -276,7 +354,7 @@ namespace FileCabinetApp
             this.binaryWriter.Write(stringBuffer);
         }
 
-        private FileCabinetRecord GetRecord(int index)
+        private FileCabonetFilesystemRecord GetRecord(int index)
         {
             int position = index * RecordSize;
             if (position + RecordSize > this.binaryReader.BaseStream.Length)
@@ -284,9 +362,11 @@ namespace FileCabinetApp
                 return null;
             }
 
+            var fileSystemRecord = new FileCabonetFilesystemRecord();
             this.binaryReader.BaseStream.Position = position;
-            this.binaryReader.ReadUInt16();
-            var record = new FileCabinetRecord()
+
+            fileSystemRecord.ServiceInormation = this.binaryReader.ReadInt16();
+            fileSystemRecord.Record = new FileCabinetRecord()
             {
                 Id = this.binaryReader.ReadInt32(),
                 FirstName = Encoding.ASCII.GetString(this.binaryReader.ReadBytes(MaxNameLength), 0, MaxNameLength).Trim('\0'),
@@ -297,10 +377,31 @@ namespace FileCabinetApp
                 IdentificationLetter = this.binaryReader.ReadChar(),
             };
 
-            return record;
+            return fileSystemRecord;
         }
 
         private FileCabinetRecord GetNext()
+        {
+            while (true)
+            {
+                var filesystemecord = this.GetRecord(this.iterationIndex++);
+                if (filesystemecord is null)
+                {
+                    return null;
+                }
+
+                if ((filesystemecord.ServiceInormation & 4) == 4)
+                {
+                    return this.GetNext();
+                }
+                else
+                {
+                    return filesystemecord.Record;
+                }
+            }
+        }
+
+        private FileCabonetFilesystemRecord GetNextAny()
         {
             return this.GetRecord(this.iterationIndex++);
         }
@@ -316,14 +417,14 @@ namespace FileCabinetApp
             this.GoToStart();
             while (true)
             {
-                var record = this.GetNext();
-                if (record is null)
+                var fileSystemRecord = this.GetNext();
+                if (fileSystemRecord is null)
                 {
                     break;
                 }
-                else if (comparator(record))
+                else if (comparator(fileSystemRecord))
                 {
-                    subList.Add(record);
+                    subList.Add(fileSystemRecord);
                 }
             }
 
@@ -336,15 +437,15 @@ namespace FileCabinetApp
             int higherId = 0;
             while (true)
             {
-                var record = this.GetNext();
-                if (record is null)
+                var fileSystemRecord = this.GetNext();
+                if (fileSystemRecord is null)
                 {
                     this.GoToStart();
                     break;
                 }
-                else if (record.Id > higherId)
+                else if (fileSystemRecord.Id > higherId)
                 {
-                    higherId = record.Id;
+                    higherId = fileSystemRecord.Id;
                 }
             }
 
