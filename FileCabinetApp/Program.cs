@@ -95,6 +95,7 @@ namespace FileCabinetApp
                 }
             }
             while (isRunning);
+            fileCabinetService.Purge();
         }
 
         private static void DisplayInfoMessage()

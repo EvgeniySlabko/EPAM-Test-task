@@ -73,5 +73,10 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="id">The id of the deleted entry.</param>
         public void Remove(int id);
+
+        /// <summary>
+        /// Purge.
+        /// </summary>
+        public void Purge();
     }
 }

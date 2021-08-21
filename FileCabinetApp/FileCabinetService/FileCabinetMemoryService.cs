@@ -219,6 +219,12 @@ namespace FileCabinetApp
             }
         }
 
+        /// <inheritdoc/>
+        public void Purge()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Remove record from list and dictionaries.
         /// </summary>

@@ -188,6 +188,36 @@ namespace FileCabinetApp
             return i;
         }
 
+        /// <inheritdoc/>
+        public void Purge()
+        {
+            this.GoToStart();
+            int offset = 0;
+            int avalibleRecordCounter = 0;
+            while (true)
+            {
+                var record = this.GetNextAny();
+                if (record is null)
+                {
+                    this.fileStrieam.SetLength(avalibleRecordCounter * RecordSize);
+                    break;
+                }
+                else if ((record.ServiceInormation & 4) != 0)
+                {
+                    offset++;
+                    continue;
+                }
+                else if (offset != 0)
+                {
+                    this.Write(record, this.iterationIndex - offset - 1);
+                }
+
+                avalibleRecordCounter++;
+            }
+
+            this.GoToStart();
+        }
+
         /// <summary>
         /// Takes a snapshot of the current state of the list of records.
         /// </summary>
