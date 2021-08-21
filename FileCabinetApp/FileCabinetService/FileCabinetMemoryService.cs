@@ -205,7 +205,18 @@ namespace FileCabinetApp
         /// <inheritdoc/>
         public void Remove(int id)
         {
-            throw new NotImplementedException();
+            var record = this.list.Find(f => f.Id == id);
+            if (record is not null)
+            {
+                this.list.Remove(record);
+                this.firstNameDictionary.Remove(record.FirstName);
+                this.lastNameDictionary.Remove(record.LastName);
+                this.dateTimeDictionary.Remove(record.DateOfBirth);
+            }
+            else
+            {
+                throw new ArgumentException($"Record {id} does not exists.");
+            }
         }
 
         /// <summary>
