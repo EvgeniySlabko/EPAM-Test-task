@@ -124,15 +124,16 @@ namespace FileCabinetApp
                 try
                 {
                     fileCabinetService.Remove(result.Item3);
+                    Console.WriteLine(Rm.GetString("RecordIsRemoved", CultureInfo.CurrentCulture), result.Item3);
                 }
                 catch (ArgumentException)
                 {
-                    Console.WriteLine(Rm.GetString("RecordIsRemoved", CultureInfo.CurrentCulture), result.Item3);
+                    Console.WriteLine(Rm.GetString("RecordDoesNotExists", CultureInfo.CurrentCulture), result.Item3);
                 }
             }
             else
             {
-                Console.WriteLine(Rm.GetString("RecordDoesNotExists", CultureInfo.CurrentCulture));
+                Console.WriteLine(Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
             }
         }
 
