@@ -16,10 +16,11 @@ namespace FileCabinetApp
     {
         private const string ConsoleStartSymbol = ">";
 
-        public static readonly ResourceManager Rm = new ("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
-        public static IFileCabinetService fileCabinetService;
         private static ValidationRule validationRule = ValidationRule.Default;
         private static ServiceType serviceType = ServiceType.MemoryService;
+
+        public static readonly ResourceManager Rm = new ("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
+        public static IFileCabinetService fileCabinetService;
         public static ValidationRuleSet validationRuleSet;
         public static bool isRunning = true;
 
@@ -55,10 +56,30 @@ namespace FileCabinetApp
             fileCabinetService.Purge();
         }
 
-        private static CommandHandler CreateCommandHanders()
+        private static ICommandHandler CreateCommandHanders()
         {
-            var commandHandler = new CommandHandler();
-            return commandHandler;
+            var createHandler = new CreateCommandHandler();
+            var editHandler = new EditCommandHandler();
+            var exitHandler = new ExitCommandHandler();
+            var exportHandler = new ExportCommandHandler();
+            var findHandler = new FindCommandHandler();
+            var helpHandler = new HelpCommandHandler();
+            var importHandler = new ImportCommandHandler();
+            var listHandler = new ListCommandHandler();
+            var removeHandler = new RemoveCommandHandler();
+            var statHandler = new StatCommandHandler();
+
+            statHandler.SetNext(removeHandler);
+            removeHandler.SetNext(listHandler);
+            listHandler.SetNext(importHandler);
+            importHandler.SetNext(helpHandler);
+            helpHandler.SetNext(findHandler);
+            findHandler.SetNext(exportHandler);
+            exportHandler.SetNext(exitHandler);
+            exitHandler.SetNext(editHandler);
+            editHandler.SetNext(createHandler);
+
+            return statHandler;
         }
 
         private static void DisplayInfoMessage()
@@ -135,6 +156,5 @@ namespace FileCabinetApp
                     break;
             }
         }
-
     }
 }

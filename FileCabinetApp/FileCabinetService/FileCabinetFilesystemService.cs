@@ -84,9 +84,9 @@ namespace FileCabinetApp
             while (true)
             {
                 var currentRecord = this.GetNext();
-                if (record is null)
+                if (currentRecord is null)
                 {
-                    throw new ArgumentException($"record with id {currentRecord.Id} not found");
+                    throw new ArgumentException($"Record with id {record.Id} not found");
                 }
                 else if (currentRecord.Id == record.Id)
                 {

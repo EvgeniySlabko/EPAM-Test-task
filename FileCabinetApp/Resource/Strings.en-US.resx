@@ -139,7 +139,7 @@
     <value>The list is empty</value>
   </data>
   <data name="ErrorWriteToFileMessage" xml:space="preserve">
-    <value>Export failed: can't open {0}</value>
+    <value>Export failed: can't open</value>
   </data>
   <data name="ExitMessage" xml:space="preserve">
     <value>Exiting an application...</value>

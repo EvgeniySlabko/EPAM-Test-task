@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace FileCabinetApp
 {
@@ -23,7 +24,7 @@ namespace FileCabinetApp
         {
             this.writer = writer;
             this.writer.WriteStartDocument();
-            this.writer.WriteStartElement("records");
+            //this.writer.WriteStartElement("records");
         }
 
         /// <summary>
@@ -42,31 +43,50 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(record));
             }
 
-            this.writer.WriteStartElement("record");
-            this.writer.WriteAttributeString("id", record.Id.ToString(CultureInfo.CurrentCulture));
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
 
-            this.writer.WriteStartElement("name");
-            this.writer.WriteAttributeString("last", record.LastName);
-            this.writer.WriteAttributeString("first", record.FirstName);
-            this.writer.WriteEndElement();
 
-            this.writer.WriteStartElement("dateOfBirth");
-            this.writer.WriteString(record.DateOfBirth.ToString("dd/MM/yyyy", DateTimeFormatInfo.InvariantInfo));
-            this.writer.WriteEndElement();
+            //using var xmlReader = new XmlTextReader(this.reader);
+            var serializer = new XmlSerializer(typeof(FileCabinetRecordsSerializable));
 
-            this.writer.WriteStartElement("identificationNumber");
-            this.writer.WriteString(record.IdentificationNumber.ToString(CultureInfo.CurrentCulture));
-            this.writer.WriteEndElement();
+            var r = new FileCabinetRecordSerializable
+            {
+                DateOfBirth = new DateTime(1999, 10, 10),
+                Id = 2,
+                IdentificationLetter = 'g',
+                IdentificationNumber = 333,
+                Name = new NameSerializeble
+                {
+                    FirstName = "dsf",
+                    LastName = "dfs"
+                },
+                PointsForFourTests = 123,
 
-            this.writer.WriteStartElement("identificationLetter");
-            this.writer.WriteString(record.IdentificationLetter.ToString(CultureInfo.CurrentCulture));
-            this.writer.WriteEndElement();
+            };
+            var rr = new FileCabinetRecordsSerializable();
+            rr.Records.Add(r);
+            serializer.Serialize(writer, rr);
 
-            this.writer.WriteStartElement("pointsForFourTests");
-            this.writer.WriteString(record.PointsForFourTests.ToString(CultureInfo.CurrentCulture));
-            this.writer.WriteEndElement();
+            //this.writer.WriteStartElement("record");
+            //this.writer.WriteAttributeString("id", record.Id.ToString(CultureInfo.CurrentCulture));
 
-            this.writer.WriteEndElement();
+            //this.writer.WriteStartElement("name");
+            //this.writer.WriteAttributeString("last", record.LastName);
+            //this.writer.WriteAttributeString("first", record.FirstName);
+            //this.writer.WriteEndElement();
+
+            //this.writer.WriteElementString("dateOfBirth", record.DateOfBirth.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+            //this.writer.WriteElementString("identificationNumber", record.IdentificationNumber.ToString(CultureInfo.CurrentCulture));
+
+            //this.writer.WriteElementString("identificationLetter", record.IdentificationLetter.ToString(CultureInfo.CurrentCulture));
+
+            //this.writer.WriteElementString("pointsForFourTests", record.PointsForFourTests.ToString(CultureInfo.CurrentCulture));
+
+            //this.writer.WriteEndElement();
         }
     }
 }

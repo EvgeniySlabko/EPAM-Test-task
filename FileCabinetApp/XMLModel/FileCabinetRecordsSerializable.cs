@@ -11,7 +11,7 @@ namespace FileCabinetApp
     /// Model for serialization record.
     /// </summary>
     [Serializable]
-    [XmlRoot(ElementName ="records")]
+    [XmlRoot("records")]
     public class FileCabinetRecordsSerializable
     {
         /// <summary>
@@ -47,6 +47,6 @@ namespace FileCabinetApp
         /// Records.
         /// </value>
         [XmlElement(ElementName = "record")]
-        public List<FileCabinetRecordSerializable> Records { get; }
+        public List<FileCabinetRecordSerializable> Records { get; set; }
     }
 }

@@ -14,14 +14,14 @@ namespace FileCabinetApp
         /// Gets or sets record first name.
         /// </summary>
         /// <value>Record first name.</value>
-        [XmlAttribute("firstName")]
+        [XmlAttribute("first")]
         public string FirstName { get; set; }
 
         /// <summary>
         /// Gets or sets record first name.
         /// </summary>
         /// <value>Record first name.</value>
-        [XmlAttribute("lastName")]
+        [XmlAttribute("last")]
         public string LastName { get; set; }
     }
 }
