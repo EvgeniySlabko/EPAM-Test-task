@@ -6,15 +6,17 @@ namespace FileCabinetApp
     /// <summary>
     /// handler for Edit command.
     /// </summary>
-    public class EditCommandHandler : CommandHandlerBase
+    public class EditCommandHandler : FileCabinetServiceCommandHandlerBase
     {
         private const string Command = "edit";
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EditCommandHandler"/> class.
         /// </summary>
-        public EditCommandHandler()
-            : base(Command)
+        /// <param name="service">Srvice.</param>
+        public EditCommandHandler(IFileCabinetService service)
+            : base(Command, service)
         {
         }
 
@@ -30,7 +32,7 @@ namespace FileCabinetApp
             var result = new IntConverter().Convert(commandRequest.Parameters);
             if (result.Item1)
             {
-                Edit(result.Item3);
+                this.Edit(result.Item3);
             }
             else
             {
@@ -39,13 +41,13 @@ namespace FileCabinetApp
             }
         }
 
-        private static void Edit(int id)
+        private void Edit(int id)
         {
             ConsoleHelper.EnterRecord(out FileCabinetRecord record);
             record.Id = id;
             try
             {
-                Program.fileCabinetService.Edit(record);
+                this.Service.Edit(record);
             }
             catch (ArgumentException ex)
             {

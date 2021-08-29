@@ -8,7 +8,7 @@ namespace FileCabinetApp
     /// <summary>
     /// handler for export command.
     /// </summary>
-    public class ExportCommandHandler : CommandHandlerBase
+    public class ExportCommandHandler : FileCabinetServiceCommandHandlerBase
     {
         private const string Command = "export";
         private Dictionary<string, FileType> fileType = new Dictionary<string, FileType>
@@ -20,8 +20,9 @@ namespace FileCabinetApp
         /// <summary>
         /// Initializes a new instance of the <see cref="ExportCommandHandler"/> class.
         /// </summary>
-        public ExportCommandHandler()
-            : base(Command)
+        /// <param name="service">Service</param>
+        public ExportCommandHandler(IFileCabinetService service)
+            : base(Command, service)
         {
         }
 
@@ -30,7 +31,7 @@ namespace FileCabinetApp
         {
             if (this.CheckCommand(commandRequest) && this.ParseParameters(commandRequest.Parameters, out FileType type, out string path))
             {
-                Export(type, path);
+                this.Export(type, path);
             }
             else
             {
@@ -38,9 +39,9 @@ namespace FileCabinetApp
             }
         }
 
-        private static void Export(FileType type, string filePath)
+        private void Export(FileType type, string filePath)
         {
-            FileCabinetServiceSnapshot snapshot = Program.fileCabinetService.MakeSnapshot();
+            FileCabinetServiceSnapshot snapshot = this.Service.MakeSnapshot();
             Action<StreamWriter> saveToMethod;
             switch (type)
             {
@@ -60,7 +61,7 @@ namespace FileCabinetApp
             try
             {
                 using var writer = new StreamWriter(filePath);
-                snapshot = Program.fileCabinetService.MakeSnapshot();
+                snapshot = this.Service.MakeSnapshot();
                 saveToMethod(writer);
                 Console.WriteLine(Program.Rm.GetString("SuccessfulWriteToFileMessage", CultureInfo.CurrentCulture));
             }

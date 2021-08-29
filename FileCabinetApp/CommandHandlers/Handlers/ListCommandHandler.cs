@@ -6,15 +6,16 @@ namespace FileCabinetApp
     /// <summary>
     /// Handler for list command.
     /// </summary>
-    public class ListCommandHandler : CommandHandlerBase
+    public class ListCommandHandler : FileCabinetServiceCommandHandlerBase
     {
         private const string Command = "list";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ListCommandHandler"/> class.
         /// </summary>
-        public ListCommandHandler()
-            : base(Command)
+        /// <param name="service">Service.</param>
+        public ListCommandHandler(IFileCabinetService service)
+            : base(Command, service)
         {
         }
 
@@ -23,7 +24,7 @@ namespace FileCabinetApp
         {
             if (this.CheckCommand(commandRequest) && string.IsNullOrEmpty(commandRequest.Parameters))
             {
-                List();
+                this.List();
             }
             else
             {
@@ -31,9 +32,9 @@ namespace FileCabinetApp
             }
         }
 
-        private static void List()
+        private void List()
         {
-            var records = Program.fileCabinetService.GetRecords();
+            var records = this.Service.GetRecords();
             ConsoleHelper.DisplayRecordList(records);
         }
     }

@@ -7,15 +7,16 @@ namespace FileCabinetApp
     /// <summary>
     /// handler for find command.
     /// </summary>
-    public class FindCommandHandler : CommandHandlerBase
+    public class FindCommandHandler : FileCabinetServiceCommandHandlerBase
     {
         private const string Command = "find";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FindCommandHandler"/> class.
         /// </summary>
-        public FindCommandHandler()
-            : base(Command)
+        /// <param name="service">Service.</param>
+        public FindCommandHandler(IFileCabinetService service)
+            : base(Command, service)
         {
         }
 
@@ -24,7 +25,7 @@ namespace FileCabinetApp
         {
             if (this.CheckCommand(commandRequest) && ParseParameters(commandRequest.Parameters, out RecordParameter recordParameter, out object searchParameter))
             {
-                Find(recordParameter, searchParameter);
+                this.Find(recordParameter, searchParameter);
             }
             else
             {
@@ -79,21 +80,21 @@ namespace FileCabinetApp
             return true;
         }
 
-        private static void Find(RecordParameter recordParameter, object objectForFind)
+        private void Find(RecordParameter recordParameter, object objectForFind)
         {
             ReadOnlyCollection<FileCabinetRecord> subList;
             switch (recordParameter)
             {
                 case RecordParameter.FirstName:
-                    subList = Program.fileCabinetService.FindByFirstName((string)objectForFind);
+                    subList = this.Service.FindByFirstName((string)objectForFind);
                     break;
 
                 case RecordParameter.LastName:
-                    subList = Program.fileCabinetService.FindByLastName((string)objectForFind);
+                    subList = this.Service.FindByLastName((string)objectForFind);
                     break;
 
                 case RecordParameter.DateOfBirth:
-                    subList = Program.fileCabinetService.FindByDate((DateTime)objectForFind);
+                    subList = this.Service.FindByDate((DateTime)objectForFind);
                     break;
 
                 default:

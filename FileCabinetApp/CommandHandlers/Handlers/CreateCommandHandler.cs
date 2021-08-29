@@ -6,15 +6,16 @@ namespace FileCabinetApp
     /// <summary>
     /// Handler for create command.
     /// </summary>
-    public class CreateCommandHandler : CommandHandlerBase
+    public class CreateCommandHandler : FileCabinetServiceCommandHandlerBase
     {
         private const string Command = "create";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateCommandHandler"/> class.
         /// </summary>
-        public CreateCommandHandler()
-            : base(Command)
+        /// <param name="service">Service.</param>
+        public CreateCommandHandler(IFileCabinetService service)
+            : base(Command, service)
         {
         }
 
@@ -37,7 +38,7 @@ namespace FileCabinetApp
             int recordId = -1;
             try
             {
-                recordId = Program.fileCabinetService.CreateRecord(newRecord);
+                recordId = this.Service.CreateRecord(newRecord);
             }
             catch (ArgumentException exeption)
             {

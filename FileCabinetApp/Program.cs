@@ -18,7 +18,7 @@ namespace FileCabinetApp
         private static ServiceType serviceType = ServiceType.MemoryService;
 
         public static readonly ResourceManager Rm = new ("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
-        public static IFileCabinetService fileCabinetService;
+        private static IFileCabinetService fileCabinetService;
         public static ValidationRuleSet validationRuleSet;
         public static bool isRunning = true;
 
@@ -56,16 +56,16 @@ namespace FileCabinetApp
 
         private static ICommandHandler CreateCommandHanders()
         {
-            var createHandler = new CreateCommandHandler();
-            var editHandler = new EditCommandHandler();
+            var createHandler = new CreateCommandHandler(fileCabinetService);
+            var editHandler = new EditCommandHandler(fileCabinetService);
             var exitHandler = new ExitCommandHandler();
-            var exportHandler = new ExportCommandHandler();
-            var findHandler = new FindCommandHandler();
+            var exportHandler = new ExportCommandHandler(fileCabinetService);
+            var findHandler = new FindCommandHandler(fileCabinetService);
             var helpHandler = new HelpCommandHandler();
-            var importHandler = new ImportCommandHandler();
-            var listHandler = new ListCommandHandler();
-            var removeHandler = new RemoveCommandHandler();
-            var statHandler = new StatCommandHandler();
+            var importHandler = new ImportCommandHandler(fileCabinetService);
+            var listHandler = new ListCommandHandler(fileCabinetService);
+            var removeHandler = new RemoveCommandHandler(fileCabinetService);
+            var statHandler = new StatCommandHandler(fileCabinetService);
 
             statHandler.SetNext(removeHandler);
             removeHandler.SetNext(listHandler);

@@ -6,15 +6,16 @@ namespace FileCabinetApp
     /// <summary>
     /// handler for remove command.
     /// </summary>
-    public class RemoveCommandHandler : CommandHandlerBase
+    public class RemoveCommandHandler : FileCabinetServiceCommandHandlerBase
     {
         private const string Command = "remove";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RemoveCommandHandler"/> class.
         /// </summary>
-        public RemoveCommandHandler()
-            : base(Command)
+        /// <param name="service">Service.</param>
+        public RemoveCommandHandler(IFileCabinetService service)
+            : base(Command, service)
         {
         }
 
@@ -38,11 +39,11 @@ namespace FileCabinetApp
             }
         }
 
-        private static void Remove(int id)
+        private void Remove(int id)
         {
             try
             {
-                Program.fileCabinetService.Remove(id);
+                this.Service.Remove(id);
                 Console.WriteLine(Program.Rm.GetString("RecordIsRemoved", CultureInfo.CurrentCulture), id);
             }
             catch (ArgumentException)

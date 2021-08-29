@@ -8,7 +8,7 @@ namespace FileCabinetApp
     /// <summary>
     /// handler for import command.
     /// </summary>
-    public class ImportCommandHandler : CommandHandlerBase
+    public class ImportCommandHandler : FileCabinetServiceCommandHandlerBase
     {
         private const string Command = "import";
         private Dictionary<string, FileType> fileType = new Dictionary<string, FileType>
@@ -20,8 +20,9 @@ namespace FileCabinetApp
         /// <summary>
         /// Initializes a new instance of the <see cref="ImportCommandHandler"/> class.
         /// </summary>
-        public ImportCommandHandler()
-            : base(Command)
+        /// <param name="service">Service</param>
+        public ImportCommandHandler(IFileCabinetService service)
+            : base(Command, service)
         {
         }
 
@@ -38,7 +39,7 @@ namespace FileCabinetApp
             }
         }
 
-        private static void Import(FileType type, string path)
+        private void Import(FileType type, string path)
         {
             var snapshot = new FileCabinetServiceSnapshot();
             Action<FileStream> loader;
@@ -62,7 +63,7 @@ namespace FileCabinetApp
             {
                 using var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
                 loader(stream);
-                Program.fileCabinetService.Restore(snapshot);
+                this.Service.Restore(snapshot);
             }
             catch (IOException)
             {
