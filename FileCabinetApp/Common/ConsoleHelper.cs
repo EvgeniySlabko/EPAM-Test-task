@@ -11,30 +11,36 @@ namespace FileCabinetApp
     public static class ConsoleHelper
     {
         /// <summary>
-        /// Enter record from connsole.
+        /// Enter record.
         /// </summary>
-        /// <param name="newRecord">Entered record.</param>
-        public static void EnterRecord(out FileCabinetRecord newRecord)
+        /// <param name="newRecord">Record.</param>
+        /// <param name="validationRuleSet">Validation rule set.</param>
+        public static void EnterRecord(out FileCabinetRecord newRecord, ValidationRuleSet validationRuleSet)
         {
+            if (validationRuleSet is null)
+            {
+                throw new ArgumentNullException(nameof(validationRuleSet));
+            }
+
             newRecord = new FileCabinetRecord();
             Console.WriteLine();
-            Console.Write(Program.Rm.GetString("FirstNameMessage", CultureInfo.CurrentCulture));
-            newRecord.FirstName = ReadInput(new StringConverter().GetDelegate(), Program.validationRuleSet.FirstNameVAidator.GetDelegate());
+            Console.Write(StringManager.Rm.GetString("FirstNameMessage", CultureInfo.CurrentCulture));
+            newRecord.FirstName = ReadInput(new StringConverter().GetDelegate(), validationRuleSet.FirstNameVAidator.GetDelegate());
 
-            Console.Write(Program.Rm.GetString("LastNameMessage", CultureInfo.CurrentCulture));
-            newRecord.LastName = ReadInput(new StringConverter().GetDelegate(), Program.validationRuleSet.LastNameValidator.GetDelegate());
+            Console.Write(StringManager.Rm.GetString("LastNameMessage", CultureInfo.CurrentCulture));
+            newRecord.LastName = ReadInput(new StringConverter().GetDelegate(), validationRuleSet.LastNameValidator.GetDelegate());
 
-            Console.Write(Program.Rm.GetString("DateOfBirthMessage", CultureInfo.CurrentCulture));
-            newRecord.DateOfBirth = ReadInput(new DateTimeConverter().GetDelegate(), Program.validationRuleSet.DateValidator.GetDelegate());
+            Console.Write(StringManager.Rm.GetString("DateOfBirthMessage", CultureInfo.CurrentCulture));
+            newRecord.DateOfBirth = ReadInput(new DateTimeConverter().GetDelegate(), validationRuleSet.DateValidator.GetDelegate());
 
-            Console.Write(Program.Rm.GetString("IdentificationNumberMessage", CultureInfo.CurrentCulture));
-            newRecord.IdentificationNumber = ReadInput(new DecimalConverter().GetDelegate(), Program.validationRuleSet.IdentificationNumberValidator.GetDelegate());
+            Console.Write(StringManager.Rm.GetString("IdentificationNumberMessage", CultureInfo.CurrentCulture));
+            newRecord.IdentificationNumber = ReadInput(new DecimalConverter().GetDelegate(), validationRuleSet.IdentificationNumberValidator.GetDelegate());
 
-            Console.Write(Program.Rm.GetString("IdentificationLetterMessage", CultureInfo.CurrentCulture));
-            newRecord.IdentificationLetter = ReadInput(new CharConverter().GetDelegate(), Program.validationRuleSet.IdentificationLetterValidator.GetDelegate());
+            Console.Write(StringManager.Rm.GetString("IdentificationLetterMessage", CultureInfo.CurrentCulture));
+            newRecord.IdentificationLetter = ReadInput(new CharConverter().GetDelegate(), validationRuleSet.IdentificationLetterValidator.GetDelegate());
 
-            Console.Write(Program.Rm.GetString("PointsForFourTestsMessage", CultureInfo.CurrentCulture));
-            newRecord.PointsForFourTests = ReadInput(new ShortConverter().GetDelegate(), Program.validationRuleSet.PointsForFourTestsValidator.GetDelegate());
+            Console.Write(StringManager.Rm.GetString("PointsForFourTestsMessage", CultureInfo.CurrentCulture));
+            newRecord.PointsForFourTests = ReadInput(new ShortConverter().GetDelegate(), validationRuleSet.PointsForFourTestsValidator.GetDelegate());
         }
 
         /// <summary>
@@ -65,12 +71,12 @@ namespace FileCabinetApp
 
             if (records.Count.Equals(0))
             {
-                Console.WriteLine(Program.Rm.GetString("EmptyListMessage", CultureInfo.CurrentCulture));
+                Console.WriteLine(StringManager.Rm.GetString("EmptyListMessage", CultureInfo.CurrentCulture));
             }
 
             foreach (var record in records)
             {
-                Console.WriteLine(Program.Rm.GetString("RecordInfoString", CultureInfo.CurrentCulture), record.Id, record.FirstName, record.LastName, record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo), record.IdentificationNumber, record.IdentificationLetter, record.PointsForFourTests);
+                Console.WriteLine(StringManager.Rm.GetString("RecordInfoString", CultureInfo.CurrentCulture), record.Id, record.FirstName, record.LastName, record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo), record.IdentificationNumber, record.IdentificationLetter, record.PointsForFourTests);
             }
         }
 
@@ -105,7 +111,7 @@ namespace FileCabinetApp
 
                 if (!conversionResult.Item1)
                 {
-                    Console.WriteLine(Program.Rm.GetString("ConversationFailedMessage", CultureInfo.CurrentCulture), conversionResult.Item2);
+                    Console.WriteLine(StringManager.Rm.GetString("ConversationFailedMessage", CultureInfo.CurrentCulture), conversionResult.Item2);
                     continue;
                 }
 
@@ -114,7 +120,7 @@ namespace FileCabinetApp
                 var validationResult = validator(value);
                 if (!validationResult.Item1)
                 {
-                    Console.WriteLine(Program.Rm.GetString("ValidationFailedMessage", CultureInfo.CurrentCulture), validationResult.Item2);
+                    Console.WriteLine(StringManager.Rm.GetString("ValidationFailedMessage", CultureInfo.CurrentCulture), validationResult.Item2);
                     continue;
                 }
 

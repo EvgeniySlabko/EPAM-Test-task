@@ -10,14 +10,17 @@ namespace FileCabinetApp
     {
         private const string Command = "edit";
 
+        private readonly ValidationRuleSet validationRuleSet;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EditCommandHandler"/> class.
         /// </summary>
-        /// <param name="service">Srvice.</param>
-        public EditCommandHandler(IFileCabinetService service)
+        /// <param name="service">Service.</param>
+        /// <param name="validationRuleSet">Validation rule set.</param>
+        public EditCommandHandler(IFileCabinetService service, ValidationRuleSet validationRuleSet)
             : base(Command, service)
         {
+            this.validationRuleSet = validationRuleSet;
         }
 
         /// <inheritdoc/>
@@ -43,7 +46,7 @@ namespace FileCabinetApp
 
         private void Edit(int id)
         {
-            ConsoleHelper.EnterRecord(out FileCabinetRecord record);
+            ConsoleHelper.EnterRecord(out FileCabinetRecord record, this.validationRuleSet);
             record.Id = id;
             try
             {
@@ -55,7 +58,7 @@ namespace FileCabinetApp
                 return;
             }
 
-            Console.WriteLine(Program.Rm.GetString("UppdateRecordMessage", CultureInfo.CurrentCulture), record.Id);
+            Console.WriteLine(StringManager.Rm.GetString("UppdateRecordMessage", CultureInfo.CurrentCulture), record.Id);
         }
     }
 }

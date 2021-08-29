@@ -13,7 +13,7 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int ExplanationHelpIndex = 2;
 
-        private static string[][] helpMessages = new string[][]
+        private static readonly string[][] HelpMessages = new string[][]
         {
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
@@ -52,23 +52,23 @@ namespace FileCabinetApp
         {
             if (!string.IsNullOrEmpty(parameters))
             {
-                var index = Array.FindIndex(helpMessages, 0, helpMessages.Length, i => string.Equals(i[CommandHelpIndex], parameters, StringComparison.InvariantCultureIgnoreCase));
+                var index = Array.FindIndex(HelpMessages, 0, HelpMessages.Length, i => string.Equals(i[CommandHelpIndex], parameters, StringComparison.InvariantCultureIgnoreCase));
                 if (index >= 0)
                 {
-                    Console.WriteLine(helpMessages[index][ExplanationHelpIndex]);
+                    Console.WriteLine(HelpMessages[index][ExplanationHelpIndex]);
                 }
                 else
                 {
-                    Console.WriteLine(Program.Rm.GetString("CommandExplanationMessage", CultureInfo.CurrentCulture), parameters);
+                    Console.WriteLine(StringManager.Rm.GetString("CommandExplanationMessage", CultureInfo.CurrentCulture), parameters);
                 }
             }
             else
             {
-                Console.WriteLine(Program.Rm.GetString("AvailableCommandsMessage", CultureInfo.CurrentCulture));
+                Console.WriteLine(StringManager.Rm.GetString("AvailableCommandsMessage", CultureInfo.CurrentCulture));
 
-                foreach (var helpMessage in helpMessages)
+                foreach (var helpMessage in HelpMessages)
                 {
-                    Console.WriteLine(Program.Rm.GetString("HelpMessageTemplate", CultureInfo.CurrentCulture), helpMessage[CommandHelpIndex], helpMessage[DescriptionHelpIndex]);
+                    Console.WriteLine(StringManager.Rm.GetString("HelpMessageTemplate", CultureInfo.CurrentCulture), helpMessage[CommandHelpIndex], helpMessage[DescriptionHelpIndex]);
                 }
             }
 

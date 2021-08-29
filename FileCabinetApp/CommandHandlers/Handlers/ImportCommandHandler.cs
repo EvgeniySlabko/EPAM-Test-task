@@ -11,7 +11,7 @@ namespace FileCabinetApp
     public class ImportCommandHandler : FileCabinetServiceCommandHandlerBase
     {
         private const string Command = "import";
-        private Dictionary<string, FileType> fileType = new Dictionary<string, FileType>
+        private readonly Dictionary<string, FileType> fileType = new ()
         {
             { "csv", FileType.Сsv },
             { "xml", FileType.Xml },
@@ -20,7 +20,7 @@ namespace FileCabinetApp
         /// <summary>
         /// Initializes a new instance of the <see cref="ImportCommandHandler"/> class.
         /// </summary>
-        /// <param name="service">Service</param>
+        /// <param name="service">Service.</param>
         public ImportCommandHandler(IFileCabinetService service)
             : base(Command, service)
         {
@@ -31,7 +31,7 @@ namespace FileCabinetApp
         {
             if (this.CheckCommand(commandRequest) && this.ParseParameters(commandRequest.Parameters, out FileType type, out string path))
             {
-                Import(type, path);
+                this.Import(type, path);
             }
             else
             {
@@ -55,7 +55,7 @@ namespace FileCabinetApp
                     break;
 
                 default:
-                    Console.WriteLine(Program.Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
+                    Console.WriteLine(StringManager.Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
                     return;
             }
 
@@ -67,12 +67,12 @@ namespace FileCabinetApp
             }
             catch (IOException)
             {
-                Console.WriteLine(Program.Rm.GetString("СouldТotOpenFile", CultureInfo.CurrentCulture));
+                Console.WriteLine(StringManager.Rm.GetString("СouldТotOpenFile", CultureInfo.CurrentCulture));
                 return;
             }
             catch (ArgumentException)
             {
-                Console.WriteLine(Program.Rm.GetString("СouldТotOpenFile", CultureInfo.CurrentCulture));
+                Console.WriteLine(StringManager.Rm.GetString("СouldТotOpenFile", CultureInfo.CurrentCulture));
                 return;
             }
             catch (InvalidOperationException ex)
@@ -81,7 +81,7 @@ namespace FileCabinetApp
                 return;
             }
 
-            Console.WriteLine(Program.Rm.GetString("RecordsWereImport", CultureInfo.CurrentCulture), path);
+            Console.WriteLine(StringManager.Rm.GetString("RecordsWereImport", CultureInfo.CurrentCulture), path);
         }
 
         private bool ParseParameters(string parameters, out FileType type, out string path)

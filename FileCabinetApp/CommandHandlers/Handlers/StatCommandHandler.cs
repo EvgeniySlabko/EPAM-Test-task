@@ -13,7 +13,7 @@ namespace FileCabinetApp
         /// <summary>
         /// Initializes a new instance of the <see cref="StatCommandHandler"/> class.
         /// </summary>
-        /// <param name="service"></param>
+        /// <param name="service">Service.</param>
         public StatCommandHandler(IFileCabinetService service)
             : base(Command, service)
         {
@@ -24,7 +24,7 @@ namespace FileCabinetApp
         {
             if (this.CheckCommand(commandRequest) && string.IsNullOrEmpty(commandRequest.Parameters))
             {
-                Stat();
+                this.Stat();
             }
             else
             {
@@ -35,7 +35,7 @@ namespace FileCabinetApp
         private void Stat()
         {
             var result = this.Service.GetStat();
-            Console.WriteLine(Program.Rm.GetString("StatMessage", CultureInfo.CurrentCulture), result.Item1, result.Item2);
+            Console.WriteLine(StringManager.Rm.GetString("StatMessage", CultureInfo.CurrentCulture), result.Item1, result.Item2);
         }
     }
 }

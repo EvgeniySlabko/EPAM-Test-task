@@ -31,7 +31,7 @@ namespace FileCabinetApp
             var result = new IntConverter().Convert(commandRequest.Parameters);
             if (result.Item1)
             {
-                Remove(result.Item3);
+                this.Remove(result.Item3);
             }
             else
             {
@@ -44,11 +44,11 @@ namespace FileCabinetApp
             try
             {
                 this.Service.Remove(id);
-                Console.WriteLine(Program.Rm.GetString("RecordIsRemoved", CultureInfo.CurrentCulture), id);
+                Console.WriteLine(StringManager.Rm.GetString("RecordIsRemoved", CultureInfo.CurrentCulture), id);
             }
             catch (ArgumentException)
             {
-                Console.WriteLine(Program.Rm.GetString("RecordDoesNotExists", CultureInfo.CurrentCulture), id);
+                Console.WriteLine(StringManager.Rm.GetString("RecordDoesNotExists", CultureInfo.CurrentCulture), id);
             }
         }
     }

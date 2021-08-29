@@ -98,13 +98,13 @@ namespace FileCabinetApp
                     break;
 
                 default:
-                    Console.WriteLine(Program.Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
+                    Console.WriteLine(StringManager.Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
                     return;
             }
 
             if (subList is null)
             {
-                Console.WriteLine(Program.Rm.GetString("RecordFindMissMessage", CultureInfo.CurrentCulture));
+                Console.WriteLine(StringManager.Rm.GetString("RecordFindMissMessage", CultureInfo.CurrentCulture));
                 return;
             }
 

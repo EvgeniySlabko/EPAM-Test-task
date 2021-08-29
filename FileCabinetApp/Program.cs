@@ -17,10 +17,9 @@ namespace FileCabinetApp
         private static ValidationRule validationRule = ValidationRule.Default;
         private static ServiceType serviceType = ServiceType.MemoryService;
 
-        public static readonly ResourceManager Rm = new ("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
         private static IFileCabinetService fileCabinetService;
-        public static ValidationRuleSet validationRuleSet;
-        public static bool isRunning = true;
+        private static ValidationRuleSet validationRuleSet;
+        private static bool isRunning = true;
 
         /// <summary>
         /// Entry point.
@@ -29,14 +28,14 @@ namespace FileCabinetApp
         public static void Main(string[] args)
         {
             CultureInfo.CurrentCulture = new CultureInfo("en-US");
-            Console.WriteLine(Rm.GetString("WelcomeMessage", CultureInfo.CurrentCulture));
+            Console.WriteLine(StringManager.Rm.GetString("WelcomeMessage", CultureInfo.CurrentCulture));
             ParseCommandLineArguments(args);
             DisplayInfoMessage();
             Console.WriteLine();
 
             do
             {
-                Console.Write(Rm.GetString("ConsoleStartSymbol", CultureInfo.CurrentCulture));
+                Console.Write(StringManager.Rm.GetString("ConsoleStartSymbol", CultureInfo.CurrentCulture));
                 var inputs = Console.ReadLine().Split(' ', 2);
                 const int commandIndex = 0;
                 var command = inputs[commandIndex];
@@ -44,7 +43,7 @@ namespace FileCabinetApp
 
                 if (string.IsNullOrEmpty(command))
                 {
-                    Console.WriteLine(Rm.GetString("HintMessage", CultureInfo.CurrentCulture));
+                    Console.WriteLine(StringManager.Rm.GetString("HintMessage", CultureInfo.CurrentCulture));
                     continue;
                 }
 
@@ -56,9 +55,9 @@ namespace FileCabinetApp
 
         private static ICommandHandler CreateCommandHanders()
         {
-            var createHandler = new CreateCommandHandler(fileCabinetService);
-            var editHandler = new EditCommandHandler(fileCabinetService);
-            var exitHandler = new ExitCommandHandler();
+            var createHandler = new CreateCommandHandler(fileCabinetService, validationRuleSet);
+            var editHandler = new EditCommandHandler(fileCabinetService, validationRuleSet);
+            var exitHandler = new ExitCommandHandler(stop => isRunning = stop);
             var exportHandler = new ExportCommandHandler(fileCabinetService);
             var findHandler = new FindCommandHandler(fileCabinetService);
             var helpHandler = new HelpCommandHandler();
@@ -84,7 +83,7 @@ namespace FileCabinetApp
         {
             string validationRuleString = (validationRule == ValidationRule.Default) ? "default" : "custom";
             string serviceTypeString = (serviceType == ServiceType.FileService) ? "file" : "memory";
-            Console.WriteLine(Rm.GetString("InfoMessage", CultureInfo.CurrentCulture), validationRuleString, serviceTypeString);
+            Console.WriteLine(StringManager.Rm.GetString("InfoMessage", CultureInfo.CurrentCulture), validationRuleString, serviceTypeString);
         }
 
         private static void ParseCommandLineArguments(string[] args)
@@ -102,7 +101,7 @@ namespace FileCabinetApp
                 }
                 else
                 {
-                    throw new ArgumentException(Rm.GetString("UnableCommandLineArgumentsMessage", CultureInfo.CurrentCulture));
+                    throw new ArgumentException(StringManager.Rm.GetString("UnableCommandLineArgumentsMessage", CultureInfo.CurrentCulture));
                 }
             }
 
@@ -118,7 +117,7 @@ namespace FileCabinetApp
                 }
                 else
                 {
-                    throw new ArgumentException(Rm.GetString("UnableCommandLineArgumentsMessage", CultureInfo.CurrentCulture));
+                    throw new ArgumentException(StringManager.Rm.GetString("UnableCommandLineArgumentsMessage", CultureInfo.CurrentCulture));
                 }
             }
 

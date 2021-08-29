@@ -10,12 +10,16 @@ namespace FileCabinetApp
     {
         private const string Command = "exit";
 
+        private readonly Action<bool> stopProgram;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ExitCommandHandler"/> class.
         /// </summary>
-        public ExitCommandHandler()
+        /// <param name="stopProgram">Stop program action.</param>
+        public ExitCommandHandler(Action<bool> stopProgram)
             : base(Command)
         {
+            this.stopProgram = stopProgram;
         }
 
         /// <inheritdoc/>
@@ -23,8 +27,8 @@ namespace FileCabinetApp
         {
             if (this.CheckCommand(commandRequest) && string.IsNullOrEmpty(commandRequest.Parameters))
             {
-                Console.WriteLine(Program.Rm.GetString("ExitMessage", CultureInfo.CurrentCulture));
-                Program.isRunning = false;
+                Console.WriteLine(StringManager.Rm.GetString("ExitMessage", CultureInfo.CurrentCulture));
+                this.stopProgram(false);
             }
             else
             {

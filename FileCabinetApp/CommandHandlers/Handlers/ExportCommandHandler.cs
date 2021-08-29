@@ -11,7 +11,7 @@ namespace FileCabinetApp
     public class ExportCommandHandler : FileCabinetServiceCommandHandlerBase
     {
         private const string Command = "export";
-        private Dictionary<string, FileType> fileType = new Dictionary<string, FileType>
+        private readonly Dictionary<string, FileType> fileType = new ()
         {
             { "csv", FileType.Сsv },
             { "xml", FileType.Xml },
@@ -20,7 +20,7 @@ namespace FileCabinetApp
         /// <summary>
         /// Initializes a new instance of the <see cref="ExportCommandHandler"/> class.
         /// </summary>
-        /// <param name="service">Service</param>
+        /// <param name="service">Service.</param>
         public ExportCommandHandler(IFileCabinetService service)
             : base(Command, service)
         {
@@ -54,7 +54,7 @@ namespace FileCabinetApp
                     break;
 
                 default:
-                    Console.WriteLine(Program.Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
+                    Console.WriteLine(StringManager.Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
                     return;
             }
 
@@ -63,11 +63,11 @@ namespace FileCabinetApp
                 using var writer = new StreamWriter(filePath);
                 snapshot = this.Service.MakeSnapshot();
                 saveToMethod(writer);
-                Console.WriteLine(Program.Rm.GetString("SuccessfulWriteToFileMessage", CultureInfo.CurrentCulture));
+                Console.WriteLine(StringManager.Rm.GetString("SuccessfulWriteToFileMessage", CultureInfo.CurrentCulture));
             }
             catch (IOException)
             {
-                Console.WriteLine(Program.Rm.GetString("ErrorWriteToFileMessage", CultureInfo.CurrentCulture));
+                Console.WriteLine(StringManager.Rm.GetString("ErrorWriteToFileMessage", CultureInfo.CurrentCulture));
             }
             catch (ArgumentException ex)
             {
@@ -98,6 +98,5 @@ namespace FileCabinetApp
 
             return true;
         }
-
     }
 }

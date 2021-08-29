@@ -70,7 +70,7 @@ namespace FileCabinetApp
 
         private static void PrintMissedCommandInfo(string command)
         {
-            Console.WriteLine(Program.Rm.GetString("MissedCommandInfoMessage", CultureInfo.CurrentCulture), command);
+            Console.WriteLine(StringManager.Rm.GetString("MissedCommandInfoMessage", CultureInfo.CurrentCulture), command);
             Console.WriteLine();
         }
     }
