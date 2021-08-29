@@ -28,7 +28,7 @@ namespace FileCabinetApp
         /// <inheritdoc/>
         public override void Handle(AppCommandRequest commandRequest)
         {
-            if (this.CheckCommand(commandRequest) && ParseParameters(commandRequest.Parameters, out FileType type, out string path))
+            if (this.CheckCommand(commandRequest) && this.ParseParameters(commandRequest.Parameters, out FileType type, out string path))
             {
                 Export(type, path);
             }

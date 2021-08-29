@@ -7,6 +7,7 @@ namespace FileCabinetApp
     /// <summary>
     /// First and last record name.
     /// </summary>
+    [Serializable]
     [XmlRoot("name")]
     public class NameSerializeble
     {

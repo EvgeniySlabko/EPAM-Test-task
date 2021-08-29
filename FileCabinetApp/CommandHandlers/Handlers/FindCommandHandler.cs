@@ -61,14 +61,19 @@ namespace FileCabinetApp
                 var convertResult = new DateTimeConverter().Convert(splitedParameters[1]);
                 if (!convertResult.Item1)
                 {
+                    Console.WriteLine(convertResult.Item2, CultureInfo.CurrentCulture);
                     return false;
                 }
 
+                searchParameter = convertResult.Item3;
+            }
+            else if (splitedParameters[1][0] == '"' && splitedParameters[1][^1] == '"')
+            {
                 searchParameter = splitedParameters[1][1..^1];
             }
             else
             {
-                searchParameter = splitedParameters[1];
+                return false;
             }
 
             return true;

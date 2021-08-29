@@ -250,17 +250,14 @@ namespace FileCabinetApp
             foreach (var newRecord in snapshot.Records)
             {
                 this.GoToStart();
-                int i = 0;
                 while (true)
                 {
                     var record = this.GetNext();
                     if (record is null || record.Id == newRecord.Id)
                     {
-                        this.Write(newRecord, i);
+                        this.Write(newRecord, this.iterationIndex - 1);
                         break;
                     }
-
-                    i++;
                 }
 
                 this.GoToStart();

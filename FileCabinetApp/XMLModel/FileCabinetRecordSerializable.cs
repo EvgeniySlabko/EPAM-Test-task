@@ -38,7 +38,7 @@ namespace FileCabinetApp
             this.Name.LastName = record.LastName;
             this.DateOfBirth = record.DateOfBirth;
             this.IdentificationNumber = record.IdentificationNumber;
-            this.IdentificationLetter = record.IdentificationLetter;
+            this.IdentificationLetter = record.IdentificationLetter.ToString();
             this.PointsForFourTests = record.PointsForFourTests;
         }
 
@@ -60,7 +60,6 @@ namespace FileCabinetApp
         /// Gets or sets record date of birthday.
         /// </summary>
         /// <value>Record date of birthday.</value>
-
         [XmlElement(DataType = "date", ElementName = "dateOfBirth")]
         public DateTime DateOfBirth { get; set; }
 
@@ -75,8 +74,8 @@ namespace FileCabinetApp
         /// Gets or sets identification letter.
         /// </summary>
         /// <value>Record identification letter.</value>
-        [XmlElement(ElementName = "identificationLetter")]
-        public char IdentificationLetter { get; set; }
+        [XmlElement("identificationLetter")]
+        public string IdentificationLetter { get; set; }
 
         /// <summary>
         /// Gets or sets record points for four tests.

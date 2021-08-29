@@ -47,6 +47,8 @@ namespace FileCabinetApp
             var records = new List<FileCabinetRecord>();
 
             // Skip first info line.
+            this.reader.ReadLine();
+
             while (!this.reader.EndOfStream)
             {
                 var record = this.ReadOneRecord();

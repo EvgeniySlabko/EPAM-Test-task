@@ -80,7 +80,7 @@ namespace FileCabinetApp
                 return;
             }
 
-            Console.WriteLine(Program.Rm.GetString("RecordsWereImport", CultureInfo.CurrentCulture));
+            Console.WriteLine(Program.Rm.GetString("RecordsWereImport", CultureInfo.CurrentCulture), path);
         }
 
         private bool ParseParameters(string parameters, out FileType type, out string path)

@@ -51,7 +51,7 @@ namespace FileCabinetApp
         /// <param name="stream">Given stream.</param>
         public void LoadFromXml(FileStream stream)
         {
-            using var reader = new StreamReader(stream);
+            using var reader = new StreamReader(stream, Encoding.ASCII);
             this.records = new FileCabinerXmlReader(reader).ReadAll().ToArray();
         }
 

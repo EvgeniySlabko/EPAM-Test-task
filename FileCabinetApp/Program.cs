@@ -14,8 +14,6 @@ namespace FileCabinetApp
     /// </summary>
     public static class Program
     {
-        private const string ConsoleStartSymbol = ">";
-
         private static ValidationRule validationRule = ValidationRule.Default;
         private static ServiceType serviceType = ServiceType.MemoryService;
 
@@ -38,7 +36,7 @@ namespace FileCabinetApp
 
             do
             {
-                Console.Write(ConsoleStartSymbol);
+                Console.Write(Rm.GetString("ConsoleStartSymbol", CultureInfo.CurrentCulture));
                 var inputs = Console.ReadLine().Split(' ', 2);
                 const int commandIndex = 0;
                 var command = inputs[commandIndex];

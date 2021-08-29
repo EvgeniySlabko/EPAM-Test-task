@@ -60,7 +60,7 @@ namespace FileCabinetApp
             cvcRecord.Append(record.LastName);
             cvcRecord.Append(", ");
 
-            cvcRecord.Append(record.DateOfBirth.ToString(DateTimeFormatInfo.InvariantInfo));
+            cvcRecord.Append(record.DateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture));
             cvcRecord.Append(", ");
 
             cvcRecord.Append(record.IdentificationNumber.ToString(CultureInfo.CurrentCulture));
