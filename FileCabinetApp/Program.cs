@@ -55,15 +55,14 @@ namespace FileCabinetApp
 
         private static ICommandHandler CreateCommandHanders()
         {
-            var recordPrinter = new DefaultRecordPrinter();
             var createHandler = new CreateCommandHandler(fileCabinetService, validationRuleSet);
             var editHandler = new EditCommandHandler(fileCabinetService, validationRuleSet);
             var exitHandler = new ExitCommandHandler(stop => isRunning = stop);
             var exportHandler = new ExportCommandHandler(fileCabinetService);
-            var findHandler = new FindCommandHandler(fileCabinetService, recordPrinter);
+            var findHandler = new FindCommandHandler(fileCabinetService, Program.DefaultRecordsPrint);
             var helpHandler = new HelpCommandHandler();
             var importHandler = new ImportCommandHandler(fileCabinetService);
-            var listHandler = new ListCommandHandler(fileCabinetService, recordPrinter);
+            var listHandler = new ListCommandHandler(fileCabinetService, Program.DefaultRecordsPrint);
             var removeHandler = new RemoveCommandHandler(fileCabinetService);
             var statHandler = new StatCommandHandler(fileCabinetService);
 
@@ -78,6 +77,26 @@ namespace FileCabinetApp
             editHandler.SetNext(createHandler);
 
             return statHandler;
+        }
+
+        private static void DefaultRecordsPrint(IEnumerable<FileCabinetRecord> records)
+        {
+            var list = new List<FileCabinetRecord>(records);
+
+            if (records is null)
+            {
+                throw new ArgumentNullException(nameof(records));
+            }
+
+            if (list.Count.Equals(0))
+            {
+                Console.WriteLine(StringManager.Rm.GetString("EmptyListMessage", CultureInfo.CurrentCulture));
+            }
+
+            foreach (var record in records)
+            {
+                Console.WriteLine(StringManager.Rm.GetString("RecordInfoString", CultureInfo.CurrentCulture), record.Id, record.FirstName, record.LastName, record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo), record.IdentificationNumber, record.IdentificationLetter, record.PointsForFourTests);
+            }
         }
 
         private static void DisplayInfoMessage()

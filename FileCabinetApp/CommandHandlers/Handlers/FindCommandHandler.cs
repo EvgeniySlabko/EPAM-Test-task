@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 
@@ -11,14 +13,14 @@ namespace FileCabinetApp
     {
         private const string Command = "find";
 
-        private readonly IRecordPrinter printer;
+        private readonly Action<IEnumerable<FileCabinetRecord>> printer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FindCommandHandler"/> class.
         /// </summary>
         /// <param name="service">Service.</param>
         /// <param name="printer">Printer.</param>
-        public FindCommandHandler(IFileCabinetService service, IRecordPrinter printer)
+        public FindCommandHandler(IFileCabinetService service, Action<IEnumerable<FileCabinetRecord>> printer)
             : base(Command, service)
         {
             this.printer = printer;
@@ -112,7 +114,7 @@ namespace FileCabinetApp
                 return;
             }
 
-            this.printer.Print(subList);
+            this.printer(subList);
         }
     }
 }
