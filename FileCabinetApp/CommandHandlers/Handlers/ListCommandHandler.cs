@@ -10,13 +10,17 @@ namespace FileCabinetApp
     {
         private const string Command = "list";
 
+        private readonly IRecordPrinter printer;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ListCommandHandler"/> class.
         /// </summary>
         /// <param name="service">Service.</param>
-        public ListCommandHandler(IFileCabinetService service)
+        /// <param name="printer">Printer.</param>
+        public ListCommandHandler(IFileCabinetService service, IRecordPrinter printer)
             : base(Command, service)
         {
+            this.printer = printer;
         }
 
         /// <inheritdoc/>
@@ -35,7 +39,7 @@ namespace FileCabinetApp
         private void List()
         {
             var records = this.Service.GetRecords();
-            ConsoleHelper.DisplayRecordList(records);
+            this.printer.Print(records);
         }
     }
 }

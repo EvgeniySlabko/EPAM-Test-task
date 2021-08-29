@@ -11,13 +11,17 @@ namespace FileCabinetApp
     {
         private const string Command = "find";
 
+        private readonly IRecordPrinter printer;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FindCommandHandler"/> class.
         /// </summary>
         /// <param name="service">Service.</param>
-        public FindCommandHandler(IFileCabinetService service)
+        /// <param name="printer">Printer.</param>
+        public FindCommandHandler(IFileCabinetService service, IRecordPrinter printer)
             : base(Command, service)
         {
+            this.printer = printer;
         }
 
         /// <inheritdoc/>
@@ -108,7 +112,7 @@ namespace FileCabinetApp
                 return;
             }
 
-            ConsoleHelper.DisplayRecordList(subList);
+            this.printer.Print(subList);
         }
     }
 }

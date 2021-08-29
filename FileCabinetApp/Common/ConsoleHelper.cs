@@ -58,28 +58,6 @@ namespace FileCabinetApp
             return YesOrNoDialog(reqestMessage.ToString());
         }
 
-        /// <summary>
-        /// Display records.
-        /// </summary>
-        /// <param name="records">Records.</param>
-        public static void DisplayRecordList(ReadOnlyCollection<FileCabinetRecord> records)
-        {
-            if (records is null)
-            {
-                throw new ArgumentNullException(nameof(records));
-            }
-
-            if (records.Count.Equals(0))
-            {
-                Console.WriteLine(StringManager.Rm.GetString("EmptyListMessage", CultureInfo.CurrentCulture));
-            }
-
-            foreach (var record in records)
-            {
-                Console.WriteLine(StringManager.Rm.GetString("RecordInfoString", CultureInfo.CurrentCulture), record.Id, record.FirstName, record.LastName, record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo), record.IdentificationNumber, record.IdentificationLetter, record.PointsForFourTests);
-            }
-        }
-
         private static bool YesOrNoDialog(string message)
         {
             Console.WriteLine(message, " [Y/n]");
