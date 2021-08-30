@@ -150,27 +150,33 @@ namespace FileCabinetApp
 
         private static void ApplyCommandLineArguments()
         {
+            IRecordValidator recordvalidator;
             switch (validationRule)
             {
                 case ValidationRule.Default:
                     validationRuleSet = ValidationRuleSetMaker.MakeDefaultValidationSet();
+                    recordvalidator = new DefaultRecordValidator();
                     break;
 
                 case ValidationRule.Custom:
                     validationRuleSet = ValidationRuleSetMaker.MakeCustomValidationSet();
+                    recordvalidator = new CustomRecordValidator();
                     break;
+                default:
+                    throw new ArgumentException(nameof(validationRule));
             }
 
-            var serviceValidator = new ServiceValidator(validationRuleSet);
             switch (serviceType)
             {
                 case ServiceType.MemoryService:
-                    fileCabinetService = new FileCabinetMemoryService(serviceValidator);
+                    fileCabinetService = new FileCabinetMemoryService(recordvalidator);
                     break;
 
                 case ServiceType.FileService:
-                    fileCabinetService = new FileCabinetFilesystemService(serviceValidator);
+                    fileCabinetService = new FileCabinetFilesystemService(recordvalidator);
                     break;
+                default:
+                    throw new ArgumentException(nameof(serviceType));
             }
         }
     }
