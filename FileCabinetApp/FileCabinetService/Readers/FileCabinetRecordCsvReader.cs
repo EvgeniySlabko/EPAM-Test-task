@@ -59,7 +59,7 @@ namespace FileCabinetApp
                     continue;
                 }
 
-                if (new DefaultRecordValidator().ValidateParameters(record))
+                if (new ValidatorBuilder().CreateDefault().ValidateParameters(record))
                 {
                     records.Add(record);
                 }

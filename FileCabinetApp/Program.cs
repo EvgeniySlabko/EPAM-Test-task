@@ -155,29 +155,23 @@ namespace FileCabinetApp
             {
                 case ValidationRule.Default:
                     validationRuleSet = ValidationRuleSetMaker.MakeDefaultValidationSet();
-                    recordvalidator = new DefaultRecordValidator();
+                    recordvalidator = new ValidatorBuilder().CreateDefault();
                     break;
 
                 case ValidationRule.Custom:
                     validationRuleSet = ValidationRuleSetMaker.MakeCustomValidationSet();
-                    recordvalidator = new CustomRecordValidator();
+                    recordvalidator = new ValidatorBuilder().CreateCustom();
                     break;
                 default:
                     throw new ArgumentException(nameof(validationRule));
             }
 
-            switch (serviceType)
+            fileCabinetService = serviceType switch
             {
-                case ServiceType.MemoryService:
-                    fileCabinetService = new FileCabinetMemoryService(recordvalidator);
-                    break;
-
-                case ServiceType.FileService:
-                    fileCabinetService = new FileCabinetFilesystemService(recordvalidator);
-                    break;
-                default:
-                    throw new ArgumentException(nameof(serviceType));
-            }
+                ServiceType.MemoryService => new FileCabinetMemoryService(recordvalidator),
+                ServiceType.FileService => new FileCabinetFilesystemService(recordvalidator),
+                _ => throw new ArgumentException(nameof(serviceType)),
+            };
         }
     }
 }
