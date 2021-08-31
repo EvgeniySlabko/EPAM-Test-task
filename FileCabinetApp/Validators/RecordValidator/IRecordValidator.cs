@@ -15,7 +15,7 @@ namespace FileCabinetApp
         /// Method for parameter validation.
         /// </summary>
         /// <param name="record">Given parameters.</param>
-        /// <returns>true, if the parameters are valid otherwise false.</returns>
+        /// <returns>Validation result.</returns>
         public bool ValidateParameters(FileCabinetRecord record);
     }
 }

@@ -10,6 +10,7 @@ namespace FileCabinetApp
     /// <summary>
     /// Record.
     /// </summary>
+    [Serializable]
     [XmlRoot(ElementName = "record")]
     public class FileCabinetRecordSerializable
     {
@@ -37,7 +38,7 @@ namespace FileCabinetApp
             this.Name.LastName = record.LastName;
             this.DateOfBirth = record.DateOfBirth;
             this.IdentificationNumber = record.IdentificationNumber;
-            this.IdentificationLetter = record.IdentificationLetter;
+            this.IdentificationLetter = record.IdentificationLetter.ToString();
             this.PointsForFourTests = record.PointsForFourTests;
         }
 
@@ -45,7 +46,7 @@ namespace FileCabinetApp
         /// Gets or sets record id.
         /// </summary>
         /// <value>Record id.</value>
-        [XmlAttribute("Id")]
+        [XmlAttribute("id")]
         public int Id { get; set; }
 
         /// <summary>
@@ -56,38 +57,31 @@ namespace FileCabinetApp
         public NameSerializeble Name { get; set; }
 
         /// <summary>
-        /// Gets or sets record last name.
-        /// </summary>
-        /// <value>Record last name.</value>
-        [XmlElement("lastName")]
-        public string LastName { get; set; }
-
-        /// <summary>
         /// Gets or sets record date of birthday.
         /// </summary>
         /// <value>Record date of birthday.</value>
-        [XmlElement("dateOfBirth")]
+        [XmlElement(DataType = "date", ElementName = "dateOfBirth")]
         public DateTime DateOfBirth { get; set; }
-
-        /// <summary>
-        /// Gets or sets record points for four tests.
-        /// </summary>
-        /// <value>Record points for four tests.</value>
-        [XmlElement("points")]
-        public short PointsForFourTests { get; set; }
 
         /// <summary>
         /// Gets or sets identification number.
         /// </summary>
         /// <value>Record identification number.</value>
-        [XmlElement("IdentificationNumber")]
+        [XmlElement("identificationNumber")]
         public decimal IdentificationNumber { get; set; }
 
         /// <summary>
         /// Gets or sets identification letter.
         /// </summary>
         /// <value>Record identification letter.</value>
-        [XmlElement("IdentificationLetter")]
-        public char IdentificationLetter { get; set; }
+        [XmlElement("identificationLetter")]
+        public string IdentificationLetter { get; set; }
+
+        /// <summary>
+        /// Gets or sets record points for four tests.
+        /// </summary>
+        /// <value>Record points for four tests.</value>
+        [XmlElement("pointsForFourTests")]
+        public short PointsForFourTests { get; set; }
     }
 }

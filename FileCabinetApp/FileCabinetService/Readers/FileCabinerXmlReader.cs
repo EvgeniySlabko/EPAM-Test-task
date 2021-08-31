@@ -64,7 +64,7 @@ namespace FileCabinetApp
                 LastName = recordSerializeble.Name.LastName,
                 DateOfBirth = recordSerializeble.DateOfBirth,
                 IdentificationNumber = recordSerializeble.IdentificationNumber,
-                IdentificationLetter = recordSerializeble.IdentificationLetter,
+                IdentificationLetter = recordSerializeble.IdentificationLetter[0],
                 PointsForFourTests = recordSerializeble.PointsForFourTests,
             };
         }

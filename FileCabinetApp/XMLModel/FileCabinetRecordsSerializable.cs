@@ -11,7 +11,7 @@ namespace FileCabinetApp
     /// Model for serialization record.
     /// </summary>
     [Serializable]
-    [XmlRoot(ElementName ="records")]
+    [XmlRoot("records")]
     public class FileCabinetRecordsSerializable
     {
         /// <summary>

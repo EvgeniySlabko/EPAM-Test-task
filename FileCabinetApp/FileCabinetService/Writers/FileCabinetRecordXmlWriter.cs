@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace FileCabinetApp
 {
@@ -42,6 +43,11 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(record));
             }
 
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
             this.writer.WriteStartElement("record");
             this.writer.WriteAttributeString("id", record.Id.ToString(CultureInfo.CurrentCulture));
 
@@ -50,21 +56,13 @@ namespace FileCabinetApp
             this.writer.WriteAttributeString("first", record.FirstName);
             this.writer.WriteEndElement();
 
-            this.writer.WriteStartElement("dateOfBirth");
-            this.writer.WriteString(record.DateOfBirth.ToString("dd/MM/yyyy", DateTimeFormatInfo.InvariantInfo));
-            this.writer.WriteEndElement();
+            this.writer.WriteElementString("dateOfBirth", record.DateOfBirth.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
 
-            this.writer.WriteStartElement("identificationNumber");
-            this.writer.WriteString(record.IdentificationNumber.ToString(CultureInfo.CurrentCulture));
-            this.writer.WriteEndElement();
+            this.writer.WriteElementString("identificationNumber", record.IdentificationNumber.ToString(CultureInfo.CurrentCulture));
 
-            this.writer.WriteStartElement("identificationLetter");
-            this.writer.WriteString(record.IdentificationLetter.ToString(CultureInfo.CurrentCulture));
-            this.writer.WriteEndElement();
+            this.writer.WriteElementString("identificationLetter", record.IdentificationLetter.ToString(CultureInfo.CurrentCulture));
 
-            this.writer.WriteStartElement("pointsForFourTests");
-            this.writer.WriteString(record.PointsForFourTests.ToString(CultureInfo.CurrentCulture));
-            this.writer.WriteEndElement();
+            this.writer.WriteElementString("pointsForFourTests", record.PointsForFourTests.ToString(CultureInfo.CurrentCulture));
 
             this.writer.WriteEndElement();
         }

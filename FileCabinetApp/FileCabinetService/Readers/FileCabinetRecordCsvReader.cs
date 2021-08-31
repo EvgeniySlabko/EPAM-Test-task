@@ -47,6 +47,8 @@ namespace FileCabinetApp
             var records = new List<FileCabinetRecord>();
 
             // Skip first info line.
+            this.reader.ReadLine();
+
             while (!this.reader.EndOfStream)
             {
                 var record = this.ReadOneRecord();
@@ -57,7 +59,7 @@ namespace FileCabinetApp
                     continue;
                 }
 
-                if (new ServiceValidator(ValidationRuleSetMaker.MakeDefaultValidationSet()).ValidateParameters(record))
+                if (new ValidatorBuilder().CreateDefault().ValidateParameters(record))
                 {
                     records.Add(record);
                 }

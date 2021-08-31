@@ -12,7 +12,7 @@ namespace FileCabinetApp
     /// </summary>
     public class DateTimeConverter : IConverter<DateTime>
     {
-        private readonly string[] dateFormats = { "dd-MM-yyyy", "dd/MM/yyyy", "dd.MM.yyyy" };
+        private readonly string[] dateFormats = { "dd-MM-yyyy", "dd/MM/yyyy", "dd.MM.yyyy", "yyyy-MM-dd" };
 
         /// <summary>
         /// converts a string to a value of char type.
