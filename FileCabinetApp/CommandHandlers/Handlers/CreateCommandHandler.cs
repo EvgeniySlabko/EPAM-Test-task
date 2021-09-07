@@ -10,14 +10,14 @@ namespace FileCabinetApp
     {
         private const string Command = "create";
 
-        private readonly ValidationRuleSet validationRuleSet;
+        private readonly ValidationSettings validationRuleSet;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateCommandHandler"/> class.
         /// </summary>
         /// <param name="service">Service.</param>
         /// <param name="validationRuleSet">Validation rule set.</param>
-        public CreateCommandHandler(IFileCabinetService service, ValidationRuleSet validationRuleSet)
+        public CreateCommandHandler(IFileCabinetService service, ValidationSettings validationRuleSet)
             : base(Command, service)
         {
             this.validationRuleSet = validationRuleSet;

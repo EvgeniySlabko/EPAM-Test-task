@@ -19,12 +19,6 @@ namespace FileCabinetApp
         /// <param name="inputString">Given string.</param>
         /// <returns>Result tupple. bool value - validation result. string value - message string. T value - result of convertation.</returns>
         public Tuple<bool, string, T> Convert(string inputString);
-
-        /// <summary>
-        /// Gets convert method delegate.
-        /// </summary>
-        /// <returns>Convert method delegate.</returns>
-        public Func<string, Tuple<bool, string, T>> GetDelegate();
     }
 
     /// <summary>
@@ -59,15 +53,6 @@ namespace FileCabinetApp
             }
 
             return new (successfulConvert, message, value);
-        }
-
-        /// <summary>
-        /// Gets the delegate.
-        /// </summary>
-        /// <returns>Gets delegate for conversion method.</returns>
-        public Func<string, Tuple<bool, string, int>> GetDelegate()
-        {
-            return this.Convert;
         }
     }
 }

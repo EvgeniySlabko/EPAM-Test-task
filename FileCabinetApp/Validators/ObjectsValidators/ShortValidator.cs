@@ -33,15 +33,6 @@ namespace FileCabinetApp
         public short MaxValue { get; }
 
         /// <summary>
-        /// Gets the delegate.
-        /// </summary>
-        /// <returns>Gets delegate for Validate method.</returns>
-        public Func<short, Tuple<bool, string>> GetDelegate()
-        {
-            return this.Validate;
-        }
-
-        /// <summary>
         /// String validation.
         /// </summary>
         /// <param name="inputValue">Given string.</param>

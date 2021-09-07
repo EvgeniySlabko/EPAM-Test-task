@@ -15,11 +15,5 @@ namespace FileCabinetApp
         /// <param name="value">Given value or validation.</param>
         /// <returns>True if the value is valid otherwise false.</returns>
         public Tuple<bool, string> Validate(T value);
-
-        /// <summary>
-        /// Gets the delegate.
-        /// </summary>
-        /// <returns>True if the value is valid otherwise false.</returns>
-        public Func<T, Tuple<bool, string>> GetDelegate();
     }
 }

@@ -33,15 +33,6 @@ namespace FileCabinetApp
         public decimal MaxValue { get; }
 
         /// <summary>
-        /// Gets the delegate.
-        /// </summary>
-        /// <returns>Gets delegate for Validate mrthod.</returns>
-        public Func<decimal, Tuple<bool, string>> GetDelegate()
-        {
-            return this.Validate;
-        }
-
-        /// <summary>
         /// Given value.
         /// </summary>
         /// <param name="inputValue">Given decimal value.</param>

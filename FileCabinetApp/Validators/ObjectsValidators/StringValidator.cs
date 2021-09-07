@@ -17,7 +17,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="maxLen">Maximum string length.</param>
         /// <param name="minLen">Minimal string length.</param>
-        public StringValidator(int maxLen, int minLen)
+        public StringValidator(int minLen, int maxLen)
         {
             this.MaxLen = maxLen;
             this.MinLen = minLen;
@@ -34,15 +34,6 @@ namespace FileCabinetApp
         /// </summary>
         /// <value>Maximum length.</value>
         public int MaxLen { get; }
-
-        /// <summary>
-        /// Gets the delegate.
-        /// </summary>
-        /// <returns>Gets delegate for Validate mrthod.</returns>
-        public Func<string, Tuple<bool, string>> GetDelegate()
-        {
-            return this.Validate;
-        }
 
         /// <summary>
         /// String validation.

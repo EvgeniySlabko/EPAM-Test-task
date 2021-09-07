@@ -36,14 +36,5 @@ namespace FileCabinetApp
 
             return new (successfulConvert, message, value);
         }
-
-        /// <summary>
-        /// Gets the delegate.
-        /// </summary>
-        /// <returns>Gets delegate for conversion method.</returns>
-        public Func<string, Tuple<bool, string, DateTime>> GetDelegate()
-        {
-            return this.Convert;
-        }
     }
 }

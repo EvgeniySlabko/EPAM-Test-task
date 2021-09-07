@@ -6,6 +6,9 @@ using System.IO;
 using System.Reflection;
 using System.Resources;
 using System.Text;
+using System.Text.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace FileCabinetApp
 {
@@ -14,11 +17,10 @@ namespace FileCabinetApp
     /// </summary>
     public static class Program
     {
-        private static ValidationRule validationRule = ValidationRule.Default;
-        private static ServiceType serviceType = ServiceType.MemoryService;
-
+        private static string validationRule = Constants.DefaultValidationSettingsName;
+        private static ServiceType serviceType = Constants.DefaultServiceType;
         private static IFileCabinetService fileCabinetService;
-        private static ValidationRuleSet validationRuleSet;
+        private static ValidationSettings validationSettings;
         private static bool isRunning = true;
 
         /// <summary>
@@ -30,6 +32,7 @@ namespace FileCabinetApp
             CultureInfo.CurrentCulture = new CultureInfo("en-US");
             Console.WriteLine(StringManager.Rm.GetString("WelcomeMessage", CultureInfo.CurrentCulture));
             ParseCommandLineArguments(args);
+            LoadValidationSettings();
             DisplayInfoMessage();
             Console.WriteLine();
 
@@ -55,8 +58,8 @@ namespace FileCabinetApp
 
         private static ICommandHandler CreateCommandHanders()
         {
-            var createHandler = new CreateCommandHandler(fileCabinetService, validationRuleSet);
-            var editHandler = new EditCommandHandler(fileCabinetService, validationRuleSet);
+            var createHandler = new CreateCommandHandler(fileCabinetService, validationSettings);
+            var editHandler = new EditCommandHandler(fileCabinetService, validationSettings);
             var exitHandler = new ExitCommandHandler(stop => isRunning = stop);
             var exportHandler = new ExportCommandHandler(fileCabinetService);
             var findHandler = new FindCommandHandler(fileCabinetService, Program.DefaultRecordsPrint);
@@ -77,6 +80,11 @@ namespace FileCabinetApp
             editHandler.SetNext(createHandler);
 
             return statHandler;
+        }
+
+        private static void LoadValidationSettings()
+        {
+            validationSettings = ValidationSetLoader.LoadRules(Constants.ValidationSettingsFileName)[validationRule];
         }
 
         private static void DefaultRecordsPrint(IEnumerable<FileCabinetRecord> records)
@@ -101,7 +109,7 @@ namespace FileCabinetApp
 
         private static void DisplayInfoMessage()
         {
-            string validationRuleString = (validationRule == ValidationRule.Default) ? "default" : "custom";
+            string validationRuleString = validationRule;
             string serviceTypeString = (serviceType == ServiceType.FileService) ? "file" : "memory";
             Console.WriteLine(StringManager.Rm.GetString("InfoMessage", CultureInfo.CurrentCulture), validationRuleString, serviceTypeString);
         }
@@ -109,21 +117,6 @@ namespace FileCabinetApp
         private static void ParseCommandLineArguments(string[] args)
         {
             var parser = new CommandLineParser();
-            static void ValidationRuleAction(string arg)
-            {
-                if (arg.Equals("custom"))
-                {
-                    validationRule = ValidationRule.Custom;
-                }
-                else if (arg.Equals("default"))
-                {
-                    validationRule = ValidationRule.Default;
-                }
-                else
-                {
-                    throw new ArgumentException(StringManager.Rm.GetString("UnableCommandLineArgumentsMessage", CultureInfo.CurrentCulture));
-                }
-            }
 
             static void StorageRuleAction(string arg)
             {
@@ -141,7 +134,7 @@ namespace FileCabinetApp
                 }
             }
 
-            parser.AddCommandLineArgumentDescription("--validation-rules", "-v", ValidationRuleAction);
+            parser.AddCommandLineArgumentDescription("--validation-rules", "-v", s => validationRule = s);
             parser.AddCommandLineArgumentDescription("--storage", "-s", StorageRuleAction);
 
             parser.ParseCommandLineArguments(args);
@@ -151,19 +144,18 @@ namespace FileCabinetApp
         private static void ApplyCommandLineArguments()
         {
             IRecordValidator recordvalidator;
-            switch (validationRule)
-            {
-                case ValidationRule.Default:
-                    validationRuleSet = ValidationRuleSetMaker.MakeDefaultValidationSet();
-                    recordvalidator = new ValidatorBuilder().CreateDefault();
-                    break;
 
-                case ValidationRule.Custom:
-                    validationRuleSet = ValidationRuleSetMaker.MakeCustomValidationSet();
-                    recordvalidator = new ValidatorBuilder().CreateCustom();
-                    break;
-                default:
-                    throw new ArgumentException(nameof(validationRule));
+            if (validationRule.Equals("default"))
+            {
+                recordvalidator = new ValidatorBuilder().CreateDefault();
+            }
+            else if (validationRule.Equals("custom"))
+            {
+                recordvalidator = new ValidatorBuilder().CreateCustom();
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(validationRule));
             }
 
             fileCabinetService = serviceType switch

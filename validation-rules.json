@@ -1,0 +1,47 @@
+{
+  "default": {
+    "firstName": {
+      "min": 2,
+      "max": 30
+    },
+    "lastName": {
+      "min": 2,
+      "max": 30
+    },
+    "dateOfBirth": {
+      "from": "19/4/1960",
+      "to": "01/01/2021"
+    },
+    "points": {
+      "min": 0,
+      "max": 400
+    },
+    "identificationNumber": {
+      "min": 0,
+      "max": 99999999999
+    }
+  },
+
+  "custom": {
+    "firstName": {
+      "min": 1,
+      "max": 50
+    },
+    "lastName": {
+      "min": 1,
+      "max": 50
+    },
+    "dateOfBirth": {
+      "from": "19/4/1500",
+      "to": "01/01/2021"
+    },
+    "points": {
+      "min": 0,
+      "max": 1000
+    },
+    "identificationNumber": {
+      "min": 0,
+      "max": 99999999999
+    }
+  }
+}

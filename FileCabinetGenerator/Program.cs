@@ -16,6 +16,7 @@ namespace FileCabinetGenerator
     {
         static OutputFileType outputFileType = new();
         static string outputFileName;
+        static string validationRulesFilePath;
         static int amountOfGeneratedRecords;
         static int firstIdValue;
         const string resultString = "{0} records were written to {1}";
@@ -44,28 +45,30 @@ namespace FileCabinetGenerator
             parser.AddCommandLineArgumentDescription("--output", "-o", arg => outputFileName = arg);
             parser.AddCommandLineArgumentDescription("--records-amount", "-a", arg => amountOfGeneratedRecords = int.Parse(arg));
             parser.AddCommandLineArgumentDescription("--start-id", "-i", arg => firstIdValue = int.Parse(arg));
+            parser.AddCommandLineArgumentDescription("--validation-file-path", "-v", arg => validationRulesFilePath = arg);
 
             parser.ParseCommandLineArguments(args);
         }
 
         private static ReadOnlyCollection<FileCabinetRecord> GenerateRandomRecords()
         {
-            ValidationRuleSet defaultRuleSet = ValidationRuleSetMaker.MakeDefaultValidationSet();
+            var defaultRule = ValidationSetLoader.LoadRules(validationRulesFilePath)["default"];
+
             var records = new List<FileCabinetRecord>();
             var random = new Random();
             for (int i = 0; i < amountOfGeneratedRecords; i++)
             {
-                var year = random.Next(defaultRuleSet.DateValidator.MinDateOfBirth.Year, defaultRuleSet.DateValidator.MaxDateOfBirth.Year);
-                var month = random.Next(defaultRuleSet.DateValidator.MinDateOfBirth.Month, defaultRuleSet.DateValidator.MaxDateOfBirth.Month);
-                var day = random.Next(defaultRuleSet.DateValidator.MinDateOfBirth.Day, defaultRuleSet.DateValidator.MaxDateOfBirth.Day);
-                var pointForFourTests = (short)random.Next(defaultRuleSet.PointsForFourTestsValidator.MinValue, defaultRuleSet.PointsForFourTestsValidator.MaxValue);
-                var identificationNumber = GetRandomtDecimal(defaultRuleSet.IdentificationNumberValidator.MinValue, defaultRuleSet.IdentificationNumberValidator.MaxValue);
+                var year = random.Next(defaultRule.DateModel.From.Year, defaultRule.DateModel.To.Year);
+                var month = random.Next(defaultRule.DateModel.From.Month, defaultRule.DateModel.To.Month);
+                var day = random.Next(defaultRule.DateModel.From.Day, defaultRule.DateModel.To.Day);
+                var pointForFourTests = (short)random.Next(defaultRule.PointsModel.Min, defaultRule.PointsModel.Max);
+                var identificationNumber = GetRandomtDecimal(defaultRule.IdentificationNumberModel.Min, defaultRule.IdentificationNumberModel.Max);
 
                 var newRecord = new FileCabinetRecord
                 {
                     Id = firstIdValue + i,
-                    FirstName = GetRandomString(defaultRuleSet.FirstNameVAidator.MaxLen / 4),
-                    LastName = GetRandomString(defaultRuleSet.FirstNameVAidator.MaxLen / 4),
+                    FirstName = GetRandomString(defaultRule.FirstName.Max / 4),
+                    LastName = GetRandomString(defaultRule.LastName.Max / 4),
                     DateOfBirth = new DateTime(year, month, day),
                     PointsForFourTests = pointForFourTests,
                     IdentificationNumber = identificationNumber,

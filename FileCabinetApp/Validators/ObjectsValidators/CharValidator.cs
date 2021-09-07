@@ -30,15 +30,6 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Gets the delegate.
-        /// </summary>
-        /// <returns>Gets delegate for Validate method.</returns>
-        public Func<char, Tuple<bool, string>> GetDelegate()
-        {
-            return this.Validate;
-        }
-
-        /// <summary>
         /// String validation.
         /// </summary>
         /// <param name="inputValue">Given char character.</param>

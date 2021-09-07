@@ -33,15 +33,6 @@ namespace FileCabinetApp
         public int MaxValue { get; }
 
         /// <summary>
-        /// Gets the delegate.
-        /// </summary>
-        /// <returns>Gets delegate for Validate mrthod.</returns>
-        public Func<int, Tuple<bool, string>> GetDelegate()
-        {
-            return this.Validate;
-        }
-
-        /// <summary>
         /// String validation.
         /// </summary>
         /// <param name="inputValue">Given string.</param>

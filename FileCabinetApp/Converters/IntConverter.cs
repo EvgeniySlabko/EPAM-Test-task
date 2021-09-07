@@ -38,14 +38,5 @@ namespace FileCabinetApp.Converters
 
             return new (successfulConvert, message, value);
         }
-
-        /// <summary>
-        /// Gets the delegate.
-        /// </summary>
-        /// <returns>Gets delegate for Conversion method.</returns>
-        public Func<string, Tuple<bool, string, int>> GetDelegate()
-        {
-            return this.Convert;
-        }
     }
 }

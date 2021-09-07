@@ -33,15 +33,6 @@ namespace FileCabinetApp
         public DateTime MaxDateOfBirth { get; }
 
         /// <summary>
-        /// Gets the delegate.
-        /// </summary>
-        /// <returns>Gets delegate for Validate mrthod.</returns>
-        public Func<DateTime, Tuple<bool, string>> GetDelegate()
-        {
-            return this.Validate;
-        }
-
-        /// <summary>
         /// String validation.
         /// </summary>
         /// <param name="inputDateOfBirth">Given string.</param>
