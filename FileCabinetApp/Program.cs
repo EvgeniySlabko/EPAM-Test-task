@@ -23,6 +23,7 @@ namespace FileCabinetApp
         private static ValidationSettings validationSettings;
         private static bool isRunning = true;
         private static bool useStopWatch;
+        private static bool useLogger;
 
         /// <summary>
         /// Entry point.
@@ -110,11 +111,11 @@ namespace FileCabinetApp
 
         private static void DisplayInfoMessage()
         {
-            var infoMessage = new StringBuilder();
             string validationRuleString = validationRule;
             string serviceTypeString = (serviceType == ServiceType.FileService) ? "file" : "memory";
             string stopWatchMode = useStopWatch ? "on" : "off";
-            Console.WriteLine(StringManager.Rm.GetString("InfoMessage", CultureInfo.CurrentCulture), validationRuleString, serviceTypeString, stopWatchMode);
+            string loggerMode = useLogger ? "on" : "off";
+            Console.WriteLine(StringManager.Rm.GetString("InfoMessage", CultureInfo.CurrentCulture), validationRuleString, serviceTypeString, stopWatchMode, loggerMode);
         }
 
         private static void ParseCommandLineArguments(string[] args)
@@ -140,6 +141,7 @@ namespace FileCabinetApp
             parser.AddCommandLineArgumentDescription("--validation-rules", "-v", s => validationRule = s);
             parser.AddCommandLineArgumentDescription("--storage", "-s", StorageRuleAction);
             parser.AddCommandLineArgumentDescription("--use-stopwatch", "-sw", s => useStopWatch = bool.Parse(s));
+            parser.AddCommandLineArgumentDescription("--use-logger", "-l", s => useLogger = bool.Parse(s));
 
             parser.ParseCommandLineArguments(args);
             ApplyCommandLineArguments();
@@ -171,6 +173,10 @@ namespace FileCabinetApp
             };
 
             fileCabinetService = useStopWatch ? new ServiceMeter(service) : service;
+            if (useLogger)
+            {
+                fileCabinetService = new ServiceLogger(fileCabinetService);
+            }
         }
     }
 }

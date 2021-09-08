@@ -169,7 +169,7 @@
     <value>Identification Number:</value>
   </data>
   <data name="InfoMessage" xml:space="preserve">
-    <value>Using {0} validation rules. Storage - {1}. Stopwatch - {2}</value>
+    <value>Using {0} validation rules. Storage - {1}. Stopwatch - {2}. Logger - {3}.</value>
   </data>
   <data name="Invalid arguments message" xml:space="preserve">
     <value>Invalid arguments</value>
