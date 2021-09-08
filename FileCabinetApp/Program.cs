@@ -22,6 +22,7 @@ namespace FileCabinetApp
         private static IFileCabinetService fileCabinetService;
         private static ValidationSettings validationSettings;
         private static bool isRunning = true;
+        private static bool useStopWatch;
 
         /// <summary>
         /// Entry point.
@@ -109,9 +110,11 @@ namespace FileCabinetApp
 
         private static void DisplayInfoMessage()
         {
+            var infoMessage = new StringBuilder();
             string validationRuleString = validationRule;
             string serviceTypeString = (serviceType == ServiceType.FileService) ? "file" : "memory";
-            Console.WriteLine(StringManager.Rm.GetString("InfoMessage", CultureInfo.CurrentCulture), validationRuleString, serviceTypeString);
+            string stopWatchMode = useStopWatch ? "on" : "off";
+            Console.WriteLine(StringManager.Rm.GetString("InfoMessage", CultureInfo.CurrentCulture), validationRuleString, serviceTypeString, stopWatchMode);
         }
 
         private static void ParseCommandLineArguments(string[] args)
@@ -136,6 +139,7 @@ namespace FileCabinetApp
 
             parser.AddCommandLineArgumentDescription("--validation-rules", "-v", s => validationRule = s);
             parser.AddCommandLineArgumentDescription("--storage", "-s", StorageRuleAction);
+            parser.AddCommandLineArgumentDescription("--use-stopwatch", "-sw", s => useStopWatch = bool.Parse(s));
 
             parser.ParseCommandLineArguments(args);
             ApplyCommandLineArguments();
@@ -158,12 +162,15 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(validationRule));
             }
 
-            fileCabinetService = serviceType switch
+            IFileCabinetService service;
+            service = serviceType switch
             {
                 ServiceType.MemoryService => new FileCabinetMemoryService(recordvalidator),
                 ServiceType.FileService => new FileCabinetFilesystemService(recordvalidator),
                 _ => throw new ArgumentException(nameof(serviceType)),
             };
+
+            fileCabinetService = useStopWatch ? new ServiceMeter(service) : service;
         }
     }
 }
