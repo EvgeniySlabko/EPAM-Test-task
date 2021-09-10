@@ -43,7 +43,7 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
+        public IRecordIterator FindByDate(DateTime dataOfBirthday)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -54,7 +54,7 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        public IRecordIterator FindByFirstName(string firstName)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -65,7 +65,7 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        public IRecordIterator FindByLastName(string lastName)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -76,7 +76,7 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
+        public IRecordIterator GetRecords()
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();

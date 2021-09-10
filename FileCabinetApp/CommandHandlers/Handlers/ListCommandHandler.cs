@@ -11,14 +11,14 @@ namespace FileCabinetApp
     {
         private const string Command = "list";
 
-        private readonly Action<IEnumerable<FileCabinetRecord>> printer;
+        private readonly Action<IRecordIterator> printer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ListCommandHandler"/> class.
         /// </summary>
         /// <param name="service">Service.</param>
         /// <param name="printer">Printer.</param>
-        public ListCommandHandler(IFileCabinetService service, Action<IEnumerable<FileCabinetRecord>> printer)
+        public ListCommandHandler(IFileCabinetService service, Action<IRecordIterator> printer)
             : base(Command, service)
         {
             this.printer = printer;
@@ -39,8 +39,8 @@ namespace FileCabinetApp
 
         private void List()
         {
-            var records = this.Service.GetRecords();
-            this.printer(records);
+            var iter = this.Service.GetRecords();
+            this.printer(iter);
         }
     }
 }

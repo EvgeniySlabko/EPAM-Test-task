@@ -74,49 +74,49 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
+        public IRecordIterator FindByDate(DateTime dataOfBirthday)
         {
             this.Log($"Calling FindByDate() with argument {dataOfBirthday.ToString(DateFormat, CultureInfo.CurrentCulture)}");
 
             var result = this.service.FindByDate(dataOfBirthday);
 
-            this.Log($"Calling FindByDate() returne {result.Count} records.");
+            this.Log($"Calling FindByDate() succeeded.");
 
             return result;
         }
 
         /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        public IRecordIterator FindByFirstName(string firstName)
         {
             this.Log($"Calling FindByFirstName() with argument {firstName}");
 
             var result = this.service.FindByFirstName(firstName);
 
-            this.Log($"Calling FindByFirstName() returne {result.Count} records.");
+            this.Log($"Calling FindByFirstName() succeeded.");
 
             return result;
         }
 
         /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        public IRecordIterator FindByLastName(string lastName)
         {
             this.Log($"Calling FindByLastName() with argument {lastName}");
 
             var result = this.service.FindByLastName(lastName);
 
-            this.Log($"Calling FindByLastName() returne {result.Count} records.");
+            this.Log($"Calling FindByLastName() succeeded.");
 
             return result;
         }
 
         /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
+        public IRecordIterator GetRecords()
         {
             this.Log($"Calling GetRecords()");
 
             var result = this.service.GetRecords();
 
-            this.Log($"Calling GetRecords() returne {result.Count} records.");
+            this.Log($"Calling GetRecords() succeeded.");
 
             return result;
         }

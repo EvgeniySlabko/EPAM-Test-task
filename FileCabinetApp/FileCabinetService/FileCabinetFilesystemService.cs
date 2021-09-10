@@ -106,9 +106,9 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="dataOfBirthday">Вata of birthday to search.</param>
         /// <returns>Record if found otherwise null.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
+        public IRecordIterator FindByDate(DateTime dataOfBirthday)
         {
-            return this.FindBy(this.dateofbirthDictionary, dataOfBirthday);
+            return new FilesystemIterator(this.GetRecord, r => r.DateOfBirth.Equals(dataOfBirthday));
         }
 
         /// <summary>
@@ -116,14 +116,14 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="firstName">First name to search.</param>
         /// <returns>Record if found otherwise null.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        public IRecordIterator FindByFirstName(string firstName)
         {
             if (firstName is null)
             {
                 throw new ArgumentNullException(nameof(firstName));
             }
 
-            return this.FindBy(this.firstNameDictionary, firstName);
+            return new FilesystemIterator(this.GetRecord, r => r.FirstName.Equals(firstName));
         }
 
         /// <summary>
@@ -131,39 +131,23 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="lastName">Last name to search.</param>
         /// <returns>Record if found otherwise null.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        public IRecordIterator FindByLastName(string lastName)
         {
             if (lastName is null)
             {
                 throw new ArgumentNullException(nameof(lastName));
             }
 
-            return this.FindBy(this.lastNameDictionary, lastName);
+            return new FilesystemIterator(this.GetRecord, r => r.LastName.Equals(lastName));
         }
 
         /// <summary>
         /// Returns all records.
         /// </summary>
         /// <returns>array with records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
+        public IRecordIterator GetRecords()
         {
-            var records = new List<FileCabinetRecord>();
-            this.GoToStart();
-            while (true)
-            {
-                var record = this.GetNext();
-                if (record is null)
-                {
-                    this.GoToStart();
-                    break;
-                }
-                else
-                {
-                    records.Add(record);
-                }
-            }
-
-            return new ReadOnlyCollection<FileCabinetRecord>(records);
+            return new FilesystemIterator(this.GetRecord, r => true);
         }
 
         /// <summary>
@@ -238,7 +222,7 @@ namespace FileCabinetApp
         /// <returns>Snapshot of the current list of records.</returns>
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
-            var records = this.GetRecords();
+            var records = this.GetRecordsList();
             var recordsArray = new FileCabinetRecord[records.Count];
             records.CopyTo(recordsArray, 0);
             return new FileCabinetServiceSnapshot(recordsArray);
@@ -328,6 +312,27 @@ namespace FileCabinetApp
                 };
                 dictionary.Add(key, list);
             }
+        }
+
+        private ReadOnlyCollection<FileCabinetRecord> GetRecordsList()
+        {
+            var records = new List<FileCabinetRecord>();
+            this.GoToStart();
+            while (true)
+            {
+                var record = this.GetNext();
+                if (record is null)
+                {
+                    this.GoToStart();
+                    break;
+                }
+                else
+                {
+                    records.Add(record);
+                }
+            }
+
+            return new ReadOnlyCollection<FileCabinetRecord>(records);
         }
 
         private void Write(FileCabinetRecord record, int index)
@@ -433,26 +438,6 @@ namespace FileCabinetApp
         private void GoToStart()
         {
             this.iterationIndex = 0;
-        }
-
-        private ReadOnlyCollection<FileCabinetRecord> FindBy<T>(SortedDictionary<T, List<int>> dictionary, T index)
-        {
-            var subList = new List<FileCabinetRecord>();
-            if (!dictionary.ContainsKey(index))
-            {
-                return new ReadOnlyCollection<FileCabinetRecord>(subList);
-            }
-
-            foreach (var offset in dictionary[index])
-            {
-                var record = this.GetRecord(offset);
-                if ((record.ServiceInormation & 4) == 0)
-                {
-                    subList.Add(record.Record);
-                }
-            }
-
-            return new ReadOnlyCollection<FileCabinetRecord>(subList);
         }
 
         private void StartupService()
