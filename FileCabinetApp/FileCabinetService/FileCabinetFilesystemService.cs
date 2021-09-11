@@ -108,7 +108,12 @@ namespace FileCabinetApp
         /// <returns>Record if found otherwise null.</returns>
         public IEnumerable<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
         {
-            return new FileCabinetRecordEnumerable(new FilesystemIterator(this.GetRecord, r => r.DateOfBirth.Equals(dataOfBirthday)));
+            if (this.dateofbirthDictionary.ContainsKey(dataOfBirthday))
+            {
+                return this.OffsetEnumerator(this.dateofbirthDictionary[dataOfBirthday]);
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -123,7 +128,12 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(firstName));
             }
 
-            return new FileCabinetRecordEnumerable(new FilesystemIterator(this.GetRecord, r => r.FirstName.Equals(firstName)));
+            if (this.lastNameDictionary.ContainsKey(firstName))
+            {
+                return this.OffsetEnumerator(this.firstNameDictionary[firstName]);
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -138,7 +148,12 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(lastName));
             }
 
-            return new FileCabinetRecordEnumerable(new FilesystemIterator(this.GetRecord, r => r.LastName.Equals(lastName)));
+            if (this.lastNameDictionary.ContainsKey(lastName))
+            {
+                return this.OffsetEnumerator(this.lastNameDictionary[lastName]);
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -147,7 +162,21 @@ namespace FileCabinetApp
         /// <returns>array with records.</returns>
         public IEnumerable<FileCabinetRecord> GetRecords()
         {
-            return new FileCabinetRecordEnumerable(new FilesystemIterator(this.GetRecord, r => true));
+            // return new FileCabinetRecordEnumerable(new FilesystemIterator(this.GetRecord, r => true));
+            int i = 0;
+            while (true)
+            {
+                var serviceRecord = this.GetRecord(i++);
+                if (serviceRecord is null)
+                {
+                    yield break;
+                }
+
+                if ((serviceRecord.ServiceInormation & 4) == 0)
+                {
+                    yield return serviceRecord.Record;
+                }
+            }
         }
 
         /// <summary>
@@ -433,6 +462,14 @@ namespace FileCabinetApp
         private FileCabonetFilesystemRecord GetNextAny()
         {
             return this.GetRecord(this.iterationIndex++);
+        }
+
+        private IEnumerable<FileCabinetRecord> OffsetEnumerator(IEnumerable<int> offsets)
+        {
+            foreach (var offset in offsets)
+            {
+                yield return this.GetRecord(offset).Record;
+            }
         }
 
         private void GoToStart()

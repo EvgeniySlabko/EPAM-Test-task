@@ -68,7 +68,12 @@ namespace FileCabinetApp
         /// <returns>array with records.</returns>
         public IEnumerable<FileCabinetRecord> GetRecords()
         {
-            return new FileCabinetRecordEnumerable(new MemoryIterator(this.list));
+            foreach (var record in this.list)
+            {
+                yield return record;
+            }
+
+            yield break;
         }
 
         /// <summary>
@@ -125,10 +130,13 @@ namespace FileCabinetApp
 
             if (this.firstNameDictionary.TryGetValue(firstName.ToLower(CultureInfo.CurrentCulture), out List<FileCabinetRecord> subList))
             {
-                return new FileCabinetRecordEnumerable(new MemoryIterator(subList));
+                foreach (var record in subList)
+                {
+                    yield return record;
+                }
             }
 
-            return null;
+            yield break;
         }
 
         /// <summary>
@@ -145,10 +153,13 @@ namespace FileCabinetApp
 
             if (this.lastNameDictionary.TryGetValue(lastName.ToLower(CultureInfo.CurrentCulture), out List<FileCabinetRecord> subList))
             {
-                return new FileCabinetRecordEnumerable(new MemoryIterator(subList));
+                foreach (var record in subList)
+                {
+                    yield return record;
+                }
             }
 
-            return null;
+            yield break;
         }
 
         /// <summary>
@@ -160,10 +171,13 @@ namespace FileCabinetApp
         {
             if (this.dateTimeDictionary.TryGetValue(dataOfBirthday, out List<FileCabinetRecord> subList))
             {
-                return new FileCabinetRecordEnumerable(new MemoryIterator(subList));
+                foreach (var record in subList)
+                {
+                    yield return record;
+                }
             }
 
-            return null;
+            yield break;
         }
 
         /// <summary>
