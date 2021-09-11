@@ -13,14 +13,14 @@ namespace FileCabinetApp
     {
         private const string Command = "find";
 
-        private readonly Action<IRecordIterator> printer;
+        private readonly Action<IEnumerable<FileCabinetRecord>> printer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FindCommandHandler"/> class.
         /// </summary>
         /// <param name="service">Service.</param>
         /// <param name="printer">Printer.</param>
-        public FindCommandHandler(IFileCabinetService service, Action<IRecordIterator> printer)
+        public FindCommandHandler(IFileCabinetService service, Action<IEnumerable<FileCabinetRecord>> printer)
             : base(Command, service)
         {
             this.printer = printer;
@@ -88,19 +88,19 @@ namespace FileCabinetApp
 
         private void Find(RecordParameter recordParameter, object objectForFind)
         {
-            IRecordIterator iter;
+            IEnumerable<FileCabinetRecord> records;
             switch (recordParameter)
             {
                 case RecordParameter.FirstName:
-                    iter = this.Service.FindByFirstName((string)objectForFind);
+                    records = this.Service.FindByFirstName((string)objectForFind);
                     break;
 
                 case RecordParameter.LastName:
-                    iter = this.Service.FindByLastName((string)objectForFind);
+                    records = this.Service.FindByLastName((string)objectForFind);
                     break;
 
                 case RecordParameter.DateOfBirth:
-                    iter = this.Service.FindByDate((DateTime)objectForFind);
+                    records = this.Service.FindByDate((DateTime)objectForFind);
                     break;
 
                 default:
@@ -108,13 +108,13 @@ namespace FileCabinetApp
                     return;
             }
 
-            if (iter is null)
+            if (records is null)
             {
                 Console.WriteLine(StringManager.Rm.GetString("RecordFindMissMessage", CultureInfo.CurrentCulture));
                 return;
             }
 
-            this.printer(iter);
+            this.printer(records);
         }
     }
 }

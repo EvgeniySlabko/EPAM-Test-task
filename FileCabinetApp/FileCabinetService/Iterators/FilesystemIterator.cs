@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,10 +10,10 @@ namespace FileCabinetApp
     /// <summary>
     /// FilesystemIterator.
     /// </summary>
-    public class FilesystemIterator : IRecordIterator
+    public class FilesystemIterator : IEnumerator<FileCabinetRecord>
     {
         private readonly Func<int, FileCabonetFilesystemRecord> getNext;
-        private Predicate<FileCabinetRecord> comparator;
+        private readonly Predicate<FileCabinetRecord> comparator;
         private FileCabinetRecord currentRecord;
         private int index;
 
@@ -25,13 +26,64 @@ namespace FileCabinetApp
         {
             this.comparator = comparator;
             this.getNext = getter;
-            this.GetNext();
         }
 
         /// <inheritdoc/>
-        public FileCabinetRecord GetNext()
+        public FileCabinetRecord Current
         {
-            var outputRecord = this.currentRecord;
+            get
+            {
+                if (this.currentRecord is not null)
+                {
+                    return this.currentRecord;
+                }
+                else
+                {
+                    throw new InvalidOperationException();
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        object IEnumerator.Current
+        {
+            get
+            {
+                return this.Current;
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <inheritdoc/>
+        public bool MoveNext()
+        {
+            this.GetNext();
+            return this.currentRecord is not null;
+        }
+
+        /// <inheritdoc/>
+        public void Reset()
+        {
+            this.index = 0;
+            this.GetNext();
+        }
+
+        /// <summary>
+        /// Dispose.
+        /// </summary>
+        /// <param name="disposing">Disposing.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+        }
+
+        private void GetNext()
+        {
             while (true)
             {
                 var serviceRecord = this.getNext(this.index++);
@@ -47,14 +99,6 @@ namespace FileCabinetApp
                     break;
                 }
             }
-
-            return outputRecord;
-        }
-
-        /// <inheritdoc/>
-        public bool HasMore()
-        {
-            return this.currentRecord is not null;
         }
     }
 }

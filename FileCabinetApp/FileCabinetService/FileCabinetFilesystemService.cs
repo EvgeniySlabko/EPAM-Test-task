@@ -106,9 +106,9 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="dataOfBirthday">Вata of birthday to search.</param>
         /// <returns>Record if found otherwise null.</returns>
-        public IRecordIterator FindByDate(DateTime dataOfBirthday)
+        public IEnumerable<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
         {
-            return new FilesystemIterator(this.GetRecord, r => r.DateOfBirth.Equals(dataOfBirthday));
+            return new FileCabinetRecordEnumerable(new FilesystemIterator(this.GetRecord, r => r.DateOfBirth.Equals(dataOfBirthday)));
         }
 
         /// <summary>
@@ -116,14 +116,14 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="firstName">First name to search.</param>
         /// <returns>Record if found otherwise null.</returns>
-        public IRecordIterator FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             if (firstName is null)
             {
                 throw new ArgumentNullException(nameof(firstName));
             }
 
-            return new FilesystemIterator(this.GetRecord, r => r.FirstName.Equals(firstName));
+            return new FileCabinetRecordEnumerable(new FilesystemIterator(this.GetRecord, r => r.FirstName.Equals(firstName)));
         }
 
         /// <summary>
@@ -131,23 +131,23 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="lastName">Last name to search.</param>
         /// <returns>Record if found otherwise null.</returns>
-        public IRecordIterator FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             if (lastName is null)
             {
                 throw new ArgumentNullException(nameof(lastName));
             }
 
-            return new FilesystemIterator(this.GetRecord, r => r.LastName.Equals(lastName));
+            return new FileCabinetRecordEnumerable(new FilesystemIterator(this.GetRecord, r => r.LastName.Equals(lastName)));
         }
 
         /// <summary>
         /// Returns all records.
         /// </summary>
         /// <returns>array with records.</returns>
-        public IRecordIterator GetRecords()
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
-            return new FilesystemIterator(this.GetRecord, r => true);
+            return new FileCabinetRecordEnumerable(new FilesystemIterator(this.GetRecord, r => true));
         }
 
         /// <summary>

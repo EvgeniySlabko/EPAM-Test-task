@@ -74,7 +74,7 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public IRecordIterator FindByDate(DateTime dataOfBirthday)
+        public IEnumerable<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
         {
             this.Log($"Calling FindByDate() with argument {dataOfBirthday.ToString(DateFormat, CultureInfo.CurrentCulture)}");
 
@@ -86,7 +86,7 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public IRecordIterator FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             this.Log($"Calling FindByFirstName() with argument {firstName}");
 
@@ -98,7 +98,7 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public IRecordIterator FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             this.Log($"Calling FindByLastName() with argument {lastName}");
 
@@ -110,7 +110,7 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public IRecordIterator GetRecords()
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
             this.Log($"Calling GetRecords()");
 

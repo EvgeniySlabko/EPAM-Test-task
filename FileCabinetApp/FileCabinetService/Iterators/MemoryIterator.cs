@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace FileCabinetApp
     /// <summary>
     /// FilesystemIterator.
     /// </summary>
-    public class MemoryIterator : IRecordIterator
+    public class MemoryIterator : IEnumerator<FileCabinetRecord>
     {
         private readonly List<FileCabinetRecord> records;
         private int index;
@@ -24,15 +25,56 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public FileCabinetRecord GetNext()
+        object IEnumerator.Current
         {
-            return this.records[this.index++];
+            get
+            {
+                return this.Current;
+            }
         }
 
         /// <inheritdoc/>
-        public bool HasMore()
+        public FileCabinetRecord Current
         {
+            get
+            {
+                if (this.index < this.records.Count)
+                {
+                    return this.records[this.index];
+                }
+                else
+                {
+                    throw new InvalidOperationException();
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        public bool MoveNext()
+        {
+            this.index++;
             return this.index < this.records.Count;
+        }
+
+        /// <inheritdoc/>
+        public void Reset()
+        {
+            this.index = 0;
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Dispose.
+        /// </summary>
+        /// <param name="disposing">Disposing.</param>
+        protected virtual void Dispose(bool disposing)
+        {
         }
     }
 }

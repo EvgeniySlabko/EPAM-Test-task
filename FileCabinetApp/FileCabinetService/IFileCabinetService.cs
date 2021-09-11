@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 
@@ -28,27 +29,27 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="dataOfBirthday">Вata of birthday to search.</param>
         /// <returns>Record if found otherwise null.</returns>
-        IRecordIterator FindByDate(DateTime dataOfBirthday);
+        IEnumerable<FileCabinetRecord> FindByDate(DateTime dataOfBirthday);
 
         /// <summary>
         /// Find record by its first name.
         /// </summary>
         /// <param name="firstName">First name to search.</param>
         /// <returns>Record if found otherwise null.</returns>
-        IRecordIterator FindByFirstName(string firstName);
+        IEnumerable<FileCabinetRecord> FindByFirstName(string firstName);
 
         /// <summary>
         /// Find record by its last name.
         /// </summary>
         /// <param name="lastName">Last name to search.</param>
         /// <returns>Record if found otherwise null.</returns>
-        IRecordIterator FindByLastName(string lastName);
+        IEnumerable<FileCabinetRecord> FindByLastName(string lastName);
 
         /// <summary>
         /// Returns all records.
         /// </summary>
         /// <returns>array with records.</returns>
-        IRecordIterator GetRecords();
+        IEnumerable<FileCabinetRecord> GetRecords();
 
         /// <summary>
         /// Returns the number of records in the list.

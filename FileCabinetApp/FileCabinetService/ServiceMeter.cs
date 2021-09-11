@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -43,7 +44,7 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public IRecordIterator FindByDate(DateTime dataOfBirthday)
+        public IEnumerable<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -54,7 +55,7 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public IRecordIterator FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -65,7 +66,7 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public IRecordIterator FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -76,7 +77,7 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public IRecordIterator GetRecords()
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();

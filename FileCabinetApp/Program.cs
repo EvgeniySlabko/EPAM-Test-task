@@ -89,26 +89,11 @@ namespace FileCabinetApp
             validationSettings = ValidationSetLoader.LoadRules(Constants.ValidationSettingsFileName)[validationRule];
         }
 
-        private static void DefaultRecordsPrint(IRecordIterator iter)
-        {
-            while (iter.HasMore())
-            {
-                PrintOneRecord(iter.GetNext());
-            }
-        }
-
         private static void DefaultRecordsPrint(IEnumerable<FileCabinetRecord> records)
         {
-            var list = new List<FileCabinetRecord>(records);
-
             if (records is null)
             {
                 throw new ArgumentNullException(nameof(records));
-            }
-
-            if (list.Count.Equals(0))
-            {
-                Console.WriteLine(StringManager.Rm.GetString("EmptyListMessage", CultureInfo.CurrentCulture));
             }
 
             foreach (var record in records)

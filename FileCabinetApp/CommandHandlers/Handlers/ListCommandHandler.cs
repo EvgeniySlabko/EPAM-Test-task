@@ -11,14 +11,14 @@ namespace FileCabinetApp
     {
         private const string Command = "list";
 
-        private readonly Action<IRecordIterator> printer;
+        private readonly Action<IEnumerable<FileCabinetRecord>> printer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ListCommandHandler"/> class.
         /// </summary>
         /// <param name="service">Service.</param>
         /// <param name="printer">Printer.</param>
-        public ListCommandHandler(IFileCabinetService service, Action<IRecordIterator> printer)
+        public ListCommandHandler(IFileCabinetService service, Action<IEnumerable<FileCabinetRecord>> printer)
             : base(Command, service)
         {
             this.printer = printer;
