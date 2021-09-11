@@ -88,19 +88,19 @@ namespace FileCabinetApp
 
         private void Find(RecordParameter recordParameter, object objectForFind)
         {
-            ReadOnlyCollection<FileCabinetRecord> subList;
+            IEnumerable<FileCabinetRecord> records;
             switch (recordParameter)
             {
                 case RecordParameter.FirstName:
-                    subList = this.Service.FindByFirstName((string)objectForFind);
+                    records = this.Service.FindByFirstName((string)objectForFind);
                     break;
 
                 case RecordParameter.LastName:
-                    subList = this.Service.FindByLastName((string)objectForFind);
+                    records = this.Service.FindByLastName((string)objectForFind);
                     break;
 
                 case RecordParameter.DateOfBirth:
-                    subList = this.Service.FindByDate((DateTime)objectForFind);
+                    records = this.Service.FindByDate((DateTime)objectForFind);
                     break;
 
                 default:
@@ -108,13 +108,13 @@ namespace FileCabinetApp
                     return;
             }
 
-            if (subList is null)
+            if (records is null)
             {
                 Console.WriteLine(StringManager.Rm.GetString("RecordFindMissMessage", CultureInfo.CurrentCulture));
                 return;
             }
 
-            this.printer(subList);
+            this.printer(records);
         }
     }
 }

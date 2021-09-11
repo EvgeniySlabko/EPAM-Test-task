@@ -66,9 +66,14 @@ namespace FileCabinetApp
         /// Returns an array with records.
         /// </summary>
         /// <returns>array with records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
-            return new ReadOnlyCollection<FileCabinetRecord>(this.list);
+            foreach (var record in this.list)
+            {
+                yield return record;
+            }
+
+            yield break;
         }
 
         /// <summary>
@@ -116,7 +121,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="firstName">First name to search.</param>
         /// <returns>Record if found otherwise null.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             if (firstName is null)
             {
@@ -125,10 +130,13 @@ namespace FileCabinetApp
 
             if (this.firstNameDictionary.TryGetValue(firstName.ToLower(CultureInfo.CurrentCulture), out List<FileCabinetRecord> subList))
             {
-                return new ReadOnlyCollection<FileCabinetRecord>(subList);
+                foreach (var record in subList)
+                {
+                    yield return record;
+                }
             }
 
-            return null;
+            yield break;
         }
 
         /// <summary>
@@ -136,7 +144,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="lastName">Last name to search.</param>
         /// <returns>Record if found otherwise null.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             if (lastName is null)
             {
@@ -145,10 +153,13 @@ namespace FileCabinetApp
 
             if (this.lastNameDictionary.TryGetValue(lastName.ToLower(CultureInfo.CurrentCulture), out List<FileCabinetRecord> subList))
             {
-                return new ReadOnlyCollection<FileCabinetRecord>(subList);
+                foreach (var record in subList)
+                {
+                    yield return record;
+                }
             }
 
-            return null;
+            yield break;
         }
 
         /// <summary>
@@ -156,14 +167,17 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="dataOfBirthday">Вata of birthday to search.</param>
         /// <returns>Record if found otherwise null.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
+        public IEnumerable<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
         {
             if (this.dateTimeDictionary.TryGetValue(dataOfBirthday, out List<FileCabinetRecord> subList))
             {
-                return new ReadOnlyCollection<FileCabinetRecord>(subList);
+                foreach (var record in subList)
+                {
+                    yield return record;
+                }
             }
 
-            return null;
+            yield break;
         }
 
         /// <summary>
