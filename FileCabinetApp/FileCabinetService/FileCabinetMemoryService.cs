@@ -47,19 +47,27 @@ namespace FileCabinetApp
                 throw new ArgumentException("Invalide parameters");
             }
 
-            FileCabinetRecord currrentRecord = new ()
+            if (generateNewId)
             {
-                Id = generateNewId ? this.list.Count + 1 : newRecord.Id,
-                FirstName = newRecord.FirstName,
-                LastName = newRecord.LastName,
-                DateOfBirth = newRecord.DateOfBirth,
+                newRecord.Id = this.list.Count + 1;
+                this.AddNewRecord(newRecord);
+            }
+            else
+            {
+                var record = this.list.Find(r => r.Id.Equals(newRecord.Id));
+                if (record is null)
+                {
+                    this.AddNewRecord(newRecord);
+                }
+                else
+                {
+                    // Replace previous record.
+                    this.RemoveRecord(record);
+                    this.AddNewRecord(newRecord);
+                }
+            }
 
-                IdentificationLetter = newRecord.IdentificationLetter,
-                IdentificationNumber = newRecord.IdentificationNumber,
-                PointsForFourTests = newRecord.PointsForFourTests,
-            };
-
-            return this.AddRecordToDictionaries(currrentRecord);
+            return newRecord.Id;
         }
 
         /// <summary>
@@ -193,16 +201,15 @@ namespace FileCabinetApp
 
             foreach (var newRecord in snapshot.Records)
             {
-                for (int i = 0; i < this.list.Count; i++)
+                var record = this.list.Find(r => newRecord.Id == r.Id);
+                if (record is not null)
                 {
-                    if (newRecord.Id == this.list[i].Id)
-                    {
-                        this.list[i] = newRecord;
-                        continue;
-                    }
+                    record = newRecord;
                 }
-
-                this.list.Add(newRecord);
+                else
+                {
+                    this.list.Add(newRecord);
+                }
             }
         }
 
@@ -222,10 +229,7 @@ namespace FileCabinetApp
             var record = this.list.Find(f => f.Id == id);
             if (record is not null)
             {
-                this.list.Remove(record);
-                this.firstNameDictionary.Remove(record.FirstName);
-                this.lastNameDictionary.Remove(record.LastName);
-                this.dateTimeDictionary.Remove(record.DateOfBirth);
+                this.RemoveRecord(record);
             }
             else
             {
@@ -239,10 +243,38 @@ namespace FileCabinetApp
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Remove record from list and dictionaries.
-        /// </summary>
-        /// <param name="record">Record to remove.</param>
+        private static void AddRecordToDictionary<T>(Dictionary<T, List<FileCabinetRecord>> dictionary, FileCabinetRecord record, T index)
+        {
+            if (dictionary.TryGetValue(index, out List<FileCabinetRecord> subList))
+            {
+                subList.Add(record);
+            }
+            else
+            {
+                subList = new List<FileCabinetRecord>
+                {
+                    record,
+                };
+                dictionary.Add(index, subList);
+            }
+        }
+
+        private void AddNewRecord(FileCabinetRecord newRecord)
+        {
+            FileCabinetRecord currrentRecord = new ()
+            {
+                Id = newRecord.Id,
+                FirstName = newRecord.FirstName,
+                LastName = newRecord.LastName,
+                DateOfBirth = newRecord.DateOfBirth,
+                IdentificationLetter = newRecord.IdentificationLetter,
+                IdentificationNumber = newRecord.IdentificationNumber,
+                PointsForFourTests = newRecord.PointsForFourTests,
+            };
+
+            this.AddRecordToDictionaries(currrentRecord);
+        }
+
         private void RemoveRecord(FileCabinetRecord record)
         {
             this.firstNameDictionary[record.FirstName.ToLower(CultureInfo.CurrentCulture)].Remove(record);
@@ -257,58 +289,12 @@ namespace FileCabinetApp
             this.list.Remove(record);
         }
 
-        /// <summary>
-        /// Takes a snapshot of the current state of the list of records.
-        /// </summary>
-        /// <returns>Snapshot of the current list of records.</returns>
-        private int AddRecordToDictionaries(FileCabinetRecord currrentRecord)
+        private void AddRecordToDictionaries(FileCabinetRecord record)
         {
-            // Add record in main list
-            this.list.Add(currrentRecord);
-
-            // add record in firstNameDictionary
-            if (this.firstNameDictionary.TryGetValue(currrentRecord.FirstName.ToLower(CultureInfo.CurrentCulture), out List<FileCabinetRecord> subList))
-            {
-                subList.Add(currrentRecord);
-            }
-            else
-            {
-                subList = new List<FileCabinetRecord>
-            {
-                currrentRecord,
-            };
-                this.firstNameDictionary.Add(currrentRecord.FirstName.ToLower(CultureInfo.CurrentCulture), subList);
-            }
-
-            // add record in lastNameDictionary
-            if (this.lastNameDictionary.TryGetValue(currrentRecord.LastName.ToLower(CultureInfo.CurrentCulture), out subList))
-            {
-                subList.Add(currrentRecord);
-            }
-            else
-            {
-                subList = new List<FileCabinetRecord>
-            {
-                currrentRecord,
-            };
-                this.lastNameDictionary.Add(currrentRecord.LastName.ToLower(CultureInfo.CurrentCulture), subList);
-            }
-
-            // add record in dateTimeDictionary
-            if (this.dateTimeDictionary.TryGetValue(currrentRecord.DateOfBirth, out subList))
-            {
-                subList.Add(currrentRecord);
-            }
-            else
-            {
-                subList = new List<FileCabinetRecord>
-            {
-                currrentRecord,
-            };
-                this.dateTimeDictionary.Add(currrentRecord.DateOfBirth, subList);
-            }
-
-            return currrentRecord.Id;
+            AddRecordToDictionary(this.firstNameDictionary, record, record.FirstName.ToLower(CultureInfo.CurrentCulture));
+            AddRecordToDictionary(this.lastNameDictionary, record, record.LastName.ToLower(CultureInfo.CurrentCulture));
+            AddRecordToDictionary(this.dateTimeDictionary, record, record.DateOfBirth);
+            this.list.Add(record);
         }
     }
 }

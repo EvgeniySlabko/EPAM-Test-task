@@ -70,6 +70,7 @@ namespace FileCabinetApp
             var listHandler = new ListCommandHandler(fileCabinetService, Program.DefaultRecordsPrint);
             var removeHandler = new RemoveCommandHandler(fileCabinetService);
             var statHandler = new StatCommandHandler(fileCabinetService);
+            var insertHandler = new InsertCommandHandler(fileCabinetService);
 
             statHandler.SetNext(removeHandler);
             removeHandler.SetNext(listHandler);
@@ -80,6 +81,7 @@ namespace FileCabinetApp
             exportHandler.SetNext(exitHandler);
             exitHandler.SetNext(editHandler);
             editHandler.SetNext(createHandler);
+            createHandler.SetNext(insertHandler);
 
             return statHandler;
         }

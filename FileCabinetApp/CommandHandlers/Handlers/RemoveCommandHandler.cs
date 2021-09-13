@@ -28,7 +28,7 @@ namespace FileCabinetApp
                 return;
             }
 
-            var result = new IntConverter().Convert(commandRequest.Parameters);
+            var result = new Converter().Convert<int>(commandRequest.Parameters);
             if (result.Item1)
             {
                 this.Remove(result.Item3);

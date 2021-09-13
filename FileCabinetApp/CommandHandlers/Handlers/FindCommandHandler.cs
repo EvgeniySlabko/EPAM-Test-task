@@ -65,7 +65,7 @@ namespace FileCabinetApp
 
             if (recordParameter.Equals(RecordParameter.DateOfBirth))
             {
-                var convertResult = new DateTimeConverter().Convert(splitedParameters[1]);
+                var convertResult = new Converter().Convert<DateTime>(splitedParameters[1]);
                 if (!convertResult.Item1)
                 {
                     Console.WriteLine(convertResult.Item2, CultureInfo.CurrentCulture);

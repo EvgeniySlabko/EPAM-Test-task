@@ -20,13 +20,14 @@ namespace FileCabinetApp
         private readonly BinaryWriter binaryWriter;
         private readonly BinaryReader binaryReader;
 
-        private readonly SortedDictionary<int, List<int>> idDictionary = new ();
+        private readonly SortedDictionary<int, int> idDictionary = new ();
         private readonly SortedDictionary<string, List<int>> firstNameDictionary = new (StringComparer.InvariantCultureIgnoreCase);
         private readonly SortedDictionary<string, List<int>> lastNameDictionary = new (StringComparer.InvariantCultureIgnoreCase);
         private readonly SortedDictionary<DateTime, List<int>> dateofbirthDictionary = new ();
 
         private int id;
         private int iterationIndex;
+        private int lastPosition;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetFilesystemService"/> class.
@@ -60,8 +61,26 @@ namespace FileCabinetApp
                 throw new ArgumentException("Invalide parameters");
             }
 
-            record.Id = generateNewId ? this.id++ : record.Id;
-            this.Write(record);
+            if (generateNewId)
+            {
+                record.Id = this.id++;
+            }
+            else
+            {
+                if (this.idDictionary.ContainsKey(record.Id))
+                {
+                    int position = this.idDictionary[record.Id];
+                    this.RemoveRecordFromDictionaries(record.Id);
+                    this.AddRecordToDictionaries(record, position);
+                    this.Write(record, position);
+                }
+                else
+                {
+                    this.Write(record);
+                    this.AddRecordToDictionaries(record, this.lastPosition);
+                }
+            }
+
             return record.Id;
         }
 
@@ -128,7 +147,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(firstName));
             }
 
-            if (this.lastNameDictionary.ContainsKey(firstName))
+            if (this.firstNameDictionary.ContainsKey(firstName))
             {
                 return this.OffsetEnumerator(this.firstNameDictionary[firstName]);
             }
@@ -232,10 +251,13 @@ namespace FileCabinetApp
                 else
                 {
                     int position = this.iterationIndex - offset - 1;
-                    this.AddRecordToDictionaries(record, position);
                     if (offset != 0)
                     {
                         this.Write(record, position);
+                    }
+                    else
+                    {
+                        this.AddRecordToDictionaries(record, position);
                     }
                 }
 
@@ -270,47 +292,36 @@ namespace FileCabinetApp
 
             foreach (var newRecord in snapshot.Records)
             {
-                this.GoToStart();
-                while (true)
+                if (this.idDictionary.ContainsKey(newRecord.Id))
                 {
-                    var record = this.GetNext();
-                    if (record is null || record.Id == newRecord.Id)
-                    {
-                        int position = this.iterationIndex - 1;
-                        this.Write(newRecord, position);
-                        this.AddRecordToDictionaries(newRecord, position);
-                        break;
-                    }
+                    var position = this.idDictionary[newRecord.Id];
+                    this.RemoveRecordFromDictionaries(newRecord.Id);
+                    this.AddRecordToDictionaries(newRecord, position);
+                    this.Write(newRecord, position);
                 }
-
-                this.GoToStart();
+                else
+                {
+                    this.Write(newRecord);
+                    this.AddRecordToDictionaries(newRecord, this.lastPosition);
+                }
             }
         }
 
         /// <inheritdoc/>
         public void Remove(int id)
         {
-            int i = 0;
-            this.GoToStart();
-            while (true)
+            if (!this.idDictionary.ContainsKey(id))
             {
-                var record = this.GetNextAny();
-                if (record is null)
-                {
-                    throw new ArgumentException($"Record {id} does not exists.");
-                }
-                else if (record.Record.Id.Equals(id) && (record.ServiceInormation & 4) == 0)
-                {
-                    record.ServiceInormation |= 4;
-                    this.Write(record, this.iterationIndex - 1);
-                    this.RemoveRecordFromDictionaries(record.Record);
-                    break;
-                }
-
-                i++;
+                throw new ArgumentException($"Record {id} does not exists.");
             }
-
-            this.GoToStart();
+            else
+            {
+                var position = this.idDictionary[id];
+                var record = this.GetRecord(position);
+                this.RemoveRecordFromDictionaries(id);
+                record.ServiceInormation |= 4;
+                this.Write(record, position);
+            }
         }
 
         /// <summary>
@@ -324,6 +335,19 @@ namespace FileCabinetApp
                 this.binaryReader.Close();
                 this.binaryWriter.Close();
                 this.fileStrieam.Close();
+            }
+        }
+
+        private static void RemoveRecordFromDictionary<T>(SortedDictionary<T, List<int>> dictionary, T index, int position)
+        {
+            var list = dictionary[index];
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i] == position)
+                {
+                    list.RemoveAt(i);
+                    break;
+                }
             }
         }
 
@@ -495,6 +519,7 @@ namespace FileCabinetApp
                         higherId = fileSystemRecord.Id;
                     }
 
+                    this.lastPosition++;
                     this.AddRecordToDictionaries(fileSystemRecord, this.iterationIndex - 1);
                 }
             }
@@ -504,7 +529,7 @@ namespace FileCabinetApp
 
         private void AddRecordToDictionaries(FileCabinetRecord record, int position)
         {
-            AddRecordToDictionary(this.idDictionary, record.Id, position);
+            this.idDictionary[record.Id] = position;
             AddRecordToDictionary(this.firstNameDictionary, record.FirstName, position);
             AddRecordToDictionary(this.lastNameDictionary, record.LastName, position);
             AddRecordToDictionary(this.dateofbirthDictionary, record.DateOfBirth, position);
@@ -512,7 +537,7 @@ namespace FileCabinetApp
 
         private void AddRecordToDictionaries(FileCabonetFilesystemRecord record, int position)
         {
-            AddRecordToDictionary(this.idDictionary, record.Record.Id, position);
+            this.idDictionary.Add(record.Record.Id, position);
             AddRecordToDictionary(this.firstNameDictionary, record.Record.FirstName, position);
             AddRecordToDictionary(this.lastNameDictionary, record.Record.LastName, position);
             AddRecordToDictionary(this.dateofbirthDictionary, record.Record.DateOfBirth, position);
@@ -526,26 +551,14 @@ namespace FileCabinetApp
             this.dateofbirthDictionary.Clear();
         }
 
-        private void RemoveRecordFromDictionary<T>(SortedDictionary<T, List<int>> dictionary, T index, FileCabinetRecord record)
+        private void RemoveRecordFromDictionaries(int id)
         {
-            var list = dictionary[index];
-            for (int i = 0; i < list.Count; i++)
-            {
-                var currentRecord = this.GetRecord(list[i]);
-                if (currentRecord.Record == record)
-                {
-                    list.RemoveAt(i);
-                    break;
-                }
-            }
-        }
-
-        private void RemoveRecordFromDictionaries(FileCabinetRecord record)
-        {
-            this.RemoveRecordFromDictionary(this.idDictionary, record.Id, record);
-            this.RemoveRecordFromDictionary(this.firstNameDictionary, record.FirstName, record);
-            this.RemoveRecordFromDictionary(this.lastNameDictionary, record.LastName, record);
-            this.RemoveRecordFromDictionary(this.dateofbirthDictionary, record.DateOfBirth, record);
+            var position = this.idDictionary[id];
+            var record = this.GetRecord(position);
+            this.idDictionary.Remove(id);
+            RemoveRecordFromDictionary(this.firstNameDictionary, record.Record.FirstName, position);
+            RemoveRecordFromDictionary(this.lastNameDictionary, record.Record.LastName, position);
+            RemoveRecordFromDictionary(this.dateofbirthDictionary, record.Record.DateOfBirth, position);
         }
     }
 }

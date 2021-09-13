@@ -101,13 +101,13 @@ namespace FileCabinetApp
                 return null;
             }
 
-            var idresult = new IntConverter().Convert(paramaters[0]);
+            var idresult = new Converter().Convert<int>(paramaters[0]);
             var firstName = paramaters[1].Trim();
             var lastName = paramaters[2].Trim();
-            var dateOfBirthResult = new DateTimeConverter().Convert(paramaters[3]);
-            var identificationNumberResult = new DecimalConverter().Convert(paramaters[4]);
-            var identificationLetterResult = new CharConverter().Convert(paramaters[5]);
-            var pointsForFourTestsResult = new ShortConverter().Convert(paramaters[6]);
+            var dateOfBirthResult = new Converter().Convert<DateTime>(paramaters[3]);
+            var identificationNumberResult = new Converter().Convert<decimal>(paramaters[4]);
+            var identificationLetterResult = new Converter().Convert<char>(paramaters[5]);
+            var pointsForFourTestsResult = new Converter().Convert<short>(paramaters[6]);
 
             if (!idresult.Item1 || !dateOfBirthResult.Item1 || !identificationNumberResult.Item1 || !pointsForFourTestsResult.Item1 || !identificationLetterResult.Item1)
             {
