@@ -34,6 +34,17 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
+        public ReadOnlyCollection<int> Delete(Predicate<FileCabinetRecord> predicate)
+        {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            var result = this.service.Delete(predicate);
+            stopWatch.Stop();
+            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "Delete", stopWatch.ElapsedTicks);
+            return result;
+        }
+
+        /// <inheritdoc/>
         public void Edit(FileCabinetRecord newRecord)
         {
             var stopWatch = new Stopwatch();

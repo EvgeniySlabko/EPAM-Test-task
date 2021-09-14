@@ -186,6 +186,9 @@
   <data name="MissedCommandInfoMessage" xml:space="preserve">
     <value>Command {0} not found.</value>
   </data>
+  <data name="NoRecordsMatchingTheseParameters" xml:space="preserve">
+    <value>There are no records matching these parameters</value>
+  </data>
   <data name="OverflowMessage" xml:space="preserve">
     <value>Overflow error</value>
   </data>

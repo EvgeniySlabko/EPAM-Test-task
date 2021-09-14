@@ -243,6 +243,42 @@ namespace FileCabinetApp
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
+        public ReadOnlyCollection<int> Delete(Predicate<FileCabinetRecord> predicate)
+        {
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            var deletedList = new List<int>();
+            var deletedRecords = new List<FileCabinetRecord>();
+            foreach (var record in this.list)
+            {
+                if (predicate(record))
+                {
+                    deletedList.Add(record.Id);
+                    deletedRecords.Add(record);
+                }
+            }
+
+            deletedRecords.ForEach(r => this.RemoveRecord(r));
+            return new ReadOnlyCollection<int>(deletedList);
+        }
+
+        private static void RemoveRecordFromDictionary<T>(Dictionary<T, List<FileCabinetRecord>> dictionary, T index, FileCabinetRecord record)
+        {
+            var list = dictionary[index];
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].Equals(record))
+                {
+                    list.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+
         private static void AddRecordToDictionary<T>(Dictionary<T, List<FileCabinetRecord>> dictionary, FileCabinetRecord record, T index)
         {
             if (dictionary.TryGetValue(index, out List<FileCabinetRecord> subList))
@@ -277,14 +313,9 @@ namespace FileCabinetApp
 
         private void RemoveRecord(FileCabinetRecord record)
         {
-            this.firstNameDictionary[record.FirstName.ToLower(CultureInfo.CurrentCulture)].Remove(record);
-            this.firstNameDictionary.Remove(record.FirstName.ToLower(CultureInfo.CurrentCulture));
-
-            this.lastNameDictionary[record.LastName.ToLower(CultureInfo.CurrentCulture)].Remove(record);
-            this.lastNameDictionary.Remove(record.LastName.ToLower(CultureInfo.CurrentCulture));
-
-            this.dateTimeDictionary[record.DateOfBirth].Remove(record);
-            this.dateTimeDictionary.Remove(record.DateOfBirth);
+            RemoveRecordFromDictionary(this.firstNameDictionary, record.FirstName.ToLower(CultureInfo.CurrentCulture), record);
+            RemoveRecordFromDictionary(this.lastNameDictionary, record.LastName.ToLower(CultureInfo.CurrentCulture), record);
+            RemoveRecordFromDictionary(this.dateTimeDictionary, record.DateOfBirth, record);
 
             this.list.Remove(record);
         }

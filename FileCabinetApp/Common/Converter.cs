@@ -10,7 +10,7 @@ namespace FileCabinetApp
     /// <summary>
     /// Converter.
     /// </summary>
-    public class Converter
+    public static class Converter
     {
         /// <summary>
         /// Convert string to Value.
@@ -18,7 +18,7 @@ namespace FileCabinetApp
         /// <typeparam name="T">Value type.</typeparam>
         /// <param name="inputString">Given string.</param>
         /// <returns>Result.</returns>
-        public Tuple<bool, string, T> Convert<T>(string inputString)
+        public static Tuple<bool, string, T> Convert<T>(string inputString)
         {
             if (inputString is null)
             {
@@ -50,6 +50,40 @@ namespace FileCabinetApp
             }
 
             return new Tuple<bool, string, T>(converted, resultMessage, result);
+        }
+
+        /// <summary>
+        /// Convert string to Value.
+        /// </summary>
+        /// <typeparam name="T">Value type.</typeparam>
+        /// <param name="inputString">Given string.</param>
+        /// <returns>Result.</returns>
+        public static T TryConvert<T>(string inputString)
+        {
+            Tuple<bool, string, T> result = Convert<T>(inputString);
+            if (!result.Item1)
+            {
+                throw new ArgumentException(result.Item2);
+            }
+
+            return result.Item3;
+        }
+
+        /// <summary>
+        /// Convert string to Value.
+        /// </summary>
+        /// <typeparam name="T">Value type.</typeparam>
+        /// <param name="inputString">Given string.</param>
+        /// <returns>Result.</returns>
+        public static object TryConvertToObject<T>(string inputString)
+        {
+            Tuple<bool, string, T> result = Convert<T>(inputString);
+            if (!result.Item1)
+            {
+                throw new ArgumentException(result.Item2);
+            }
+
+            return result.Item3;
         }
     }
 }

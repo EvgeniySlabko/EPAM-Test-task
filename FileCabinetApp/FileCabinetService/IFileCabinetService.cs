@@ -79,5 +79,12 @@ namespace FileCabinetApp
         /// Purge.
         /// </summary>
         public void Purge();
+
+        /// <summary>
+        /// Delete records appropriate conditions.
+        /// </summary>
+        /// <param name="predicate">Given predicate.</param>
+        /// <returns>Deleted records id.</returns>
+        public ReadOnlyCollection<int> Delete(Predicate<FileCabinetRecord> predicate);
     }
 }

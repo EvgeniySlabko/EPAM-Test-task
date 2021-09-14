@@ -204,6 +204,21 @@ namespace FileCabinetApp
             this.Log($"Calling Restore() succeeded.");
         }
 
+        /// <inheritdoc/>
+        public ReadOnlyCollection<int> Delete(Predicate<FileCabinetRecord> predicate)
+        {
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            this.Log($"Calling Delete()");
+
+            var result = this.service.Delete(predicate);
+            this.Log($"Calling Delete() return {result.Count} id. ");
+            return result;
+        }
+
         /// <summary>
         /// Dispose.
         /// </summary>

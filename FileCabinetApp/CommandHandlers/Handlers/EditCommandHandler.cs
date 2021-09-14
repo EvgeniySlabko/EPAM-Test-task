@@ -32,7 +32,7 @@ namespace FileCabinetApp
                 return;
             }
 
-            var result = new Converter().Convert<int>(commandRequest.Parameters);
+            var result = Converter.Convert<int>(commandRequest.Parameters);
             if (result.Item1)
             {
                 this.Edit(result.Item3);

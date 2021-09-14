@@ -77,7 +77,7 @@ namespace FileCabinetApp
                 switch (converterType)
                 {
                     case ConverterType.CharConverter:
-                        var result = new Converter().Convert<char>(fullySeparated[1][i]);
+                        var result = Converter.Convert<char>(fullySeparated[1][i]);
                         if (result.Item1)
                         {
                             record.IdentificationLetter = result.Item3;
@@ -100,7 +100,7 @@ namespace FileCabinetApp
 
                         return false;
                     case ConverterType.DecimalConverter:
-                        var decimalResult = new Converter().Convert<decimal>(fullySeparated[1][i]);
+                        var decimalResult = Converter.Convert<decimal>(fullySeparated[1][i]);
                         if (decimalResult.Item1)
                         {
                             record.IdentificationNumber = decimalResult.Item3;
@@ -109,7 +109,7 @@ namespace FileCabinetApp
 
                         return false;
                     case ConverterType.DateTimeConverter:
-                        var dateResult = new Converter().Convert<DateTime>(fullySeparated[1][i]);
+                        var dateResult = Converter.Convert<DateTime>(fullySeparated[1][i]);
                         if (dateResult.Item1)
                         {
                             record.DateOfBirth = dateResult.Item3;
@@ -118,7 +118,7 @@ namespace FileCabinetApp
 
                         return false;
                     case ConverterType.IntConverter:
-                        var intResult = new Converter().Convert<int>(fullySeparated[1][i]);
+                        var intResult = Converter.Convert<int>(fullySeparated[1][i]);
                         if (intResult.Item1)
                         {
                             record.Id = intResult.Item3;
@@ -127,7 +127,7 @@ namespace FileCabinetApp
 
                         return false;
                     case ConverterType.ShortConverter:
-                        var shortResult = new Converter().Convert<short>(fullySeparated[1][i]);
+                        var shortResult = Converter.Convert<short>(fullySeparated[1][i]);
                         if (shortResult.Item1)
                         {
                             record.PointsForFourTests = shortResult.Item3;
