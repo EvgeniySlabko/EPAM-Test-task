@@ -25,6 +25,8 @@ namespace FileCabinetApp
             new string[] { "export", "Export in CSV file", "The 'export' export records in CSV file." },
             new string[] { "import", "Import records from file", "The 'import' import records from file." },
             new string[] { "remove", "remove record from service", "The 'remove' remove record from service." },
+            new string[] { "insert", "insert record to service", "The 'insert' insert record to service." },
+            new string[] { "delete", "delete records from service", "The 'delete' delete compliant records." },
         };
 
         /// <summary>

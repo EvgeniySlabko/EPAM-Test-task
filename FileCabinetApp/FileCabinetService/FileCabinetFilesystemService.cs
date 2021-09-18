@@ -76,7 +76,7 @@ namespace FileCabinetApp
             else
             {
                 this.Write(record);
-                this.AddRecordToDictionaries(record, this.lastPosition);
+                this.AddRecordToDictionaries(record, this.lastPosition - 1);
             }
 
             return record.Id;
@@ -300,7 +300,7 @@ namespace FileCabinetApp
                 else
                 {
                     this.Write(newRecord);
-                    this.AddRecordToDictionaries(newRecord, this.lastPosition);
+                    this.AddRecordToDictionaries(newRecord, this.lastPosition - 1);
                 }
             }
         }
@@ -341,6 +341,36 @@ namespace FileCabinetApp
             }
 
             return new ReadOnlyCollection<int>(deletedList);
+        }
+
+        /// <inheritdoc/>
+        public int Update(Predicate<FileCabinetRecord> predicate, Action<FileCabinetRecord> action)
+        {
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            if (action is null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+
+            int count = 0;
+            foreach (var record in this.GetRecords())
+            {
+                if (predicate(record))
+                {
+                    var position = this.recordsIdDictionary[record.Id];
+                    this.RemoveRecordFromDictionaries(record.Id);
+                    action(record);
+                    this.Write(record, position);
+                    this.AddRecordToDictionaries(record, position);
+                    count++;
+                }
+            }
+
+            return count;
         }
 
         /// <summary>
@@ -426,7 +456,7 @@ namespace FileCabinetApp
                 Record = record,
             };
 
-            this.Write(fileSystemRecord, ++this.lastPosition);
+            this.Write(fileSystemRecord, this.lastPosition++);
         }
 
         private void Write(FileCabonetFilesystemRecord record, int index)
@@ -469,13 +499,13 @@ namespace FileCabinetApp
             fileSystemRecord.ServiceInormation = this.binaryReader.ReadInt16();
             fileSystemRecord.Record = new FileCabinetRecord()
             {
-                Id = this.binaryReader.ReadInt32(),
-                FirstName = Encoding.ASCII.GetString(this.binaryReader.ReadBytes(MaxNameLength), 0, MaxNameLength).Trim('\0'),
-                LastName = Encoding.ASCII.GetString(this.binaryReader.ReadBytes(MaxNameLength), 0, MaxNameLength).Trim('\0'),
-                DateOfBirth = DateTime.Parse($"{this.binaryReader.ReadInt32()}/{this.binaryReader.ReadInt32()}/{this.binaryReader.ReadInt32()}", CultureInfo.InvariantCulture),
-                IdentificationNumber = this.binaryReader.ReadDecimal(),
-                PointsForFourTests = this.binaryReader.ReadInt16(),
-                IdentificationLetter = this.binaryReader.ReadChar(),
+              Id = this.binaryReader.ReadInt32(),
+              FirstName = Encoding.ASCII.GetString(this.binaryReader.ReadBytes(MaxNameLength), 0, MaxNameLength).Trim('\0'),
+              LastName = Encoding.ASCII.GetString(this.binaryReader.ReadBytes(MaxNameLength), 0, MaxNameLength).Trim('\0'),
+              DateOfBirth = DateTime.Parse($"{this.binaryReader.ReadInt32()}/{this.binaryReader.ReadInt32()}/{this.binaryReader.ReadInt32()}", CultureInfo.InvariantCulture),
+              IdentificationNumber = this.binaryReader.ReadDecimal(),
+              PointsForFourTests = this.binaryReader.ReadInt16(),
+              IdentificationLetter = this.binaryReader.ReadChar(),
             };
 
             return fileSystemRecord;

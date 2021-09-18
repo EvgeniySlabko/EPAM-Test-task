@@ -60,6 +60,7 @@ namespace FileCabinetApp
 
         private static ICommandHandler CreateCommandHanders()
         {
+            var uppdateHandler = new UppdateCommandHandler(fileCabinetService);
             var deleteHandler = new DeleteCommandHandler(fileCabinetService);
             var insertHandler = new InsertCommandHandler(fileCabinetService);
             var createHandler = new CreateCommandHandler(fileCabinetService, validationSettings);
@@ -84,6 +85,7 @@ namespace FileCabinetApp
             editHandler.SetNext(createHandler);
             createHandler.SetNext(insertHandler);
             insertHandler.SetNext(deleteHandler);
+            deleteHandler.SetNext(uppdateHandler);
 
             return statHandler;
         }

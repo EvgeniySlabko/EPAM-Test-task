@@ -228,6 +228,26 @@ namespace FileCabinetApp
             GC.SuppressFinalize(this);
         }
 
+        /// <inheritdoc/>
+        public int Update(Predicate<FileCabinetRecord> predicate, Action<FileCabinetRecord> action)
+        {
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            if (action is null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+
+            this.Log($"Calling Update()");
+
+            var result = this.service.Update(predicate, action);
+            this.Log($"Calling pdate() ipdate {result} records. ");
+            return result;
+        }
+
         /// <summary>
         /// Dispose.
         /// </summary>

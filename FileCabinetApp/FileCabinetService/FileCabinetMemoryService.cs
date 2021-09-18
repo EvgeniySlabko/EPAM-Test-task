@@ -266,6 +266,40 @@ namespace FileCabinetApp
             return new ReadOnlyCollection<int>(deletedList);
         }
 
+        /// <inheritdoc/>
+        public int Update(Predicate<FileCabinetRecord> predicate, Action<FileCabinetRecord> action)
+        {
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            if (action is null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+
+            int count = 0;
+            var recordsToChange = new List<FileCabinetRecord>();
+            foreach (var record in this.list)
+            {
+                if (predicate(record))
+                {
+                    recordsToChange.Add(record);
+                    count++;
+                }
+            }
+
+            foreach (var record in recordsToChange)
+            {
+                this.Remove(record.Id);
+                action(record);
+                this.AddNewRecord(record);
+            }
+
+            return count;
+        }
+
         private static void RemoveRecordFromDictionary<T>(Dictionary<T, List<FileCabinetRecord>> dictionary, T index, FileCabinetRecord record)
         {
             var list = dictionary[index];

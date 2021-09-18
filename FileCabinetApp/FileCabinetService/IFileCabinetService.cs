@@ -86,5 +86,13 @@ namespace FileCabinetApp
         /// <param name="predicate">Given predicate.</param>
         /// <returns>Deleted records id.</returns>
         public ReadOnlyCollection<int> Delete(Predicate<FileCabinetRecord> predicate);
+
+        /// <summary>
+        /// Modify the record matching the condition.
+        /// </summary>
+        /// <param name="predicate">Given predicate.</param>
+        /// /// <param name="action">Action on record.</param>
+        /// <returns>Number of changed records.</returns>
+        public int Update(Predicate<FileCabinetRecord> predicate, Action<FileCabinetRecord> action);
     }
 }

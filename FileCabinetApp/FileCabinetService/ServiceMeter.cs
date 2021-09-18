@@ -149,5 +149,16 @@ namespace FileCabinetApp
             stopWatch.Stop();
             Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "restore", stopWatch.ElapsedTicks);
         }
+
+        /// <inheritdoc/>
+        public int Update(Predicate<FileCabinetRecord> predicate, Action<FileCabinetRecord> action)
+        {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            var result = this.service.Update(predicate, action);
+            stopWatch.Stop();
+            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "update", stopWatch.ElapsedTicks);
+            return result;
+        }
     }
 }

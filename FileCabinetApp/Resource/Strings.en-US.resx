@@ -207,6 +207,9 @@
   <data name="RecordIsRemoved" xml:space="preserve">
     <value>Record #{0} is removed.</value>
   </data>
+  <data name="RecordsChangedString" xml:space="preserve">
+    <value>{0} records was changed.</value>
+  </data>
   <data name="RecordsWereImport" xml:space="preserve">
     <value>Records were loaded from file</value>
   </data>
