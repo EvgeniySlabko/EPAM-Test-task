@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace FileCabinetApp
 {
@@ -8,8 +10,8 @@ namespace FileCabinetApp
     /// </summary>
     public class CommandHandlerBase : ICommandHandler
     {
+        private const float MinamalSimilarityСoefficientForShow = 0.5f;
         private readonly string command;
-
         private ICommandHandler commandHandler;
 
         /// <summary>
@@ -71,7 +73,54 @@ namespace FileCabinetApp
         private static void PrintMissedCommandInfo(string command)
         {
             Console.WriteLine(StringManager.Rm.GetString("MissedCommandInfoMessage", CultureInfo.CurrentCulture), command);
+
+            var similarCommands = new List<string>();
+            foreach (var currentCommand in HelpCommandHandler.HelpMessages)
+            {
+                if (GetSimilarity(currentCommand[0], command) >= MinamalSimilarityСoefficientForShow)
+                {
+                    similarCommands.Add(currentCommand[0]);
+                }
+            }
+
+            if (similarCommands.Count != 0)
+            {
+                if (similarCommands.Count > 1)
+                {
+                    Console.WriteLine(StringManager.Rm.GetString("SimilarCommandsMessage", CultureInfo.CurrentCulture), command);
+                }
+                else
+                {
+                    Console.WriteLine(StringManager.Rm.GetString("SimilarCommandMessage", CultureInfo.CurrentCulture), command);
+                }
+
+                similarCommands.ForEach(c => Console.WriteLine(c));
+            }
+
             Console.WriteLine();
+        }
+
+        /// <summary>
+        /// Get similarityСoefficient.
+        /// </summary>
+        /// <param name="source">Given command.</param>
+        /// <param name="target">ExistsCommand.</param>
+        /// <returns>Similarity coefficient.</returns>
+        private static double GetSimilarity(string source, string target)
+        {
+            if (string.IsNullOrEmpty(source) || string.IsNullOrEmpty(target))
+            {
+                return 0;
+            }
+
+            float sameLetters = 0;
+            foreach (var letter in target)
+            {
+                var matches = new Regex($@"{letter}").Matches(source).Count;
+                sameLetters += (matches != 0) ? 1 / matches : 0;
+            }
+
+            return (float)sameLetters / (float)source.Length;
         }
     }
 }

@@ -213,6 +213,12 @@
   <data name="RecordsWereImport" xml:space="preserve">
     <value>Records were loaded from file</value>
   </data>
+  <data name="SimilarCommandMessage" xml:space="preserve">
+    <value>The most similar command is</value>
+  </data>
+  <data name="SimilarCommandsMessage" xml:space="preserve">
+    <value>The most similar commands are</value>
+  </data>
   <data name="StatMessage" xml:space="preserve">
     <value>"{0} exists record(s). {1} deleted."</value>
   </data>

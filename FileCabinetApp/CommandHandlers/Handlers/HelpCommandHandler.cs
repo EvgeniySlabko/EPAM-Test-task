@@ -13,7 +13,7 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int ExplanationHelpIndex = 2;
 
-        private static readonly string[][] HelpMessages = new string[][]
+        public static string[][] HelpMessages = new string[][]
         {
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
