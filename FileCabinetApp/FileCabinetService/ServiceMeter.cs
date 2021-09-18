@@ -45,16 +45,6 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public void Edit(FileCabinetRecord newRecord)
-        {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-            this.service.Edit(newRecord);
-            stopWatch.Stop();
-            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "edit", stopWatch.ElapsedTicks);
-        }
-
-        /// <inheritdoc/>
         public IEnumerable<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
         {
             var stopWatch = new Stopwatch();
@@ -128,16 +118,6 @@ namespace FileCabinetApp
             this.service.Purge();
             stopWatch.Stop();
             Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "purge", stopWatch.ElapsedTicks);
-        }
-
-        /// <inheritdoc/>
-        public void Remove(int id)
-        {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-            this.service.Remove(id);
-            stopWatch.Stop();
-            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "remove", stopWatch.ElapsedTicks);
         }
 
         /// <inheritdoc/>

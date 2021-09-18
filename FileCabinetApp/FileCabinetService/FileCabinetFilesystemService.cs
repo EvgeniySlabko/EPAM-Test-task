@@ -92,33 +92,6 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Edits the record by its id.
-        /// </summary>
-        /// <param name="record">Edited record.</param>
-        public void Edit(FileCabinetRecord record)
-        {
-            if (record is null)
-            {
-                throw new ArgumentNullException(nameof(record));
-            }
-
-            this.GoToStart();
-            while (true)
-            {
-                var currentRecord = this.GetNext();
-                if (currentRecord is null)
-                {
-                    throw new ArgumentException($"Record with id {record.Id} not found");
-                }
-                else if (currentRecord.Id == record.Id)
-                {
-                    this.Write(record, this.iterationIndex - 1);
-                    break;
-                }
-            }
-        }
-
-        /// <summary>
         /// Find record by its data of birthday.
         /// </summary>
         /// <param name="dataOfBirthday">Вata of birthday to search.</param>
@@ -306,23 +279,6 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public void Remove(int id)
-        {
-            if (!this.recordsIdDictionary.ContainsKey(id))
-            {
-                throw new ArgumentException($"Record {id} does not exists.");
-            }
-            else
-            {
-                var position = this.recordsIdDictionary[id];
-                var record = this.GetRecord(position);
-                this.RemoveRecordFromDictionaries(id);
-                record.ServiceInormation |= 4;
-                this.Write(record, position);
-            }
-        }
-
-        /// <inheritdoc/>
         public ReadOnlyCollection<int> Delete(Predicate<FileCabinetRecord> predicate)
         {
             if (predicate is null)
@@ -413,6 +369,22 @@ namespace FileCabinetApp
                     value,
                 };
                 dictionary.Add(key, list);
+            }
+        }
+
+        private void Remove(int id)
+        {
+            if (!this.recordsIdDictionary.ContainsKey(id))
+            {
+                throw new ArgumentException($"Record {id} does not exists.");
+            }
+            else
+            {
+                var position = this.recordsIdDictionary[id];
+                var record = this.GetRecord(position);
+                this.RemoveRecordFromDictionaries(id);
+                record.ServiceInormation |= 4;
+                this.Write(record, position);
             }
         }
 

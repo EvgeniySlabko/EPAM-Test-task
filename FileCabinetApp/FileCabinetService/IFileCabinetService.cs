@@ -19,12 +19,6 @@ namespace FileCabinetApp
         int CreateRecord(FileCabinetRecord newRecord, bool generateNewId = true);
 
         /// <summary>
-        /// Edits the record by its id.
-        /// </summary>
-        /// <param name="newRecord">Edited record.</param>
-        void Edit(FileCabinetRecord newRecord);
-
-        /// <summary>
         /// Find record by its data of birthday.
         /// </summary>
         /// <param name="dataOfBirthday">Вata of birthday to search.</param>
@@ -68,12 +62,6 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="snapshot">Given snapshot.</param>
         public void Restore(FileCabinetServiceSnapshot snapshot);
-
-        /// <summary>
-        /// Remove record from service.
-        /// </summary>
-        /// <param name="id">The id of the deleted entry.</param>
-        public void Remove(int id);
 
         /// <summary>
         /// Purge.

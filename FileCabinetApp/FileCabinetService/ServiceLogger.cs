@@ -46,34 +46,6 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public void Edit(FileCabinetRecord newRecord)
-        {
-            if (newRecord is null)
-            {
-                throw new ArgumentNullException(nameof(newRecord));
-            }
-
-            this.Log($"Calling Edit() for record with id {newRecord.Id}. FirstName = {newRecord.FirstName}, LastName = {newRecord.LastName}, DateOfBirth = {newRecord.DateOfBirth.ToString(DateFormat, CultureInfo.CurrentCulture)}, IdentificationNumber = {newRecord.IdentificationNumber}, IdentificationLetter = {newRecord.IdentificationLetter}, Points = {newRecord.PointsForFourTests}");
-
-            try
-            {
-                this.service.Edit(newRecord);
-            }
-            catch (ArgumentNullException ex)
-            {
-                this.Log($"Calling Edit() returne ArgumentNullException with message {ex.Message}");
-                throw;
-            }
-            catch (ArithmeticException ex)
-            {
-                this.Log($"Calling Edit() returne ArithmeticException with message {ex.Message}");
-                throw;
-            }
-
-            this.Log($"Calling Edit() succeeded.");
-        }
-
-        /// <inheritdoc/>
         public IEnumerable<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
         {
             this.Log($"Calling FindByDate() with argument {dataOfBirthday.ToString(DateFormat, CultureInfo.CurrentCulture)}");
@@ -161,24 +133,6 @@ namespace FileCabinetApp
             }
 
             this.Log($"Calling Purge() succeeded.");
-        }
-
-        /// <inheritdoc/>
-        public void Remove(int id)
-        {
-            this.Log($"Calling Remove() for record with id {id}");
-
-            try
-            {
-                this.service.Remove(id);
-            }
-            catch (ArgumentException ex)
-            {
-                this.Log($"Calling Remove() returne ArgumentException with message {ex.Message}");
-                throw;
-            }
-
-            this.Log($"Calling Remove() succeeded.");
         }
 
         /// <inheritdoc/>

@@ -94,37 +94,6 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Edits the record by its id.
-        /// </summary>
-        /// <param name="newRecord">Edited record.</param>
-        public void Edit(FileCabinetRecord newRecord)
-        {
-            if (newRecord is null)
-            {
-                throw new ArgumentNullException(nameof(newRecord));
-            }
-
-            if (!this.recordValidator.ValidateParameters(newRecord))
-            {
-                throw new ArgumentException("Invalide parameters");
-            }
-
-            foreach (var record in this.list)
-            {
-                if (record.Id == newRecord.Id)
-                {
-                    this.RemoveRecord(record);
-
-                    this.CreateRecord(newRecord, false);
-
-                    return;
-                }
-            }
-
-            throw new ArgumentException("Id was not found");
-        }
-
-        /// <summary>
         /// Find record by its first name.
         /// </summary>
         /// <param name="firstName">First name to search.</param>
@@ -224,20 +193,6 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public void Remove(int id)
-        {
-            var record = this.list.Find(f => f.Id == id);
-            if (record is not null)
-            {
-                this.RemoveRecord(record);
-            }
-            else
-            {
-                throw new ArgumentException($"Record {id} does not exists.");
-            }
-        }
-
-        /// <inheritdoc/>
         public void Purge()
         {
             throw new NotImplementedException();
@@ -326,6 +281,19 @@ namespace FileCabinetApp
                     record,
                 };
                 dictionary.Add(index, subList);
+            }
+        }
+
+        private void Remove(int id)
+        {
+            var record = this.list.Find(f => f.Id == id);
+            if (record is not null)
+            {
+                this.RemoveRecord(record);
+            }
+            else
+            {
+                throw new ArgumentException($"Record {id} does not exists.");
             }
         }
 
