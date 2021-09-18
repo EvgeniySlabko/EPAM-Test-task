@@ -46,77 +46,49 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public void Edit(FileCabinetRecord newRecord)
-        {
-            if (newRecord is null)
-            {
-                throw new ArgumentNullException(nameof(newRecord));
-            }
-
-            this.Log($"Calling Edit() for record with id {newRecord.Id}. FirstName = {newRecord.FirstName}, LastName = {newRecord.LastName}, DateOfBirth = {newRecord.DateOfBirth.ToString(DateFormat, CultureInfo.CurrentCulture)}, IdentificationNumber = {newRecord.IdentificationNumber}, IdentificationLetter = {newRecord.IdentificationLetter}, Points = {newRecord.PointsForFourTests}");
-
-            try
-            {
-                this.service.Edit(newRecord);
-            }
-            catch (ArgumentNullException ex)
-            {
-                this.Log($"Calling Edit() returne ArgumentNullException with message {ex.Message}");
-                throw;
-            }
-            catch (ArithmeticException ex)
-            {
-                this.Log($"Calling Edit() returne ArithmeticException with message {ex.Message}");
-                throw;
-            }
-
-            this.Log($"Calling Edit() succeeded.");
-        }
-
-        /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
+        public IEnumerable<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
         {
             this.Log($"Calling FindByDate() with argument {dataOfBirthday.ToString(DateFormat, CultureInfo.CurrentCulture)}");
 
             var result = this.service.FindByDate(dataOfBirthday);
 
-            this.Log($"Calling FindByDate() returne {result.Count} records.");
+            this.Log($"Calling FindByDate() succeeded.");
 
             return result;
         }
 
         /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             this.Log($"Calling FindByFirstName() with argument {firstName}");
 
             var result = this.service.FindByFirstName(firstName);
 
-            this.Log($"Calling FindByFirstName() returne {result.Count} records.");
+            this.Log($"Calling FindByFirstName() succeeded.");
 
             return result;
         }
 
         /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             this.Log($"Calling FindByLastName() with argument {lastName}");
 
             var result = this.service.FindByLastName(lastName);
 
-            this.Log($"Calling FindByLastName() returne {result.Count} records.");
+            this.Log($"Calling FindByLastName() succeeded.");
 
             return result;
         }
 
         /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
             this.Log($"Calling GetRecords()");
 
             var result = this.service.GetRecords();
 
-            this.Log($"Calling GetRecords() returne {result.Count} records.");
+            this.Log($"Calling GetRecords() succeeded.");
 
             return result;
         }
@@ -164,24 +136,6 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public void Remove(int id)
-        {
-            this.Log($"Calling Remove() for record with id {id}");
-
-            try
-            {
-                this.service.Remove(id);
-            }
-            catch (ArgumentException ex)
-            {
-                this.Log($"Calling Remove() returne ArgumentException with message {ex.Message}");
-                throw;
-            }
-
-            this.Log($"Calling Remove() succeeded.");
-        }
-
-        /// <inheritdoc/>
         public void Restore(FileCabinetServiceSnapshot snapshot)
         {
             if (snapshot is null)
@@ -204,6 +158,21 @@ namespace FileCabinetApp
             this.Log($"Calling Restore() succeeded.");
         }
 
+        /// <inheritdoc/>
+        public ReadOnlyCollection<int> Delete(Predicate<FileCabinetRecord> predicate)
+        {
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            this.Log($"Calling Delete()");
+
+            var result = this.service.Delete(predicate);
+            this.Log($"Calling Delete() return {result.Count} id. ");
+            return result;
+        }
+
         /// <summary>
         /// Dispose.
         /// </summary>
@@ -211,6 +180,26 @@ namespace FileCabinetApp
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <inheritdoc/>
+        public int Update(Predicate<FileCabinetRecord> predicate, Action<FileCabinetRecord> action)
+        {
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            if (action is null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+
+            this.Log($"Calling Update()");
+
+            var result = this.service.Update(predicate, action);
+            this.Log($"Calling pdate() ipdate {result} records. ");
+            return result;
         }
 
         /// <summary>

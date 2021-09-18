@@ -186,6 +186,9 @@
   <data name="MissedCommandInfoMessage" xml:space="preserve">
     <value>Command {0} not found.</value>
   </data>
+  <data name="NoRecordsMatchingTheseParameters" xml:space="preserve">
+    <value>There are no records matching these parameters</value>
+  </data>
   <data name="OverflowMessage" xml:space="preserve">
     <value>Overflow error</value>
   </data>
@@ -204,8 +207,17 @@
   <data name="RecordIsRemoved" xml:space="preserve">
     <value>Record #{0} is removed.</value>
   </data>
+  <data name="RecordsChangedString" xml:space="preserve">
+    <value>{0} records was changed.</value>
+  </data>
   <data name="RecordsWereImport" xml:space="preserve">
     <value>Records were loaded from file</value>
+  </data>
+  <data name="SimilarCommandMessage" xml:space="preserve">
+    <value>The most similar command is</value>
+  </data>
+  <data name="SimilarCommandsMessage" xml:space="preserve">
+    <value>The most similar commands are</value>
   </data>
   <data name="StatMessage" xml:space="preserve">
     <value>"{0} exists record(s). {1} deleted."</value>

@@ -39,8 +39,8 @@ namespace FileCabinetApp
 
         private void List()
         {
-            var records = this.Service.GetRecords();
-            this.printer(records);
+            var iter = this.Service.GetRecords();
+            this.printer(iter);
         }
     }
 }
