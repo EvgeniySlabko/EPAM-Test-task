@@ -67,17 +67,13 @@ namespace FileCabinetApp
             var createHandler = new CreateCommandHandler(fileCabinetService, validationSettings);
             var exitHandler = new ExitCommandHandler(stop => isRunning = stop);
             var exportHandler = new ExportCommandHandler(fileCabinetService);
-            var findHandler = new FindCommandHandler(fileCabinetService, Program.DefaultRecordsPrint);
             var helpHandler = new HelpCommandHandler();
             var importHandler = new ImportCommandHandler(fileCabinetService);
-            var listHandler = new ListCommandHandler(fileCabinetService, Program.DefaultRecordsPrint);
             var statHandler = new StatCommandHandler(fileCabinetService);
 
-            statHandler.SetNext(listHandler);
-            listHandler.SetNext(importHandler);
+            statHandler.SetNext(importHandler);
             importHandler.SetNext(helpHandler);
-            helpHandler.SetNext(findHandler);
-            findHandler.SetNext(exportHandler);
+            helpHandler.SetNext(exportHandler);
             exportHandler.SetNext(exitHandler);
             exitHandler.SetNext(createHandler);
             createHandler.SetNext(insertHandler);
@@ -91,24 +87,6 @@ namespace FileCabinetApp
         private static void LoadValidationSettings()
         {
             validationSettings = ValidationSetLoader.LoadRules(Constants.ValidationSettingsFileName)[validationRule];
-        }
-
-        private static void DefaultRecordsPrint(IEnumerable<FileCabinetRecord> records)
-        {
-            if (records is null)
-            {
-                throw new ArgumentNullException(nameof(records));
-            }
-
-            foreach (var record in records)
-            {
-                PrintOneRecord(record);
-            }
-        }
-
-        private static void PrintOneRecord(FileCabinetRecord record)
-        {
-            Console.WriteLine(StringManager.Rm.GetString("RecordInfoString", CultureInfo.CurrentCulture), record.Id, record.FirstName, record.LastName, record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo), record.IdentificationNumber, record.IdentificationLetter, record.PointsForFourTests);
         }
 
         private static void DisplayInfoMessage()

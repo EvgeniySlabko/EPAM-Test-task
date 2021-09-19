@@ -92,84 +92,6 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Find record by its data of birthday.
-        /// </summary>
-        /// <param name="dataOfBirthday">Вata of birthday to search.</param>
-        /// <returns>Record if found otherwise null.</returns>
-        public IEnumerable<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
-        {
-            if (this.dateofbirthDictionary.ContainsKey(dataOfBirthday))
-            {
-                return this.OffsetEnumerator(this.dateofbirthDictionary[dataOfBirthday]);
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Find record by its first name.
-        /// </summary>
-        /// <param name="firstName">First name to search.</param>
-        /// <returns>Record if found otherwise null.</returns>
-        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
-        {
-            if (firstName is null)
-            {
-                throw new ArgumentNullException(nameof(firstName));
-            }
-
-            if (this.firstNameDictionary.ContainsKey(firstName))
-            {
-                return this.OffsetEnumerator(this.firstNameDictionary[firstName]);
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Find record by its last name.
-        /// </summary>
-        /// <param name="lastName">Last name to search.</param>
-        /// <returns>Record if found otherwise null.</returns>
-        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
-        {
-            if (lastName is null)
-            {
-                throw new ArgumentNullException(nameof(lastName));
-            }
-
-            if (this.lastNameDictionary.ContainsKey(lastName))
-            {
-                return this.OffsetEnumerator(this.lastNameDictionary[lastName]);
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Returns all records.
-        /// </summary>
-        /// <returns>array with records.</returns>
-        public IEnumerable<FileCabinetRecord> GetRecords()
-        {
-            // return new FileCabinetRecordEnumerable(new FilesystemIterator(this.GetRecord, r => true));
-            int i = 0;
-            while (true)
-            {
-                var serviceRecord = this.GetRecord(i++);
-                if (serviceRecord is null)
-                {
-                    yield break;
-                }
-
-                if ((serviceRecord.ServiceInormation & 4) == 0)
-                {
-                    yield return serviceRecord.Record;
-                }
-            }
-        }
-
-        /// <summary>
         /// Returns the number of records in the list.
         /// </summary>
         /// <returns>Number of entries in the list.</returns>
@@ -396,6 +318,24 @@ namespace FileCabinetApp
             }
         }
 
+        private IEnumerable<FileCabinetRecord> GetRecords()
+        {
+            int i = 0;
+            while (true)
+            {
+                var serviceRecord = this.GetRecord(i++);
+                if (serviceRecord is null)
+                {
+                    yield break;
+                }
+
+                if ((serviceRecord.ServiceInormation & 4) == 0)
+                {
+                    yield return serviceRecord.Record;
+                }
+            }
+        }
+
         private void Remove(int id)
         {
             if (!this.recordsIdDictionary.ContainsKey(id))
@@ -531,14 +471,6 @@ namespace FileCabinetApp
         private FileCabonetFilesystemRecord GetNextAny()
         {
             return this.GetRecord(this.iterationIndex++);
-        }
-
-        private IEnumerable<FileCabinetRecord> OffsetEnumerator(IEnumerable<int> offsets)
-        {
-            foreach (var offset in offsets)
-            {
-                yield return this.GetRecord(offset).Record;
-            }
         }
 
         private void GoToStart()

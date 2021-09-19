@@ -19,33 +19,6 @@ namespace FileCabinetApp
         int CreateRecord(FileCabinetRecord newRecord, bool generateNewId = true);
 
         /// <summary>
-        /// Find record by its data of birthday.
-        /// </summary>
-        /// <param name="dataOfBirthday">Вata of birthday to search.</param>
-        /// <returns>Record if found otherwise null.</returns>
-        IEnumerable<FileCabinetRecord> FindByDate(DateTime dataOfBirthday);
-
-        /// <summary>
-        /// Find record by its first name.
-        /// </summary>
-        /// <param name="firstName">First name to search.</param>
-        /// <returns>Record if found otherwise null.</returns>
-        IEnumerable<FileCabinetRecord> FindByFirstName(string firstName);
-
-        /// <summary>
-        /// Find record by its last name.
-        /// </summary>
-        /// <param name="lastName">Last name to search.</param>
-        /// <returns>Record if found otherwise null.</returns>
-        IEnumerable<FileCabinetRecord> FindByLastName(string lastName);
-
-        /// <summary>
-        /// Returns all records.
-        /// </summary>
-        /// <returns>array with records.</returns>
-        IEnumerable<FileCabinetRecord> GetRecords();
-
-        /// <summary>
         /// Returns the number of records in the list.
         /// </summary>
         /// <returns>Number of entries in the list.</returns>

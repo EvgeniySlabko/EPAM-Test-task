@@ -17,8 +17,6 @@ namespace FileCabinetApp
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "stat", "prints the record statistics", "The '_stat_' command prints the record statistics." },
             new string[] { "create", "create a new record", "The 'create' command create a new record." },
-            new string[] { "list", "display list of records", "The '_list_' display list of records." },
-            new string[] { "find", "find existing record", "The 'find' find existing record." },
             new string[] { "export", "Export in CSV file", "The 'export' export records in CSV file." },
             new string[] { "import", "Import records from file", "The 'import' import records from file." },
             new string[] { "insert", "insert record to service", "The 'insert' insert record to service." },

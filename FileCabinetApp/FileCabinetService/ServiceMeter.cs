@@ -45,50 +45,6 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public IEnumerable<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
-        {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-            var result = this.service.FindByDate(dataOfBirthday);
-            stopWatch.Stop();
-            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "Find", stopWatch.ElapsedTicks);
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
-        {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-            var result = this.service.FindByFirstName(firstName);
-            stopWatch.Stop();
-            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "Find", stopWatch.ElapsedTicks);
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
-        {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-            var result = this.service.FindByLastName(lastName);
-            stopWatch.Stop();
-            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "Find", stopWatch.ElapsedTicks);
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<FileCabinetRecord> GetRecords()
-        {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-            var result = this.service.GetRecords();
-            stopWatch.Stop();
-            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "list", stopWatch.ElapsedTicks);
-            return result;
-        }
-
-        /// <inheritdoc/>
         public Tuple<int, int> GetStat()
         {
             var stopWatch = new Stopwatch();
