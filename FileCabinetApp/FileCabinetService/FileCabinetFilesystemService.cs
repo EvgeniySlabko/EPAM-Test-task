@@ -329,6 +329,30 @@ namespace FileCabinetApp
             return count;
         }
 
+        /// <inheritdoc/>
+        public IEnumerable<List<string>> SelectParameters(Predicate<FileCabinetRecord> predicate, Func<FileCabinetRecord, List<string>> parametersGetter)
+        {
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            if (parametersGetter is null)
+            {
+                throw new ArgumentNullException(nameof(parametersGetter));
+            }
+
+            foreach (var record in this.GetRecords())
+            {
+                if (predicate(record))
+                {
+                    yield return parametersGetter(record);
+                }
+            }
+
+            yield break;
+        }
+
         /// <summary>
         /// Implementation IDisposable.
         /// </summary>

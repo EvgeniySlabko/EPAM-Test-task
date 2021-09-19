@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 /// <summary>
 /// Record.
 /// </summary>
-public class FileCabinetRecord
+public class FileCabinetRecord : ICloneable
 {
     /// <summary>
     /// Gets or sets record id.
@@ -48,4 +48,22 @@ public class FileCabinetRecord
     /// </summary>
     /// <value>Record identification letter.</value>
     public char IdentificationLetter { get; set; }
+
+    /// <summary>
+    /// Clone.
+    /// </summary>
+    /// <returns>Copy of record.</returns>
+    public object Clone()
+    {
+        return new FileCabinetRecord()
+        {
+            Id = this.Id,
+            FirstName = this.FirstName,
+            LastName = this.LastName,
+            DateOfBirth = this.DateOfBirth,
+            IdentificationLetter = this.IdentificationLetter,
+            IdentificationNumber = this.IdentificationNumber,
+            PointsForFourTests = this.PointsForFourTests,
+        };
+    }
 }

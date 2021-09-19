@@ -202,6 +202,25 @@ namespace FileCabinetApp
             return result;
         }
 
+        /// <inheritdoc/>
+        public IEnumerable<List<string>> SelectParameters(Predicate<FileCabinetRecord> predicate, Func<FileCabinetRecord, List<string>> parameters)
+        {
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            if (parameters is null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            this.Log($"Calling Select()");
+            var result = this.service.SelectParameters(predicate, parameters);
+            this.Log($"Calling Select() succeeded.");
+            return result;
+        }
+
         /// <summary>
         /// Dispose.
         /// </summary>

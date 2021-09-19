@@ -255,6 +255,30 @@ namespace FileCabinetApp
             return count;
         }
 
+        /// <inheritdoc/>
+        public IEnumerable<List<string>> SelectParameters(Predicate<FileCabinetRecord> predicate, Func<FileCabinetRecord, List<string>> parametersGetter)
+        {
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            if (parametersGetter is null)
+            {
+                throw new ArgumentNullException(nameof(parametersGetter));
+            }
+
+            foreach (var record in this.list)
+            {
+                if (predicate(record))
+                {
+                    yield return parametersGetter((FileCabinetRecord)record.Clone());
+                }
+            }
+
+            yield break;
+        }
+
         private static void RemoveRecordFromDictionary<T>(Dictionary<T, List<FileCabinetRecord>> dictionary, T index, FileCabinetRecord record)
         {
             var list = dictionary[index];

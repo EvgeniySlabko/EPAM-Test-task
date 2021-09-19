@@ -23,6 +23,7 @@ namespace FileCabinetApp
             new string[] { "import", "Import records from file", "The 'import' import records from file." },
             new string[] { "insert", "insert record to service", "The 'insert' insert record to service." },
             new string[] { "delete", "delete records from service", "The 'delete' delete compliant records." },
+            new string[] { "select", "get parameters of records", "The 'select' return records parameters." },
         };
 
         private const string Command = "help";

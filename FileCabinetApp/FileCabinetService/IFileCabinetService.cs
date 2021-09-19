@@ -82,5 +82,13 @@ namespace FileCabinetApp
         /// /// <param name="action">Action on record.</param>
         /// <returns>Number of changed records.</returns>
         public int Update(Predicate<FileCabinetRecord> predicate, Action<FileCabinetRecord> action);
+
+        /// <summary>
+        /// Return parameters of records.
+        /// </summary>
+        /// <param name="predicate">Given predicate.</param>
+        /// <param name="parameters">List of any record parameters.</param>
+        /// <returns>Number of changed records.</returns>
+        public IEnumerable<List<string>> SelectParameters(Predicate<FileCabinetRecord> predicate, Func<FileCabinetRecord, List<string>> parameters);
     }
 }

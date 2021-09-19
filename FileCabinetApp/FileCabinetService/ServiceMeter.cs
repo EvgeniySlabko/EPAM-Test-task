@@ -131,6 +131,17 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
+        public IEnumerable<List<string>> SelectParameters(Predicate<FileCabinetRecord> predicate, Func<FileCabinetRecord, List<string>> parameters)
+        {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            var result = this.service.SelectParameters(predicate, parameters);
+            stopWatch.Stop();
+            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "select", stopWatch.ElapsedTicks);
+            return result;
+        }
+
+        /// <inheritdoc/>
         public int Update(Predicate<FileCabinetRecord> predicate, Action<FileCabinetRecord> action)
         {
             var stopWatch = new Stopwatch();

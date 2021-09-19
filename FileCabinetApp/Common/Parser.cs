@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using RecorPredicate = System.Predicate<FileCabinetRecord>;
@@ -56,11 +58,60 @@ namespace FileCabinetApp
             { Parser.Letter, new (Converter.TryConvertToObject<char>) },
         };
 
+        private readonly Dictionary<string, Func<FileCabinetRecord, string>> getterMapper = new ()
+        {
+            { Parser.Id, r => r.Id.ToString(CultureInfo.CurrentCulture) },
+            { Parser.Firstname, r => new string(r.FirstName) },
+            { Parser.LastName, r => new string(r.LastName) },
+            { Parser.Dateofbirth, r => new string(r.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.CurrentCulture)) },
+            { Parser.IdentificationNumber, r => r.IdentificationNumber.ToString(CultureInfo.CurrentCulture) },
+            { Parser.Points, r => r.PointsForFourTests.ToString(CultureInfo.CurrentCulture) },
+            { Parser.Letter, r => r.IdentificationLetter.ToString(CultureInfo.CurrentCulture) },
+        };
+
         private readonly Dictionary<string, Func<RecorPredicate, RecorPredicate, RecorPredicate>> predicateCompositor = new ()
         {
             { Parser.Or, (p1, p2) => r => p1(r) || p2(r) },
             { Parser.And, (p1, p2) => r => p1(r) && p2(r) },
         };
+
+        /// <summary>
+        /// Gets GlobalParametersGetter.
+        /// </summary>
+        /// <value>Getter for all record fields.</value>
+        public Func<FileCabinetRecord, List<string>> GlobalParametersGetter
+        {
+            get
+            {
+                var getters = new List<Func<FileCabinetRecord, string>>();
+                foreach (var getter in this.getterMapper)
+                {
+                    getters.Add(getter.Value);
+                }
+
+                return r => getters.Select(g => g(r)).ToList();
+            }
+        }
+
+        /// <summary>
+        /// Get all headers.
+        /// </summary>
+        /// <returns>All headers.</returns>
+        public static string[] GetAllHeaders()
+        {
+            var headers = new List<string>
+            {
+                Id,
+                Firstname,
+                LastName,
+                Dateofbirth,
+                IdentificationNumber,
+                Points,
+                Letter,
+            };
+
+            return headers.ToArray();
+        }
 
         /// <summary>
         /// Parser for where Command.
@@ -76,7 +127,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(parameters));
             }
 
-            string[] separators = { Or,  And, };
+            string[] separators = { Or, And, };
             var pattern = $@"({And})|({Or})";
             var splitSecond = Regex.Split(parameters, pattern);
 
@@ -159,6 +210,38 @@ namespace FileCabinetApp
 
             setAction = complexAction;
             return new (true, "Successfully");
+        }
+
+        /// <summary>
+        /// Parser select query string.
+        /// </summary>
+        /// <param name="parameters">Given string for parsing.</param>
+        /// <param name="parametersGetter">Returns the required record parameters.</param>
+        /// <returns>Result of parsing.</returns>
+        public bool SelectParser(string parameters, out Func<FileCabinetRecord, List<string>> parametersGetter)
+        {
+            if (parameters is null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            parametersGetter = null;
+            var splitedparameters = parameters.Split(',').Select(s => s.Trim(' ')).ToArray();
+
+            var getters = new List<Func<FileCabinetRecord, string>>();
+            foreach (var arg in splitedparameters)
+            {
+                var result = this.getterMapper.TryGetValue(arg.ToLower(CultureInfo.CurrentCulture), out Func<FileCabinetRecord, string> getter);
+                if (!result)
+                {
+                    return false;
+                }
+
+                getters.Add(getter);
+            }
+
+            parametersGetter = r => getters.Select(g => g(r)).ToList();
+            return true;
         }
 
         private static Action<FileCabinetRecord> ActionCompositor(Action<FileCabinetRecord> action1, Action<FileCabinetRecord> action2)
