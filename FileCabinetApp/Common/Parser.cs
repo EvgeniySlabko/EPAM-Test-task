@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using RecorPredicate = System.Predicate<FileCabinetRecord>;
 
@@ -117,11 +117,11 @@ namespace FileCabinetApp
         /// Parser for where Command.
         /// </summary>
         /// <param name="parameters">Given string for parsing.</param>
-        /// <param name="predicate">Result set of predicates.</param>
+        /// <param name="query">Query.</param>
         /// <returns>Result of parsing.</returns>
-        public Tuple<bool, string> WhereParser(string parameters, out Predicate<FileCabinetRecord> predicate)
+        public Tuple<bool, string> WhereParser(string parameters, out Query query)
         {
-            predicate = null;
+            query = new Query();
             if (parameters is null)
             {
                 throw new ArgumentNullException(nameof(parameters));
@@ -135,12 +135,14 @@ namespace FileCabinetApp
             RecorPredicate currentPredicate = null;
             bool logicalOperation = false;
             string currentLogicOperation = null;
+            query.Hash = 0;
             foreach (var s in splitSecond)
             {
                 if (logicalOperation)
                 {
                     currentLogicOperation = s;
                     logicalOperation = false;
+                    query.Hash += currentLogicOperation.GetHashCode();
                 }
                 else
                 {
@@ -159,10 +161,11 @@ namespace FileCabinetApp
                     currentPredicate = this.predicateMapper[splitThird[0]](converter(splitThird[2]));
                     complexPredicat = (currentLogicOperation is null) ? currentPredicate : this.predicateCompositor[currentLogicOperation](complexPredicat, currentPredicate);
                     logicalOperation = true;
+                    query.Hash += string.Join(string.Empty, splitThird).GetHashCode();
                 }
             }
 
-            predicate = complexPredicat;
+            query.Predicate = complexPredicat;
 
             return new (true, "Successfully");
         }

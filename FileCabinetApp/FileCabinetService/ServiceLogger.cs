@@ -111,16 +111,16 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public ReadOnlyCollection<int> Delete(Predicate<FileCabinetRecord> predicate)
+        public ReadOnlyCollection<int> Delete(Query query)
         {
-            if (predicate is null)
+            if (query is null)
             {
-                throw new ArgumentNullException(nameof(predicate));
+                throw new ArgumentNullException(nameof(query));
             }
 
             this.Log($"Calling Delete()");
 
-            var result = this.service.Delete(predicate);
+            var result = this.service.Delete(query);
             this.Log($"Calling Delete() return {result.Count} id. ");
             return result;
         }
@@ -135,11 +135,11 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public int Update(Predicate<FileCabinetRecord> predicate, Action<FileCabinetRecord> action)
+        public int Update(Query query, Action<FileCabinetRecord> action)
         {
-            if (predicate is null)
+            if (query is null)
             {
-                throw new ArgumentNullException(nameof(predicate));
+                throw new ArgumentNullException(nameof(query));
             }
 
             if (action is null)
@@ -149,17 +149,17 @@ namespace FileCabinetApp
 
             this.Log($"Calling Update()");
 
-            var result = this.service.Update(predicate, action);
+            var result = this.service.Update(query, action);
             this.Log($"Calling pdate() ipdate {result} records. ");
             return result;
         }
 
         /// <inheritdoc/>
-        public IEnumerable<List<string>> SelectParameters(Predicate<FileCabinetRecord> predicate, Func<FileCabinetRecord, List<string>> parameters)
+        public IEnumerable<List<string>> SelectParameters(Query query, Func<FileCabinetRecord, List<string>> parameters)
         {
-            if (predicate is null)
+            if (query is null)
             {
-                throw new ArgumentNullException(nameof(predicate));
+                throw new ArgumentNullException(nameof(query));
             }
 
             if (parameters is null)
@@ -168,7 +168,7 @@ namespace FileCabinetApp
             }
 
             this.Log($"Calling Select()");
-            var result = this.service.SelectParameters(predicate, parameters);
+            var result = this.service.SelectParameters(query, parameters);
             this.Log($"Calling Select() succeeded.");
             return result;
         }

@@ -25,6 +25,8 @@ namespace FileCabinetApp
         private readonly SortedDictionary<string, List<int>> lastNameDictionary = new (StringComparer.InvariantCultureIgnoreCase);
         private readonly SortedDictionary<DateTime, List<int>> dateofbirthDictionary = new ();
 
+        private readonly Memorizer memorizer = new ();
+
         private int id;
         private int iterationIndex;
         private int lastPosition;
@@ -201,17 +203,17 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public ReadOnlyCollection<int> Delete(Predicate<FileCabinetRecord> predicate)
+        public ReadOnlyCollection<int> Delete(Query query)
         {
-            if (predicate is null)
+            if (query is null)
             {
-                throw new ArgumentNullException(nameof(predicate));
+                throw new ArgumentNullException(nameof(query));
             }
 
             var deletedList = new List<int>();
             foreach (var record in this.GetRecords())
             {
-                if (predicate(record))
+                if (query.Predicate(record))
                 {
                     deletedList.Add(record.Id);
                     this.Remove(record.Id);
@@ -222,11 +224,11 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public int Update(Predicate<FileCabinetRecord> predicate, Action<FileCabinetRecord> action)
+        public int Update(Query query, Action<FileCabinetRecord> action)
         {
-            if (predicate is null)
+            if (query is null)
             {
-                throw new ArgumentNullException(nameof(predicate));
+                throw new ArgumentNullException(nameof(query));
             }
 
             if (action is null)
@@ -237,7 +239,7 @@ namespace FileCabinetApp
             int count = 0;
             foreach (var record in this.GetRecords())
             {
-                if (predicate(record))
+                if (query.Predicate(record))
                 {
                     var position = this.recordsIdDictionary[record.Id];
                     this.RemoveRecordFromDictionaries(record.Id);
@@ -252,11 +254,11 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public IEnumerable<List<string>> SelectParameters(Predicate<FileCabinetRecord> predicate, Func<FileCabinetRecord, List<string>> parametersGetter)
+        public IEnumerable<List<string>> SelectParameters(Query query, Func<FileCabinetRecord, List<string>> parametersGetter)
         {
-            if (predicate is null)
+            if (query is null)
             {
-                throw new ArgumentNullException(nameof(predicate));
+                throw new ArgumentNullException(nameof(query));
             }
 
             if (parametersGetter is null)
@@ -264,15 +266,31 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(parametersGetter));
             }
 
-            foreach (var record in this.GetRecords())
+            var cached = this.memorizer.GetCached(query.Hash);
+            if (cached is null)
             {
-                if (predicate(record))
+                var result = new List<FileCabinetRecord>();
+                foreach (var record in this.GetRecords())
+                {
+                    if (query.Predicate(record))
+                    {
+                        result.Add(record);
+                        yield return parametersGetter(record);
+                    }
+                }
+
+                this.memorizer.Add(query.Hash, result);
+                yield break;
+            }
+            else
+            {
+                foreach (var record in cached)
                 {
                     yield return parametersGetter(record);
                 }
-            }
 
-            yield break;
+                yield break;
+            }
         }
 
         /// <summary>

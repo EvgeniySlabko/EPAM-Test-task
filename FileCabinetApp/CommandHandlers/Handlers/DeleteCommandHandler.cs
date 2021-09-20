@@ -37,9 +37,9 @@ namespace FileCabinetApp
         /// <inheritdoc/>
         public override void Handle(AppCommandRequest commandRequest)
         {
-            if (this.CheckCommand(commandRequest) && this.ParseParameters(commandRequest.Parameters, out Predicate<FileCabinetRecord> predicate))
+            if (this.CheckCommand(commandRequest) && this.ParseParameters(commandRequest.Parameters, out Query query))
             {
-                this.Delete(predicate);
+                this.Delete(query);
             }
             else
             {
@@ -47,9 +47,9 @@ namespace FileCabinetApp
             }
         }
 
-        private bool ParseParameters(string parameters, out Predicate<FileCabinetRecord> predicate)
+        private bool ParseParameters(string parameters, out Query query)
         {
-            predicate = null;
+            query = null;
             var separatedParameters = parameters.Split(' ', 2);
             if (separatedParameters.Length != 2 || !separatedParameters[0].Equals("where"))
             {
@@ -71,7 +71,7 @@ namespace FileCabinetApp
             try
             {
                 var convertedValue = result.Item1(separatedParameters2[1]);
-                predicate = result.Item2(convertedValue);
+                query.Predicate = result.Item2(convertedValue);
                 return true;
             }
             catch (ArgumentException)
@@ -80,9 +80,9 @@ namespace FileCabinetApp
             }
         }
 
-        private void Delete(Predicate<FileCabinetRecord> predicate)
+        private void Delete(Query query)
         {
-            var ids = this.Service.Delete(predicate);
+            var ids = this.Service.Delete(query);
             if (ids.Count != 0)
             {
                 var idsStr = ids.Select(i => "#" + i.ToString(CultureInfo.CurrentCulture)).ToArray();

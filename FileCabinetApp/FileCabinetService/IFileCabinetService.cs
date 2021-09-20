@@ -44,24 +44,24 @@ namespace FileCabinetApp
         /// <summary>
         /// Delete records appropriate conditions.
         /// </summary>
-        /// <param name="predicate">Given predicate.</param>
+        /// <param name="query">Query.</param>
         /// <returns>Deleted records id.</returns>
-        public ReadOnlyCollection<int> Delete(Predicate<FileCabinetRecord> predicate);
+        public ReadOnlyCollection<int> Delete(Query query);
 
         /// <summary>
         /// Modify the record matching the condition.
         /// </summary>
-        /// <param name="predicate">Given predicate.</param>
+        /// <param name="query">Query.</param>
         /// /// <param name="action">Action on record.</param>
         /// <returns>Number of changed records.</returns>
-        public int Update(Predicate<FileCabinetRecord> predicate, Action<FileCabinetRecord> action);
+        public int Update(Query query, Action<FileCabinetRecord> action);
 
         /// <summary>
         /// Return parameters of records.
         /// </summary>
-        /// <param name="predicate">Given predicate.</param>
+        /// <param name="query">Query.</param>
         /// <param name="parameters">List of any record parameters.</param>
         /// <returns>Number of changed records.</returns>
-        public IEnumerable<List<string>> SelectParameters(Predicate<FileCabinetRecord> predicate, Func<FileCabinetRecord, List<string>> parameters);
+        public IEnumerable<List<string>> SelectParameters(Query query, Func<FileCabinetRecord, List<string>> parameters);
     }
 }

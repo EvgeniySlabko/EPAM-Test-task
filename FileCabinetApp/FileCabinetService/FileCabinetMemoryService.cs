@@ -20,6 +20,8 @@ namespace FileCabinetApp
 
         private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateTimeDictionary = new ();
 
+        private readonly Memorizer memorizer = new ();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetMemoryService"/> class.
         /// </summary>
@@ -199,18 +201,18 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public ReadOnlyCollection<int> Delete(Predicate<FileCabinetRecord> predicate)
+        public ReadOnlyCollection<int> Delete(Query query)
         {
-            if (predicate is null)
+            if (query is null)
             {
-                throw new ArgumentNullException(nameof(predicate));
+                throw new ArgumentNullException(nameof(query));
             }
 
             var deletedList = new List<int>();
             var deletedRecords = new List<FileCabinetRecord>();
             foreach (var record in this.list)
             {
-                if (predicate(record))
+                if (query.Predicate(record))
                 {
                     deletedList.Add(record.Id);
                     deletedRecords.Add(record);
@@ -222,11 +224,11 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public int Update(Predicate<FileCabinetRecord> predicate, Action<FileCabinetRecord> action)
+        public int Update(Query query, Action<FileCabinetRecord> action)
         {
-            if (predicate is null)
+            if (query is null)
             {
-                throw new ArgumentNullException(nameof(predicate));
+                throw new ArgumentNullException(nameof(query));
             }
 
             if (action is null)
@@ -238,7 +240,7 @@ namespace FileCabinetApp
             var recordsToChange = new List<FileCabinetRecord>();
             foreach (var record in this.list)
             {
-                if (predicate(record))
+                if (query.Predicate(record))
                 {
                     recordsToChange.Add(record);
                     count++;
@@ -256,11 +258,11 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public IEnumerable<List<string>> SelectParameters(Predicate<FileCabinetRecord> predicate, Func<FileCabinetRecord, List<string>> parametersGetter)
+        public IEnumerable<List<string>> SelectParameters(Query query, Func<FileCabinetRecord, List<string>> parametersGetter)
         {
-            if (predicate is null)
+            if (query is null)
             {
-                throw new ArgumentNullException(nameof(predicate));
+                throw new ArgumentNullException(nameof(query));
             }
 
             if (parametersGetter is null)
@@ -268,15 +270,31 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(parametersGetter));
             }
 
-            foreach (var record in this.list)
+            var cached = this.memorizer.GetCached(query.Hash);
+            var result = new List<FileCabinetRecord>();
+            if (cached is null)
             {
-                if (predicate(record))
+                foreach (var record in this.list)
+                {
+                    if (query.Predicate(record))
+                    {
+                        result.Add(record);
+                        yield return parametersGetter((FileCabinetRecord)record.Clone());
+                    }
+                }
+
+                this.memorizer.Add(query.Hash, result);
+                yield break;
+            }
+            else
+            {
+                foreach (var record in cached)
                 {
                     yield return parametersGetter((FileCabinetRecord)record.Clone());
                 }
-            }
 
-            yield break;
+                yield break;
+            }
         }
 
         private static void RemoveRecordFromDictionary<T>(Dictionary<T, List<FileCabinetRecord>> dictionary, T index, FileCabinetRecord record)

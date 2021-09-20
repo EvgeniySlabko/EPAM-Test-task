@@ -26,9 +26,9 @@ namespace FileCabinetApp
         /// <inheritdoc/>
         public override void Handle(AppCommandRequest commandRequest)
         {
-            if (this.CheckCommand(commandRequest) && ParseArguments(commandRequest.Parameters, out Action<FileCabinetRecord> action, out Predicate<FileCabinetRecord> predicate))
+            if (this.CheckCommand(commandRequest) && ParseArguments(commandRequest.Parameters, out Action<FileCabinetRecord> action, out Query query))
             {
-                this.Uppdate(action, predicate);
+                this.Uppdate(action, query);
             }
             else
             {
@@ -36,10 +36,10 @@ namespace FileCabinetApp
             }
         }
 
-        private static bool ParseArguments(string parameters, out Action<FileCabinetRecord> action, out Predicate<FileCabinetRecord> predicate)
+        private static bool ParseArguments(string parameters, out Action<FileCabinetRecord> action, out Query query)
         {
             action = null;
-            predicate = null;
+            query = new Query();
             var splitParameters = Regex.Split(parameters, $@"({Set})|({Where})").Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
             if (splitParameters.Length != 4)
             {
@@ -51,7 +51,7 @@ namespace FileCabinetApp
                 return false;
             }
 
-            var result1 = new Parser().WhereParser(splitParameters[3], out predicate);
+            var result1 = new Parser().WhereParser(splitParameters[3], out query);
             if (!result1.Item1)
             {
                 Console.WriteLine(result1.Item2);
@@ -68,9 +68,9 @@ namespace FileCabinetApp
             return true;
         }
 
-        private void Uppdate(Action<FileCabinetRecord> action, Predicate<FileCabinetRecord> predicate)
+        private void Uppdate(Action<FileCabinetRecord> action, Query query)
         {
-            var changedRecords = this.Service.Update(predicate, action);
+            var changedRecords = this.Service.Update(query, action);
             Console.WriteLine(StringManager.Rm.GetString("RecordsChangedString", CultureInfo.CurrentCulture), changedRecords);
         }
     }

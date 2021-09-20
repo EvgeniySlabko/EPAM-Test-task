@@ -29,9 +29,9 @@ namespace FileCabinetApp
         /// <inheritdoc/>
         public override void Handle(AppCommandRequest commandRequest)
         {
-            if (this.CheckCommand(commandRequest) && ParseParameters(commandRequest.Parameters, out Predicate<FileCabinetRecord> predicate, out Func<FileCabinetRecord, List<string>> parametersGetter, out string[] headers))
+            if (this.CheckCommand(commandRequest) && ParseParameters(commandRequest.Parameters, out Func<FileCabinetRecord, List<string>> parametersGetter, out string[] headers, out Query query))
             {
-                var parameters = this.Select(parametersGetter, predicate);
+                var parameters = this.Select(parametersGetter, query);
                 this.printer(headers, parameters);
             }
             else
@@ -40,16 +40,16 @@ namespace FileCabinetApp
             }
         }
 
-        private static bool ParseParameters(string parameters, out Predicate<FileCabinetRecord> predicate, out Func<FileCabinetRecord, List<string>> parametersGetter, out string[] headers)
+        private static bool ParseParameters(string parameters, out Func<FileCabinetRecord, List<string>> parametersGetter, out string[] headers, out Query query)
         {
-            predicate = null;
             parametersGetter = null;
             headers = null;
+            query = new Query();
 
             var parser = new Parser();
             if (string.IsNullOrWhiteSpace(parameters))
             {
-                predicate = r => true;
+                query.Predicate = r => true;
                 parametersGetter = parser.GlobalParametersGetter;
                 headers = Parser.GetAllHeaders();
                 return true;
@@ -67,7 +67,7 @@ namespace FileCabinetApp
                 return false;
             }
 
-            if (!parser.WhereParser(splited[1], out predicate).Item1)
+            if (!parser.WhereParser(splited[1], out query).Item1)
             {
                 return false;
             }
@@ -75,9 +75,9 @@ namespace FileCabinetApp
             return true;
         }
 
-        private IEnumerable<List<string>> Select(Func<FileCabinetRecord, List<string>> parametersGetter, Predicate<FileCabinetRecord> predicate)
+        private IEnumerable<List<string>> Select(Func<FileCabinetRecord, List<string>> parametersGetter, Query query)
         {
-            return this.Service.SelectParameters(predicate, parametersGetter);
+            return this.Service.SelectParameters(query, parametersGetter);
         }
     }
 }

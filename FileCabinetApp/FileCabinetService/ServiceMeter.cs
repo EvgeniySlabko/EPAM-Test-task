@@ -34,11 +34,11 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public ReadOnlyCollection<int> Delete(Predicate<FileCabinetRecord> predicate)
+        public ReadOnlyCollection<int> Delete(Query query)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            var result = this.service.Delete(predicate);
+            var result = this.service.Delete(query);
             stopWatch.Stop();
             Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "Delete", stopWatch.ElapsedTicks);
             return result;
@@ -87,22 +87,22 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public IEnumerable<List<string>> SelectParameters(Predicate<FileCabinetRecord> predicate, Func<FileCabinetRecord, List<string>> parameters)
+        public IEnumerable<List<string>> SelectParameters(Query query, Func<FileCabinetRecord, List<string>> parameters)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            var result = this.service.SelectParameters(predicate, parameters);
+            var result = this.service.SelectParameters(query, parameters);
             stopWatch.Stop();
             Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "select", stopWatch.ElapsedTicks);
             return result;
         }
 
         /// <inheritdoc/>
-        public int Update(Predicate<FileCabinetRecord> predicate, Action<FileCabinetRecord> action)
+        public int Update(Query query, Action<FileCabinetRecord> action)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            var result = this.service.Update(predicate, action);
+            var result = this.service.Update(query, action);
             stopWatch.Stop();
             Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "update", stopWatch.ElapsedTicks);
             return result;
