@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 
@@ -16,39 +17,6 @@ namespace FileCabinetApp
         /// <param name="generateNewId">determines whether a new id needs to be generated.</param>
         /// <returns>id of the new record.</returns>
         int CreateRecord(FileCabinetRecord newRecord, bool generateNewId = true);
-
-        /// <summary>
-        /// Edits the record by its id.
-        /// </summary>
-        /// <param name="newRecord">Edited record.</param>
-        void Edit(FileCabinetRecord newRecord);
-
-        /// <summary>
-        /// Find record by its data of birthday.
-        /// </summary>
-        /// <param name="dataOfBirthday">Вata of birthday to search.</param>
-        /// <returns>Record if found otherwise null.</returns>
-        ReadOnlyCollection<FileCabinetRecord> FindByDate(DateTime dataOfBirthday);
-
-        /// <summary>
-        /// Find record by its first name.
-        /// </summary>
-        /// <param name="firstName">First name to search.</param>
-        /// <returns>Record if found otherwise null.</returns>
-        ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName);
-
-        /// <summary>
-        /// Find record by its last name.
-        /// </summary>
-        /// <param name="lastName">Last name to search.</param>
-        /// <returns>Record if found otherwise null.</returns>
-        ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName);
-
-        /// <summary>
-        /// Returns all records.
-        /// </summary>
-        /// <returns>array with records.</returns>
-        ReadOnlyCollection<FileCabinetRecord> GetRecords();
 
         /// <summary>
         /// Returns the number of records in the list.
@@ -69,14 +37,31 @@ namespace FileCabinetApp
         public void Restore(FileCabinetServiceSnapshot snapshot);
 
         /// <summary>
-        /// Remove record from service.
-        /// </summary>
-        /// <param name="id">The id of the deleted entry.</param>
-        public void Remove(int id);
-
-        /// <summary>
         /// Purge.
         /// </summary>
         public void Purge();
+
+        /// <summary>
+        /// Delete records appropriate conditions.
+        /// </summary>
+        /// <param name="query">Query.</param>
+        /// <returns>Deleted records id.</returns>
+        public ReadOnlyCollection<int> Delete(Query query);
+
+        /// <summary>
+        /// Modify the record matching the condition.
+        /// </summary>
+        /// <param name="query">Query.</param>
+        /// /// <param name="action">Action on record.</param>
+        /// <returns>Number of changed records.</returns>
+        public int Update(Query query, Action<FileCabinetRecord> action);
+
+        /// <summary>
+        /// Return parameters of records.
+        /// </summary>
+        /// <param name="query">Query.</param>
+        /// <param name="parameters">List of any record parameters.</param>
+        /// <returns>Number of changed records.</returns>
+        public IEnumerable<List<string>> SelectParameters(Query query, Func<FileCabinetRecord, List<string>> parameters);
     }
 }

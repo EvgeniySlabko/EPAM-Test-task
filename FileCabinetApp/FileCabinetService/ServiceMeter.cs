@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -33,56 +34,13 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public void Edit(FileCabinetRecord newRecord)
+        public ReadOnlyCollection<int> Delete(Query query)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            this.service.Edit(newRecord);
+            var result = this.service.Delete(query);
             stopWatch.Stop();
-            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "edit", stopWatch.ElapsedTicks);
-        }
-
-        /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
-        {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-            var result = this.service.FindByDate(dataOfBirthday);
-            stopWatch.Stop();
-            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "Find", stopWatch.ElapsedTicks);
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
-        {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-            var result = this.service.FindByFirstName(firstName);
-            stopWatch.Stop();
-            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "Find", stopWatch.ElapsedTicks);
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
-        {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-            var result = this.service.FindByLastName(lastName);
-            stopWatch.Stop();
-            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "Find", stopWatch.ElapsedTicks);
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
-        {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-            var result = this.service.GetRecords();
-            stopWatch.Stop();
-            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "list", stopWatch.ElapsedTicks);
+            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "Delete", stopWatch.ElapsedTicks);
             return result;
         }
 
@@ -119,16 +77,6 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public void Remove(int id)
-        {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-            this.service.Remove(id);
-            stopWatch.Stop();
-            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "remove", stopWatch.ElapsedTicks);
-        }
-
-        /// <inheritdoc/>
         public void Restore(FileCabinetServiceSnapshot snapshot)
         {
             var stopWatch = new Stopwatch();
@@ -136,6 +84,28 @@ namespace FileCabinetApp
             this.service.Restore(snapshot);
             stopWatch.Stop();
             Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "restore", stopWatch.ElapsedTicks);
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<List<string>> SelectParameters(Query query, Func<FileCabinetRecord, List<string>> parameters)
+        {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            var result = this.service.SelectParameters(query, parameters);
+            stopWatch.Stop();
+            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "select", stopWatch.ElapsedTicks);
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public int Update(Query query, Action<FileCabinetRecord> action)
+        {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            var result = this.service.Update(query, action);
+            stopWatch.Stop();
+            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "update", stopWatch.ElapsedTicks);
+            return result;
         }
     }
 }
