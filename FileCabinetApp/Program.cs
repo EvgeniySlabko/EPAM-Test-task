@@ -70,6 +70,7 @@ namespace FileCabinetApp
             var helpHandler = new HelpCommandHandler();
             var importHandler = new ImportCommandHandler(fileCabinetService);
             var statHandler = new StatCommandHandler(fileCabinetService);
+            var purgeHandler = new PurgeCommandHandler(fileCabinetService);
 
             statHandler.SetNext(importHandler);
             importHandler.SetNext(helpHandler);
@@ -80,6 +81,7 @@ namespace FileCabinetApp
             insertHandler.SetNext(deleteHandler);
             deleteHandler.SetNext(uppdateHandler);
             uppdateHandler.SetNext(selectHandler);
+            selectHandler.SetNext(purgeHandler);
 
             return statHandler;
         }
@@ -122,7 +124,6 @@ namespace FileCabinetApp
             parser.AddCommandLineArgumentDescription("--storage", "-s", StorageRuleAction);
             parser.AddCommandLineArgumentDescription("--use-stopwatch", "-sw", s => useStopWatch = bool.Parse(s));
             parser.AddCommandLineArgumentDescription("--use-logger", "-l", s => useLogger = bool.Parse(s));
-
             parser.ParseCommandLineArguments(args);
             ApplyCommandLineArguments();
         }

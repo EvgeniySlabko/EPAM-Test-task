@@ -14,9 +14,15 @@ namespace FileCabinetApp
         /// Create new record and adds it to list and dictionaries.
         /// </summary>
         /// <param name="newRecord">Record to add.</param>
-        /// <param name="generateNewId">determines whether a new id needs to be generated.</param>
         /// <returns>id of the new record.</returns>
-        int CreateRecord(FileCabinetRecord newRecord, bool generateNewId = true);
+        int Insert(FileCabinetRecord newRecord);
+
+        /// <summary>
+        /// Create new record and adds it to list and dictionaries.
+        /// </summary>
+        /// <param name="newRecord">Record to add.</param>
+        /// <returns>id of the new record.</returns>
+        int CreateRecord(FileCabinetRecord newRecord);
 
         /// <summary>
         /// Returns the number of records in the list.
@@ -39,7 +45,8 @@ namespace FileCabinetApp
         /// <summary>
         /// Purge.
         /// </summary>
-        public void Purge();
+        /// <returns>Number of purged records.</returns>
+        public int Purge();
 
         /// <summary>
         /// Delete records appropriate conditions.

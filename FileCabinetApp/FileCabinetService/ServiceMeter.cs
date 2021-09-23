@@ -23,13 +23,24 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public int CreateRecord(FileCabinetRecord newRecord, bool generateNewId = true)
+        public int CreateRecord(FileCabinetRecord newRecord)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            var result = this.service.CreateRecord(newRecord, generateNewId);
+            var result = this.service.CreateRecord(newRecord);
             stopWatch.Stop();
             Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "Create", stopWatch.ElapsedTicks);
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public int Insert(FileCabinetRecord newRecord)
+        {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            var result = this.service.Insert(newRecord);
+            stopWatch.Stop();
+            Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "Insert", stopWatch.ElapsedTicks);
             return result;
         }
 
@@ -67,13 +78,14 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public void Purge()
+        public int Purge()
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            this.service.Purge();
+            var result = this.service.Purge();
             stopWatch.Stop();
             Console.WriteLine(StringManager.Rm.GetString("DisplayInfoPatternString", CultureInfo.CurrentCulture), "purge", stopWatch.ElapsedTicks);
+            return result;
         }
 
         /// <inheritdoc/>

@@ -11,7 +11,6 @@ namespace FileCabinetApp
     public class UppdateCommandHandler : FileCabinetServiceCommandHandlerBase
     {
         private const string Command = "update";
-        private const string Set = "set";
         private const string Where = "where";
 
         /// <summary>
@@ -26,9 +25,17 @@ namespace FileCabinetApp
         /// <inheritdoc/>
         public override void Handle(AppCommandRequest commandRequest)
         {
-            if (this.CheckCommand(commandRequest) && ParseArguments(commandRequest.Parameters, out Action<FileCabinetRecord> action, out Query query))
+            if (this.CheckCommand(commandRequest))
             {
-                this.Uppdate(action, query);
+                var result = ParseArguments(commandRequest.Parameters, out Action<FileCabinetRecord> action, out Query query);
+                if (result.Item1)
+                {
+                    this.Uppdate(action, query);
+                }
+                else
+                {
+                    Console.WriteLine(result.Item2);
+                }
             }
             else
             {
@@ -36,36 +43,32 @@ namespace FileCabinetApp
             }
         }
 
-        private static bool ParseArguments(string parameters, out Action<FileCabinetRecord> action, out Query query)
+        private static Tuple<bool, string> ParseArguments(string parameters, out Action<FileCabinetRecord> action, out Query query)
         {
             action = null;
             query = new Query();
-            var splitParameters = Regex.Split(parameters, $@"({Set})|({Where})").Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-            if (splitParameters.Length != 4)
+            int index = parameters.IndexOf(Where, 0, StringComparison.InvariantCultureIgnoreCase);
+            if (index < 1 || index == parameters.Length)
             {
-                return false;
+                return new (false, "Invalid arguments)");
             }
 
-            if (!splitParameters[0].Equals(Set) || !splitParameters[2].Equals(Where))
-            {
-                return false;
-            }
+            var whereString = parameters.Substring(index, parameters.Length - index);
+            var setString = parameters.Substring(0, index);
 
-            var result1 = new Parser().WhereParser(splitParameters[3], out query);
+            var result1 = new Parser().WhereParser(whereString, out query);
             if (!result1.Item1)
             {
-                Console.WriteLine(result1.Item2);
-                return false;
+                return result1;
             }
 
-            var result2 = new Parser().SetParser(splitParameters[1], out action);
+            var result2 = new Parser().SetParser(setString, out action);
             if (!result2.Item1)
             {
-                Console.WriteLine(result2.Item2);
-                return false;
+                return result2;
             }
 
-            return true;
+            return new (true, string.Empty);
         }
 
         private void Uppdate(Action<FileCabinetRecord> action, Query query)

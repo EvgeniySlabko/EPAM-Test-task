@@ -26,11 +26,11 @@ namespace FileCabinetApp
         public ServiceLogger(IFileCabinetService service)
         {
             this.service = service;
-            this.writer = new StreamWriter(this.logFileName);
+            this.writer = new StreamWriter(this.logFileName, true);
         }
 
         /// <inheritdoc/>
-        public int CreateRecord(FileCabinetRecord newRecord, bool generateNewId)
+        public int CreateRecord(FileCabinetRecord newRecord)
         {
             if (newRecord is null)
             {
@@ -39,7 +39,23 @@ namespace FileCabinetApp
 
             this.Log($"Calling Create() with FirstName = {newRecord.FirstName}, LastName = {newRecord.LastName}, DateOfBirth = {newRecord.DateOfBirth.ToString(DateFormat, CultureInfo.CurrentCulture)}, IdentificationNumber = {newRecord.IdentificationNumber}, IdentificationLetter = {newRecord.IdentificationLetter}, Points = {newRecord.PointsForFourTests}");
 
-            var result = this.service.CreateRecord(newRecord, generateNewId);
+            var result = this.service.CreateRecord(newRecord);
+
+            this.Log($"Calling Create() returne {result.ToString(CultureInfo.CurrentCulture)}");
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public int Insert(FileCabinetRecord newRecord)
+        {
+            if (newRecord is null)
+            {
+                throw new ArgumentNullException(nameof(newRecord));
+            }
+
+            this.Log($"Calling Create() with FirstName = {newRecord.FirstName}, LastName = {newRecord.LastName}, DateOfBirth = {newRecord.DateOfBirth.ToString(DateFormat, CultureInfo.CurrentCulture)}, IdentificationNumber = {newRecord.IdentificationNumber}, IdentificationLetter = {newRecord.IdentificationLetter}, Points = {newRecord.PointsForFourTests}");
+
+            var result = this.service.CreateRecord(newRecord);
 
             this.Log($"Calling Create() returne {result.ToString(CultureInfo.CurrentCulture)}");
             return result;
@@ -52,7 +68,7 @@ namespace FileCabinetApp
 
             var result = this.service.GetStat();
 
-            this.Log($"Calling GetStat() returne ({result.Item1}, {result.Item1}).");
+            this.Log($"Calling GetStat() return ({result.Item1}, {result.Item1}).");
 
             return result;
         }
@@ -70,21 +86,12 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public void Purge()
+        public int Purge()
         {
             this.Log($"Calling Purge()");
-
-            try
-            {
-                this.service.Purge();
-            }
-            catch (NotImplementedException)
-            {
-                this.Log("Purge() method invalid for this service.");
-                throw;
-            }
-
-            this.Log($"Calling Purge() succeeded.");
+            var result = this.service.Purge();
+            this.Log($"Calling Purge() succeeded. {result} were purged");
+            return result;
         }
 
         /// <inheritdoc/>
@@ -150,7 +157,7 @@ namespace FileCabinetApp
             this.Log($"Calling Update()");
 
             var result = this.service.Update(query, action);
-            this.Log($"Calling pdate() ipdate {result} records. ");
+            this.Log($"Calling update() updates {result} records. ");
             return result;
         }
 
@@ -167,7 +174,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(parameters));
             }
 
-            this.Log($"Calling Select()");
+            this.Log($"Calling Select(). Query hash - {query.Hash}");
             var result = this.service.SelectParameters(query, parameters);
             this.Log($"Calling Select() succeeded.");
             return result;

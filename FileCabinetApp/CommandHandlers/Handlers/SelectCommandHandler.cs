@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace FileCabinetApp
@@ -29,10 +30,18 @@ namespace FileCabinetApp
         /// <inheritdoc/>
         public override void Handle(AppCommandRequest commandRequest)
         {
-            if (this.CheckCommand(commandRequest) && ParseParameters(commandRequest.Parameters, out Func<FileCabinetRecord, List<string>> parametersGetter, out string[] headers, out Query query))
+            if (this.CheckCommand(commandRequest))
             {
-                var parameters = this.Select(parametersGetter, query);
-                this.printer(headers, parameters);
+                var result = ParseParameters(commandRequest.Parameters, out Func<FileCabinetRecord, List<string>> parametersGetter, out string[] headers, out Query query);
+                if (result.Item1)
+                {
+                    var parameters = this.Select(parametersGetter, query);
+                    this.printer(headers, parameters);
+                }
+                else
+                {
+                    Console.WriteLine(result.Item2);
+                }
             }
             else
             {
@@ -40,7 +49,7 @@ namespace FileCabinetApp
             }
         }
 
-        private static bool ParseParameters(string parameters, out Func<FileCabinetRecord, List<string>> parametersGetter, out string[] headers, out Query query)
+        private static Tuple<bool, string> ParseParameters(string parameters, out Func<FileCabinetRecord, List<string>> parametersGetter, out string[] headers, out Query query)
         {
             parametersGetter = null;
             headers = null;
@@ -52,27 +61,36 @@ namespace FileCabinetApp
                 query.Predicate = r => true;
                 parametersGetter = parser.GlobalParametersGetter;
                 headers = Parser.GetAllHeaders();
-                return true;
+                return new (true, string.Empty);
             }
 
-            var splited = parameters.Split(Where, StringSplitOptions.RemoveEmptyEntries);
-            if (splited.Length != 2)
+            var queryStartIndex = parameters.IndexOf(Where, StringComparison.InvariantCultureIgnoreCase);
+            var selectString = parameters.Substring(0, (queryStartIndex < 0) ? parameters.Length : queryStartIndex);
+            var queryString = (queryStartIndex < 0) ? string.Empty : parameters.Substring(queryStartIndex, parameters.Length - queryStartIndex);
+
+            if (string.IsNullOrWhiteSpace(selectString))
             {
-                return false;
+                headers = Parser.GetAllHeaders();
+                selectString = string.Join(',', Parser.GetAllHeaders());
             }
-
-            headers = splited[0].Split(',').Select(h => h.Trim(' ')).ToArray();
-            if (!parser.SelectParser(splited[0], out parametersGetter))
+            else
             {
-                return false;
+                headers = selectString.Split(',').Select(h => h.Trim(' ')).ToArray();
             }
 
-            if (!parser.WhereParser(splited[1], out query).Item1)
+            var selectParserResult = parser.SelectParser(selectString, out parametersGetter);
+            if (!selectParserResult.Item1)
             {
-                return false;
+                return selectParserResult;
             }
 
-            return true;
+            var whereParserResult = parser.WhereParser(queryString, out query);
+            if (!whereParserResult.Item1)
+            {
+                return whereParserResult;
+            }
+
+            return new (true, string.Empty);
         }
 
         private IEnumerable<List<string>> Select(Func<FileCabinetRecord, List<string>> parametersGetter, Query query)

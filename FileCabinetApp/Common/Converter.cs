@@ -31,22 +31,22 @@ namespace FileCabinetApp
             try
             {
                 result = (T)System.Convert.ChangeType(inputString, typeof(T), CultureInfo.InvariantCulture);
-                resultMessage = "Succesful convert";
+                resultMessage = "Succesful conversation";
             }
             catch (InvalidCastException)
             {
                 converted = false;
-                resultMessage = "Conversation error. Invalid cast";
+                resultMessage = "Invalid cast";
             }
             catch (FormatException)
             {
                 converted = false;
-                resultMessage = "Conversation error. Format error";
+                resultMessage = "Format error";
             }
             catch (OverflowException)
             {
                 converted = false;
-                resultMessage = "Conversation error. Overflow error";
+                resultMessage = "Overflow error";
             }
 
             return new Tuple<bool, string, T>(converted, resultMessage, result);

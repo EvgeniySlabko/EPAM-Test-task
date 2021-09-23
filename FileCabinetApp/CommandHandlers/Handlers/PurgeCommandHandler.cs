@@ -4,22 +4,19 @@ using System.Globalization;
 namespace FileCabinetApp
 {
     /// <summary>
-    /// Handler for exit command.
+    /// Handler for Stat command.
     /// </summary>
-    public class ExitCommandHandler : CommandHandlerBase
+    public class PurgeCommandHandler : FileCabinetServiceCommandHandlerBase
     {
-        private const string Command = "exit";
-
-        private readonly Action<bool> stopProgram;
+        private const string Command = "purge";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExitCommandHandler"/> class.
+        /// Initializes a new instance of the <see cref="PurgeCommandHandler"/> class.
         /// </summary>
-        /// <param name="stopProgram">Stop program action.</param>
-        public ExitCommandHandler(Action<bool> stopProgram)
-            : base(Command)
+        /// <param name="service">Service.</param>
+        public PurgeCommandHandler(IFileCabinetService service)
+            : base(Command, service)
         {
-            this.stopProgram = stopProgram;
         }
 
         /// <inheritdoc/>
@@ -29,8 +26,7 @@ namespace FileCabinetApp
             {
                 if (string.IsNullOrEmpty(commandRequest.Parameters))
                 {
-                    Console.WriteLine(StringManager.Rm.GetString("ExitMessage", CultureInfo.CurrentCulture));
-                    this.stopProgram(false);
+                    this.Purge();
                 }
                 else
                 {
@@ -41,6 +37,12 @@ namespace FileCabinetApp
             {
                 base.Handle(commandRequest);
             }
+        }
+
+        private void Purge()
+        {
+            var purgedRecors = this.Service.Purge();
+            Console.WriteLine(StringManager.Rm.GetString("RecordsWerePurgedMessage", CultureInfo.CurrentCulture), purgedRecors);
         }
     }
 }

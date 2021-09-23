@@ -29,9 +29,17 @@ namespace FileCabinetApp
         /// <inheritdoc/>
         public override void Handle(AppCommandRequest commandRequest)
         {
-            if (this.CheckCommand(commandRequest) && this.ParseParameters(commandRequest.Parameters, out FileType type, out string path))
+            if (this.CheckCommand(commandRequest))
             {
-                this.Import(type, path);
+                var result = this.ParseParameters(commandRequest.Parameters, out FileType type, out string path);
+                if (result.Item1)
+                {
+                    this.Import(type, path);
+                }
+                else
+                {
+                    Console.WriteLine(result.Item2);
+                }
             }
             else
             {
@@ -84,7 +92,7 @@ namespace FileCabinetApp
             Console.WriteLine(StringManager.Rm.GetString("RecordsWereImport", CultureInfo.CurrentCulture), path);
         }
 
-        private bool ParseParameters(string parameters, out FileType type, out string path)
+        private Tuple<bool, string> ParseParameters(string parameters, out FileType type, out string path)
         {
             type = default;
             path = default;
@@ -92,20 +100,16 @@ namespace FileCabinetApp
 
             if (splitedParameters.Length != 2)
             {
-                return false;
+                return new (false, "Invalid parameters");
             }
 
             path = splitedParameters[1];
-            if (this.fileType.ContainsKey(splitedParameters[0]))
+            if (!this.fileType.TryGetValue(splitedParameters[0], out type))
             {
-                type = this.fileType[splitedParameters[0]];
-            }
-            else
-            {
-                return false;
+                return new (false, $"Undefined file type - {splitedParameters[0]}");
             }
 
-            return true;
+            return new (true, string.Empty);
         }
     }
 }

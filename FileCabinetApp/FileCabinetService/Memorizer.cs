@@ -39,7 +39,7 @@ namespace FileCabinetApp
         public List<FileCabinetRecord> GetCached(long hash)
         {
             var result = this.cache.Find(t => t.Item1 == hash);
-            return (result is null) ? null : result.Item2;
+            return result?.Item2;
         }
 
         /// <summary>

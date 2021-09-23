@@ -177,6 +177,9 @@
   <data name="InvalidArgumentsMessage" xml:space="preserve">
     <value>Invalid arguments</value>
   </data>
+  <data name="InvalidFileExtension" xml:space="preserve">
+    <value>Invalid file extension</value>
+  </data>
   <data name="InvalidFormatMessage" xml:space="preserve">
     <value>Invalid date format</value>
   </data>
@@ -213,6 +216,9 @@
   <data name="RecordsWereImport" xml:space="preserve">
     <value>Records were loaded from file</value>
   </data>
+  <data name="RecordsWerePurgedMessage" xml:space="preserve">
+    <value>Data file processing is completed: {0} records were purged.</value>
+  </data>
   <data name="SimilarCommandMessage" xml:space="preserve">
     <value>The most similar command is</value>
   </data>
@@ -223,7 +229,7 @@
     <value>"{0} exists record(s). {1} deleted."</value>
   </data>
   <data name="SuccessfulWriteToFileMessage" xml:space="preserve">
-    <value>All records are exported to file{0}</value>
+    <value>All records are exported to file</value>
   </data>
   <data name="UnableCommandLineArgumentsMessage" xml:space="preserve">
     <value>Unable command line arguments</value>

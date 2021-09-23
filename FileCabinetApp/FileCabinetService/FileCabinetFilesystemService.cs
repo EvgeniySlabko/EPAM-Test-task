@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace FileCabinetApp
@@ -21,9 +22,6 @@ namespace FileCabinetApp
         private readonly BinaryReader binaryReader;
 
         private readonly SortedDictionary<int, int> recordsIdDictionary = new ();
-        private readonly SortedDictionary<string, List<int>> firstNameDictionary = new (StringComparer.InvariantCultureIgnoreCase);
-        private readonly SortedDictionary<string, List<int>> lastNameDictionary = new (StringComparer.InvariantCultureIgnoreCase);
-        private readonly SortedDictionary<DateTime, List<int>> dateofbirthDictionary = new ();
 
         private readonly Memorizer memorizer = new ();
 
@@ -45,13 +43,8 @@ namespace FileCabinetApp
             this.StartupService();
         }
 
-        /// <summary>
-        /// Create new record.
-        /// </summary>
-        /// <param name="record">Record to add.</param>
-        /// <param name="generateNewId">determines whether a new id needs to be generated.</param>
-        /// <returns>id of the new record.</returns>
-        public int CreateRecord(FileCabinetRecord record, bool generateNewId)
+        /// <inheritdoc/>
+        public int Insert(FileCabinetRecord record)
         {
             if (record is null)
             {
@@ -63,25 +56,38 @@ namespace FileCabinetApp
                 throw new ArgumentException("Invalide parameters");
             }
 
-            if (generateNewId)
-            {
-                record.Id = this.id++;
-            }
-
             if (this.recordsIdDictionary.ContainsKey(record.Id))
             {
                 int position = this.recordsIdDictionary[record.Id];
-                this.RemoveRecordFromDictionaries(record.Id);
-                this.AddRecordToDictionaries(record, position);
+                this.recordsIdDictionary.Remove(record.Id);
+                this.recordsIdDictionary[record.Id] = position;
                 this.Write(record, position);
             }
             else
             {
                 this.Write(record);
-                this.AddRecordToDictionaries(record, this.lastPosition - 1);
+                this.recordsIdDictionary[record.Id] = this.lastPosition - 1;
             }
 
+            this.memorizer.Reset();
             return record.Id;
+        }
+
+        /// <inheritdoc/>
+        public int CreateRecord(FileCabinetRecord record)
+        {
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            if (!this.recordValidator.ValidateParameters(record))
+            {
+                throw new ArgumentException("Invalide parameters");
+            }
+
+            record.Id = this.id++;
+            return this.Insert(record);
         }
 
         /// <summary>
@@ -101,14 +107,8 @@ namespace FileCabinetApp
         {
             int existsCount = 0;
             int deletedCount = 0;
-            while (true)
+            foreach (var record in this.GetAnyRecords())
             {
-                var record = this.GetNextAny();
-                if (record is null)
-                {
-                    break;
-                }
-
                 if ((record.ServiceInormation & 4) != 4)
                 {
                     existsCount++;
@@ -119,47 +119,38 @@ namespace FileCabinetApp
                 }
             }
 
-            this.GoToStart();
             return new Tuple<int, int>(existsCount, deletedCount);
         }
 
         /// <inheritdoc/>
-        public void Purge()
+        public int Purge()
         {
-            this.GoToStart();
-            this.ClearDictionaries();
+            this.recordsIdDictionary.Clear();
             int offset = 0;
-            int avalibleRecordCounter = 0;
-            while (true)
+            int iterationIndex = 0;
+            foreach (var record in this.GetAnyRecords())
             {
-                var record = this.GetNextAny();
-                if (record is null)
-                {
-                    this.fileStrieam.SetLength(avalibleRecordCounter * RecordSize);
-                    break;
-                }
-                else if ((record.ServiceInormation & 4) != 0)
+                if ((record.ServiceInormation & 4) != 0)
                 {
                     offset++;
-                    continue;
                 }
                 else
                 {
-                    int position = this.iterationIndex - offset - 1;
+                    int position = iterationIndex - offset;
                     if (offset != 0)
                     {
                         this.Write(record, position);
                     }
-                    else
-                    {
-                        this.AddRecordToDictionaries(record, position);
-                    }
+
+                    this.recordsIdDictionary.Add(record.Record.Id, position);
                 }
 
-                avalibleRecordCounter++;
+                iterationIndex++;
             }
 
-            this.GoToStart();
+            this.memorizer.Reset();
+            this.fileStrieam.SetLength(RecordSize * (iterationIndex - offset));
+            return offset;
         }
 
         /// <summary>
@@ -168,10 +159,7 @@ namespace FileCabinetApp
         /// <returns>Snapshot of the current list of records.</returns>
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
-            var records = this.GetRecordsList();
-            var recordsArray = new FileCabinetRecord[records.Count];
-            records.CopyTo(recordsArray, 0);
-            return new FileCabinetServiceSnapshot(recordsArray);
+            return new FileCabinetServiceSnapshot(this.GetRecords().ToArray());
         }
 
         /// <summary>
@@ -187,17 +175,22 @@ namespace FileCabinetApp
 
             foreach (var newRecord in snapshot.Records)
             {
+                if (newRecord.Id >= this.id)
+                {
+                    this.id = newRecord.Id + 1;
+                }
+
                 if (this.recordsIdDictionary.ContainsKey(newRecord.Id))
                 {
                     var position = this.recordsIdDictionary[newRecord.Id];
-                    this.RemoveRecordFromDictionaries(newRecord.Id);
-                    this.AddRecordToDictionaries(newRecord, position);
+                    this.recordsIdDictionary.Remove(newRecord.Id);
+                    this.recordsIdDictionary[newRecord.Id] = position;
                     this.Write(newRecord, position);
                 }
                 else
                 {
                     this.Write(newRecord);
-                    this.AddRecordToDictionaries(newRecord, this.lastPosition - 1);
+                    this.recordsIdDictionary[newRecord.Id] = this.lastPosition - 1;
                 }
             }
         }
@@ -220,6 +213,7 @@ namespace FileCabinetApp
                 }
             }
 
+            this.memorizer.Reset();
             return new ReadOnlyCollection<int>(deletedList);
         }
 
@@ -242,14 +236,15 @@ namespace FileCabinetApp
                 if (query.Predicate(record))
                 {
                     var position = this.recordsIdDictionary[record.Id];
-                    this.RemoveRecordFromDictionaries(record.Id);
+                    this.recordsIdDictionary.Remove(record.Id);
                     action(record);
                     this.Write(record, position);
-                    this.AddRecordToDictionaries(record, position);
+                    this.recordsIdDictionary[record.Id] = position;
                     count++;
                 }
             }
 
+            this.memorizer.Reset();
             return count;
         }
 
@@ -307,32 +302,18 @@ namespace FileCabinetApp
             }
         }
 
-        private static void RemoveRecordFromDictionary<T>(SortedDictionary<T, List<int>> dictionary, T index, int position)
+        private IEnumerable<FileCabonetFilesystemRecord> GetAnyRecords()
         {
-            var list = dictionary[index];
-            for (int i = 0; i < list.Count; i++)
+            int i = 0;
+            while (true)
             {
-                if (list[i] == position)
+                var serviceRecord = this.GetRecord(i++);
+                if (serviceRecord is null)
                 {
-                    list.RemoveAt(i);
-                    break;
+                    yield break;
                 }
-            }
-        }
 
-        private static void AddRecordToDictionary<T>(SortedDictionary<T, List<int>> dictionary, T key, int value)
-        {
-            if (dictionary.ContainsKey(key))
-            {
-                dictionary[key].Add(value);
-            }
-            else
-            {
-                var list = new List<int>
-                {
-                    value,
-                };
-                dictionary.Add(key, list);
+                yield return serviceRecord;
             }
         }
 
@@ -364,31 +345,10 @@ namespace FileCabinetApp
             {
                 var position = this.recordsIdDictionary[id];
                 var record = this.GetRecord(position);
-                this.RemoveRecordFromDictionaries(id);
+                this.recordsIdDictionary.Remove(id);
                 record.ServiceInormation |= 4;
                 this.Write(record, position);
             }
-        }
-
-        private ReadOnlyCollection<FileCabinetRecord> GetRecordsList()
-        {
-            var records = new List<FileCabinetRecord>();
-            this.GoToStart();
-            while (true)
-            {
-                var record = this.GetNext();
-                if (record is null)
-                {
-                    this.GoToStart();
-                    break;
-                }
-                else
-                {
-                    records.Add(record);
-                }
-            }
-
-            return new ReadOnlyCollection<FileCabinetRecord>(records);
         }
 
         private void Write(FileCabinetRecord record, int index)
@@ -465,95 +425,29 @@ namespace FileCabinetApp
             return fileSystemRecord;
         }
 
-        private FileCabinetRecord GetNext()
-        {
-            while (true)
-            {
-                var filesystemecord = this.GetRecord(this.iterationIndex++);
-                if (filesystemecord is null)
-                {
-                    return null;
-                }
-
-                if ((filesystemecord.ServiceInormation & 4) == 4)
-                {
-                    return this.GetNext();
-                }
-                else
-                {
-                    return filesystemecord.Record;
-                }
-            }
-        }
-
-        private FileCabonetFilesystemRecord GetNextAny()
-        {
-            return this.GetRecord(this.iterationIndex++);
-        }
-
-        private void GoToStart()
-        {
-            this.iterationIndex = 0;
-        }
-
         private void StartupService()
         {
             int higherId = 0;
-            while (true)
+            int currentPosition = 0;
+            foreach (var record in this.GetAnyRecords())
             {
-                var fileSystemRecord = this.GetNext();
-                if (fileSystemRecord is null)
+                if (!record.IsDeleted())
                 {
-                    this.GoToStart();
-                    break;
+                    currentPosition++;
+                    continue;
                 }
-                else
-                {
-                    if (fileSystemRecord.Id > higherId)
-                    {
-                        higherId = fileSystemRecord.Id;
-                    }
 
-                    this.lastPosition++;
-                    this.AddRecordToDictionaries(fileSystemRecord, this.iterationIndex - 1);
+                if (record.Record.Id > higherId)
+                {
+                    higherId = record.Record.Id;
                 }
+
+                this.lastPosition++;
+                this.recordsIdDictionary[record.Record.Id] = currentPosition;
+                currentPosition++;
             }
 
             this.id = higherId + 1;
-        }
-
-        private void AddRecordToDictionaries(FileCabinetRecord record, int position)
-        {
-            this.recordsIdDictionary[record.Id] = position;
-            AddRecordToDictionary(this.firstNameDictionary, record.FirstName, position);
-            AddRecordToDictionary(this.lastNameDictionary, record.LastName, position);
-            AddRecordToDictionary(this.dateofbirthDictionary, record.DateOfBirth, position);
-        }
-
-        private void AddRecordToDictionaries(FileCabonetFilesystemRecord record, int position)
-        {
-            this.recordsIdDictionary.Add(record.Record.Id, position);
-            AddRecordToDictionary(this.firstNameDictionary, record.Record.FirstName, position);
-            AddRecordToDictionary(this.lastNameDictionary, record.Record.LastName, position);
-            AddRecordToDictionary(this.dateofbirthDictionary, record.Record.DateOfBirth, position);
-        }
-
-        private void ClearDictionaries()
-        {
-            this.recordsIdDictionary.Clear();
-            this.firstNameDictionary.Clear();
-            this.lastNameDictionary.Clear();
-            this.dateofbirthDictionary.Clear();
-        }
-
-        private void RemoveRecordFromDictionaries(int id)
-        {
-            var position = this.recordsIdDictionary[id];
-            var record = this.GetRecord(position);
-            this.recordsIdDictionary.Remove(id);
-            RemoveRecordFromDictionary(this.firstNameDictionary, record.Record.FirstName, position);
-            RemoveRecordFromDictionary(this.lastNameDictionary, record.Record.LastName, position);
-            RemoveRecordFromDictionary(this.dateofbirthDictionary, record.Record.DateOfBirth, position);
         }
     }
 }
