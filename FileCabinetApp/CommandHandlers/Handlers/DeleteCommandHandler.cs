@@ -28,7 +28,7 @@ namespace FileCabinetApp
         {
             if (this.CheckCommand(commandRequest))
             {
-                var result = new Parser().WhereParser(commandRequest.Parameters, out Query query);
+                var result = CommandParser.WhereParser(commandRequest.Parameters, out Query query);
                 if (result.Item1)
                 {
                     this.Delete(query);
@@ -46,12 +46,12 @@ namespace FileCabinetApp
 
         private void Delete(Query query)
         {
-            var ids = this.Service.Delete(query);
-            if (ids.Count != 0)
+            var deletedIdCollection = this.Service.Delete(query);
+            if (deletedIdCollection.Count != 0)
             {
-                var idsStr = ids.Select(i => "#" + i.ToString(CultureInfo.CurrentCulture)).ToArray();
+                var idsStr = deletedIdCollection.Select(i => "#" + i.ToString(CultureInfo.CurrentCulture)).ToArray();
                 var result = string.Join(", ", idsStr);
-                Console.WriteLine($"Records {result} are deleted.");
+                Console.WriteLine(StringManager.Rm.GetString("StringsAreDeleted", CultureInfo.CurrentCulture), result);
             }
             else
             {

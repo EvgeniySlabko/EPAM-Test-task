@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
@@ -12,9 +8,9 @@ namespace FileCabinetApp
     public static class FileCabinetFileSystemRecordExtension
     {
         /// <summary>
-        /// Is deleted.
+        /// Shows whether the entry has been deleted.
         /// </summary>
-        /// <param name="record">Record</param>
+        /// <param name="record">Record.</param>
         /// <returns>True if deleted otherwise false.</returns>
         public static bool IsDeleted(this FileCabonetFilesystemRecord record)
         {
@@ -23,7 +19,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(record));
             }
 
-            return (record.ServiceInormation & 4) != 0;
+            return (record.ServiceInormation & 4) == 0;
         }
     }
 }

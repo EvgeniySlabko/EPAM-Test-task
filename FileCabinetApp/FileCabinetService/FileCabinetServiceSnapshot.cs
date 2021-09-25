@@ -13,6 +13,7 @@ namespace FileCabinetApp
     /// </summary>
     public class FileCabinetServiceSnapshot
     {
+        private const string HeadersString = "Id, First Name, Last Name, Date of Birth, Identification number, Identification letter, Points for four tests";
         private FileCabinetRecord[] records;
 
         /// <summary>
@@ -71,7 +72,7 @@ namespace FileCabinetApp
         public void SaveToCsv(StreamWriter writer)
         {
             var csvWriter = new FileCabinetRecordCsvWriter(writer);
-            csvWriter.Write("Id, First Name, Last Name, Date of Birth, Identification number, Identification letter, Points for four tests");
+            csvWriter.Write(HeadersString);
             foreach (var record in this.records)
             {
                 csvWriter.Write(record);
@@ -79,7 +80,7 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Save records to XML file.
+        /// Save records to xml file.
         /// </summary>
         /// <param name="writer">Given StreamWriter object.</param>
         public void SaveToXml(StreamWriter writer)

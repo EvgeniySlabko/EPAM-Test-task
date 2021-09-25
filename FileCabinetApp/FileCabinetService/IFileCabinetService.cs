@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 
 namespace FileCabinetApp
 {
@@ -11,21 +10,21 @@ namespace FileCabinetApp
     public interface IFileCabinetService
     {
         /// <summary>
-        /// Create new record and adds it to list and dictionaries.
+        /// Insert record.
         /// </summary>
         /// <param name="newRecord">Record to add.</param>
         /// <returns>id of the new record.</returns>
         int Insert(FileCabinetRecord newRecord);
 
         /// <summary>
-        /// Create new record and adds it to list and dictionaries.
+        /// Create new record.
         /// </summary>
         /// <param name="newRecord">Record to add.</param>
         /// <returns>id of the new record.</returns>
-        int CreateRecord(FileCabinetRecord newRecord);
+        int CreateRecord(ValidationRecord newRecord);
 
         /// <summary>
-        /// Returns the number of records in the list.
+        /// Returns number of valid records and number of deleted records.
         /// </summary>
         /// <returns>Number of entries in the list.</returns>
         Tuple<int, int> GetStat();

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
@@ -31,7 +27,7 @@ namespace FileCabinetApp
             try
             {
                 result = (T)System.Convert.ChangeType(inputString, typeof(T), CultureInfo.InvariantCulture);
-                resultMessage = "Succesful conversation";
+                resultMessage = string.Empty;
             }
             catch (InvalidCastException)
             {
@@ -77,13 +73,7 @@ namespace FileCabinetApp
         /// <returns>Result.</returns>
         public static object TryConvertToObject<T>(string inputString)
         {
-            Tuple<bool, string, T> result = Convert<T>(inputString);
-            if (!result.Item1)
-            {
-                throw new ArgumentException(result.Item2);
-            }
-
-            return result.Item3;
+            return TryConvert<T>(inputString);
         }
     }
 }

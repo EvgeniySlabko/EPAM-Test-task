@@ -45,7 +45,7 @@ namespace FileCabinetApp
 
         private void Create()
         {
-            ConsoleHelper.EnterRecord(out FileCabinetRecord newRecord, this.validationRuleSet);
+            ConsoleHelper.EnterRecord(out ValidationRecord newRecord, this.validationRuleSet);
             int recordId = -1;
             try
             {

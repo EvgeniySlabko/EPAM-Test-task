@@ -55,36 +55,35 @@ namespace FileCabinetApp
             headers = null;
             query = new Query();
 
-            var parser = new Parser();
             if (string.IsNullOrWhiteSpace(parameters))
             {
                 query.Predicate = r => true;
-                parametersGetter = parser.GlobalParametersGetter;
-                headers = Parser.GetAllHeaders();
+                parametersGetter = CommandParser.GlobalParametersGetter;
+                headers = CommandParser.GetAllHeaders();
                 return new (true, string.Empty);
             }
 
             var queryStartIndex = parameters.IndexOf(Where, StringComparison.InvariantCultureIgnoreCase);
             var selectString = parameters.Substring(0, (queryStartIndex < 0) ? parameters.Length : queryStartIndex);
-            var queryString = (queryStartIndex < 0) ? string.Empty : parameters.Substring(queryStartIndex, parameters.Length - queryStartIndex);
+            var queryString = (queryStartIndex < 0) ? string.Empty : parameters[queryStartIndex..];
 
             if (string.IsNullOrWhiteSpace(selectString))
             {
-                headers = Parser.GetAllHeaders();
-                selectString = string.Join(',', Parser.GetAllHeaders());
+                headers = CommandParser.GetAllHeaders();
+                selectString = string.Join(',', CommandParser.GetAllHeaders());
             }
             else
             {
                 headers = selectString.Split(',').Select(h => h.Trim(' ')).ToArray();
             }
 
-            var selectParserResult = parser.SelectParser(selectString, out parametersGetter);
+            var selectParserResult = CommandParser.SelectParser(selectString, out parametersGetter);
             if (!selectParserResult.Item1)
             {
                 return selectParserResult;
             }
 
-            var whereParserResult = parser.WhereParser(queryString, out query);
+            var whereParserResult = CommandParser.WhereParser(queryString, out query);
             if (!whereParserResult.Item1)
             {
                 return whereParserResult;

@@ -3,7 +3,7 @@
 namespace FileCabinetApp
 {
     /// <summary>
-    /// Date validator.
+    /// DateOfBirthRecord validator.
     /// </summary>
     public class DateOfBirthRecordValidator : IRecordValidator
     {

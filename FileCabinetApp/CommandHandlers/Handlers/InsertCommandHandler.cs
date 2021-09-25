@@ -28,10 +28,10 @@ namespace FileCabinetApp
         {
             if (this.CheckCommand(commandRequest))
             {
-                var result = new Parser().InsertParser(commandRequest.Parameters, out FileCabinetRecord record);
+                var result = CommandParser.InsertParser(commandRequest.Parameters, out FileCabinetRecord record);
                 if (result.Item1)
                 {
-                    this.Create(record);
+                    this.Insert(record);
                 }
                 else
                 {
@@ -48,7 +48,7 @@ namespace FileCabinetApp
         /// Create ne Record.
         /// </summary>
         /// <param name="record">Given record.</param>
-        private void Create(FileCabinetRecord record)
+        private void Insert(FileCabinetRecord record)
         {
             int recordId;
             try

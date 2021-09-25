@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text.RegularExpressions;
 
 namespace FileCabinetApp
 {
@@ -10,7 +9,7 @@ namespace FileCabinetApp
     /// </summary>
     public class CommandHandlerBase : ICommandHandler
     {
-        private const float MinamalSimilarityСoefficientForShow = 0.5f;
+        private const float MinamalSimilarityСoefficientForShow = 0.3f;
         private readonly string command;
         private ICommandHandler commandHandler;
 
@@ -101,26 +100,64 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Get similarityСoefficient.
+        /// Get similarity coefficient.
         /// </summary>
-        /// <param name="source">Given command.</param>
-        /// <param name="target">ExistsCommand.</param>
+        /// <param name="first">Given command.</param>
+        /// <param name="second">ExistsCommand.</param>
         /// <returns>Similarity coefficient.</returns>
-        private static double GetSimilarity(string source, string target)
+        private static float GetSimilarity(string first, string second)
         {
-            if (string.IsNullOrEmpty(source) || string.IsNullOrEmpty(target))
+            if (string.IsNullOrEmpty(first) || string.IsNullOrEmpty(second))
             {
                 return 0;
             }
 
-            float sameLetters = 0;
-            foreach (var letter in target)
+            var firstLength = first.Length;
+            var secondtLength = second.Length;
+            int stepsToSame;
+
+            int[][] matrix = new int[firstLength + 1][];
+            for (int i = 0; i < matrix.Length; i++)
             {
-                var matches = new Regex($@"{letter}").Matches(source).Count;
-                sameLetters += (matches != 0) ? 1 / matches : 0;
+                matrix[i] = new int[secondtLength + 1];
             }
 
-            return (float)sameLetters / (float)source.Length;
+            if (firstLength == 0)
+            {
+                stepsToSame = secondtLength;
+            }
+            else if (secondtLength == 0)
+            {
+                stepsToSame = firstLength;
+            }
+            else
+            {
+                for (var i = 0; i <= firstLength; i++)
+                {
+                    matrix[i][0] = i;
+                }
+
+                for (var j = 0; j <= secondtLength; j++)
+                {
+                    matrix[0][j] = j;
+                }
+
+                for (var i = 1; i <= firstLength; i++)
+                {
+                    for (var j = 1; j <= secondtLength; j++)
+                    {
+                        var cost = (second[j - 1] == first[i - 1]) ? 0 : 1;
+
+                        matrix[i][j] = Math.Min(
+                            Math.Min(matrix[i - 1][j] + 1, matrix[i][j - 1] + 1),
+                            matrix[i - 1][j - 1] + cost);
+                    }
+                }
+
+                stepsToSame = matrix[firstLength][secondtLength];
+            }
+
+            return 1 - ((float)stepsToSame / (float)Math.Max(first.Length, second.Length));
         }
     }
 }

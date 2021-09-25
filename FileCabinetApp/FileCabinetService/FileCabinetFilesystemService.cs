@@ -21,12 +21,11 @@ namespace FileCabinetApp
         private readonly BinaryWriter binaryWriter;
         private readonly BinaryReader binaryReader;
 
-        private readonly SortedDictionary<int, int> recordsIdDictionary = new ();
+        private readonly Dictionary<int, int> recordsIdDictionary = new ();
 
         private readonly Memorizer memorizer = new ();
 
         private int id;
-        private int iterationIndex;
         private int lastPosition;
 
         /// <summary>
@@ -58,7 +57,7 @@ namespace FileCabinetApp
 
             if (this.recordsIdDictionary.ContainsKey(record.Id))
             {
-                int position = this.recordsIdDictionary[record.Id];
+                var position = this.recordsIdDictionary[record.Id];
                 this.recordsIdDictionary.Remove(record.Id);
                 this.recordsIdDictionary[record.Id] = position;
                 this.Write(record, position);
@@ -74,35 +73,25 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public int CreateRecord(FileCabinetRecord record)
+        public int CreateRecord(ValidationRecord record)
         {
             if (record is null)
             {
                 throw new ArgumentNullException(nameof(record));
             }
 
-            if (!this.recordValidator.ValidateParameters(record))
-            {
-                throw new ArgumentException("Invalide parameters");
-            }
-
-            record.Id = this.id++;
-            return this.Insert(record);
+            var fileCabinetRecord = new FileCabinetRecord(record, this.id++);
+            return this.Insert(fileCabinetRecord);
         }
 
-        /// <summary>
-        /// Implementation IDisposable.
-        /// </summary>
+        /// <inheritdoc/>
         public void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        /// <summary>
-        /// Returns the number of records in the list.
-        /// </summary>
-        /// <returns>Number of entries in the list.</returns>
+        /// <inheritdoc/>
         public Tuple<int, int> GetStat()
         {
             int existsCount = 0;
@@ -153,19 +142,13 @@ namespace FileCabinetApp
             return offset;
         }
 
-        /// <summary>
-        /// Takes a snapshot of the current state of the list of records.
-        /// </summary>
-        /// <returns>Snapshot of the current list of records.</returns>
+        /// <inheritdoc/>
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
             return new FileCabinetServiceSnapshot(this.GetRecords().ToArray());
         }
 
-        /// <summary>
-        /// Restore records from snapshot.
-        /// </summary>
-        /// <param name="snapshot">Given snapshot.</param>
+        /// <inheritdoc/>
         public void Restore(FileCabinetServiceSnapshot snapshot)
         {
             if (snapshot is null)
@@ -289,7 +272,7 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Implementation IDisposable.
+        /// Dispose.
         /// </summary>
         /// <param name="disposing">Flag for disposing.</param>
         protected virtual void Dispose(bool disposing)
@@ -427,7 +410,6 @@ namespace FileCabinetApp
 
         private void StartupService()
         {
-            int higherId = 0;
             int currentPosition = 0;
             foreach (var record in this.GetAnyRecords())
             {
@@ -437,17 +419,15 @@ namespace FileCabinetApp
                     continue;
                 }
 
-                if (record.Record.Id > higherId)
+                if (record.Record.Id > this.id)
                 {
-                    higherId = record.Record.Id;
+                    this.id = record.Record.Id;
                 }
 
                 this.lastPosition++;
                 this.recordsIdDictionary[record.Record.Id] = currentPosition;
                 currentPosition++;
             }
-
-            this.id = higherId + 1;
         }
     }
 }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
@@ -11,6 +7,10 @@ namespace FileCabinetApp
     /// </summary>
     public class StringValidator : IValidator<string>
     {
+        private readonly int minLen;
+
+        private readonly int maxLen;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="StringValidator"/> class.
         /// String validator constructor.
@@ -19,21 +19,9 @@ namespace FileCabinetApp
         /// <param name="minLen">Minimal string length.</param>
         public StringValidator(int minLen, int maxLen)
         {
-            this.MaxLen = maxLen;
-            this.MinLen = minLen;
+            this.maxLen = maxLen;
+            this.minLen = minLen;
         }
-
-        /// <summary>
-        /// Gets minimum length.
-        /// </summary>
-        /// <value>Minimum length.</value>
-        public int MinLen { get; }
-
-        /// <summary>
-        /// Gets maximum length.
-        /// </summary>
-        /// <value>Maximum length.</value>
-        public int MaxLen { get; }
 
         /// <summary>
         /// String validation.
@@ -49,9 +37,9 @@ namespace FileCabinetApp
 
             bool valid;
             string message;
-            if (inputStr.Length < this.MaxLen && inputStr.Length > this.MinLen)
+            if (inputStr.Length < this.maxLen && inputStr.Length > this.minLen)
             {
-                message = "Succesful";
+                message = string.Empty;
                 valid = true;
             }
             else

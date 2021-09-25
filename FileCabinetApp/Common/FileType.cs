@@ -1,18 +1,18 @@
 ﻿namespace FileCabinetApp
 {
     /// <summary>
-    /// Аile type.
+    /// File type.
     /// </summary>
     public enum FileType
     {
         /// <summary>
         /// Csv.
         /// </summary>
-        Сsv = 2,
+        Сsv,
 
         /// <summary>
         /// Xml.
         /// </summary>
-        Xml = 1,
+        Xml,
     }
 }

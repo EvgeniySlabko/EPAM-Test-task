@@ -29,15 +29,11 @@ namespace FileCabinetApp
             this.predicateList = predicateList;
         }
 
-        /// <summary>
-        /// String validation.
-        /// </summary>
-        /// <param name="inputValue">Given char character.</param>
-        /// <returns>Result tupple. bool value - validation result. string value - message string.</returns>
+        /// <inheritdoc/>
         public Tuple<bool, string> Validate(char inputValue)
         {
             bool valid = true;
-            string message = "Succesful";
+            string message = string.Empty;
 
             foreach (var predicate in this.predicateList)
             {

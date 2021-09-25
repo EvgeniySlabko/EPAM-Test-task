@@ -53,16 +53,16 @@ namespace FileCabinetApp
                 return new (false, "Invalid arguments)");
             }
 
-            var whereString = parameters.Substring(index, parameters.Length - index);
+            var whereString = parameters[index..];
             var setString = parameters.Substring(0, index);
 
-            var result1 = new Parser().WhereParser(whereString, out query);
+            var result1 = CommandParser.WhereParser(whereString, out query);
             if (!result1.Item1)
             {
                 return result1;
             }
 
-            var result2 = new Parser().SetParser(setString, out action);
+            var result2 = CommandParser.SetParser(setString, out action);
             if (!result2.Item1)
             {
                 return result2;

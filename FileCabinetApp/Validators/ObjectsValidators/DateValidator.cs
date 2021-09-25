@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace FileCabinetApp
 {
@@ -8,6 +7,10 @@ namespace FileCabinetApp
     /// </summary>
     public class DateValidator : IValidator<DateTime>
     {
+        private readonly DateTime minDateOfBirth;
+
+        private readonly DateTime maxDateOfBirth;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DateValidator"/> class.
         /// String validator constructor.
@@ -16,21 +19,9 @@ namespace FileCabinetApp
         /// <param name="minDateOfBirth">Minimal date of birth.</param>
         public DateValidator(DateTime minDateOfBirth, DateTime maxDateOfBirth)
         {
-            this.MinDateOfBirth = minDateOfBirth;
-            this.MaxDateOfBirth = maxDateOfBirth;
+            this.minDateOfBirth = minDateOfBirth;
+            this.maxDateOfBirth = maxDateOfBirth;
         }
-
-        /// <summary>
-        /// Gets minimum date of birth.
-        /// </summary>
-        /// <value>Minimum date of birth.</value>
-        public DateTime MinDateOfBirth { get; }
-
-        /// <summary>
-        /// Gets maximum date of birth.
-        /// </summary>
-        /// <value>Maximum date of birth.</value>
-        public DateTime MaxDateOfBirth { get; }
 
         /// <summary>
         /// String validation.
@@ -41,9 +32,9 @@ namespace FileCabinetApp
         {
             bool valid;
             string message;
-            if (inputDateOfBirth < this.MaxDateOfBirth && inputDateOfBirth > this.MinDateOfBirth)
+            if (inputDateOfBirth < this.maxDateOfBirth && inputDateOfBirth > this.minDateOfBirth)
             {
-                message = "Succesful";
+                message = string.Empty;
                 valid = true;
             }
             else

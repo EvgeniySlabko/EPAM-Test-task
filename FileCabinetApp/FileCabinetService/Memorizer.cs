@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
@@ -22,10 +19,10 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Add cached.
+        /// Add cached records.
         /// </summary>
         /// <param name="hash">Hash.</param>
-        /// <param name="list">Result.</param>
+        /// <param name="list">Records.</param>
         public void Add(long hash, List<FileCabinetRecord> list)
         {
             this.cache.Add(new Tuple<long, List<FileCabinetRecord>>(hash, list));

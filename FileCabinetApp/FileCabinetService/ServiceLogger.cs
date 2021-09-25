@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
@@ -30,7 +28,7 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public int CreateRecord(FileCabinetRecord newRecord)
+        public int CreateRecord(ValidationRecord newRecord)
         {
             if (newRecord is null)
             {
@@ -55,7 +53,7 @@ namespace FileCabinetApp
 
             this.Log($"Calling Create() with FirstName = {newRecord.FirstName}, LastName = {newRecord.LastName}, DateOfBirth = {newRecord.DateOfBirth.ToString(DateFormat, CultureInfo.CurrentCulture)}, IdentificationNumber = {newRecord.IdentificationNumber}, IdentificationLetter = {newRecord.IdentificationLetter}, Points = {newRecord.PointsForFourTests}");
 
-            var result = this.service.CreateRecord(newRecord);
+            var result = this.service.Insert(newRecord);
 
             this.Log($"Calling Create() returne {result.ToString(CultureInfo.CurrentCulture)}");
             return result;
@@ -89,7 +87,9 @@ namespace FileCabinetApp
         public int Purge()
         {
             this.Log($"Calling Purge()");
+
             var result = this.service.Purge();
+
             this.Log($"Calling Purge() succeeded. {result} were purged");
             return result;
         }
@@ -128,13 +128,12 @@ namespace FileCabinetApp
             this.Log($"Calling Delete()");
 
             var result = this.service.Delete(query);
+
             this.Log($"Calling Delete() return {result.Count} id. ");
             return result;
         }
 
-        /// <summary>
-        /// Dispose.
-        /// </summary>
+        /// <inheritdoc/>
         public void Dispose()
         {
             this.Dispose(true);

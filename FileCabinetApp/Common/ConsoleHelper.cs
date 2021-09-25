@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
 
 namespace FileCabinetApp
 {
     /// <summary>
-    /// Help with entering data from the console.
+    /// Console helper.
     /// </summary>
     public static class ConsoleHelper
     {
@@ -15,14 +14,14 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="newRecord">Record.</param>
         /// <param name="validationSettings">Validation rule set.</param>
-        public static void EnterRecord(out FileCabinetRecord newRecord, ValidationSettings validationSettings)
+        public static void EnterRecord(out ValidationRecord newRecord, ValidationSettings validationSettings)
         {
             if (validationSettings is null)
             {
                 throw new ArgumentNullException(nameof(validationSettings));
             }
 
-            newRecord = new FileCabinetRecord();
+            newRecord = new ValidationRecord();
             Console.WriteLine();
             Console.Write(StringManager.Rm.GetString("FirstNameMessage", CultureInfo.CurrentCulture));
             newRecord.FirstName = ReadInput(Converter.Convert<string>, new StringValidator(validationSettings.FirstName.Min, validationSettings.FirstName.Max).Validate);

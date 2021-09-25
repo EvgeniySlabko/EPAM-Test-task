@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 
 namespace FileCabinetApp
 {
@@ -29,11 +28,7 @@ namespace FileCabinetApp
             this.recordValidator = recordValidator;
         }
 
-        /// <summary>
-        /// Create new record and adds it to list and dictionaries.
-        /// </summary>
-        /// <param name="newRecord">Record to add.</param>
-        /// <returns>id of the new record.</returns>
+        /// <inheritdoc/>
         public int Insert(FileCabinetRecord newRecord)
         {
             if (newRecord is null)
@@ -54,7 +49,7 @@ namespace FileCabinetApp
             else
             {
                 // Replace previous record.
-                this.RemoveRecord(record);
+                this.list.Remove(record);
                 this.AddNewRecord(newRecord);
             }
 
@@ -62,15 +57,15 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public int CreateRecord(FileCabinetRecord newRecord)
+        public int CreateRecord(ValidationRecord newRecord)
         {
             if (newRecord is null)
             {
                 throw new ArgumentNullException(nameof(newRecord));
             }
 
-            newRecord.Id = this.list.Count + 1;
-            return this.Insert(newRecord);
+            var record = new FileCabinetRecord(newRecord, this.list.Count + 1);
+            return this.Insert(record);
         }
 
         /// <inheritdoc/>
@@ -138,7 +133,7 @@ namespace FileCabinetApp
                 }
             }
 
-            deletedRecords.ForEach(r => this.RemoveRecord(r));
+            deletedRecords.ForEach(r => this.list.Remove(r));
             return new ReadOnlyCollection<int>(deletedRecordsId);
         }
 
@@ -222,17 +217,7 @@ namespace FileCabinetApp
                 PointsForFourTests = newRecord.PointsForFourTests,
             };
 
-            this.AddRecordToDictionaries(currrentRecord);
-        }
-
-        private void RemoveRecord(FileCabinetRecord record)
-        {
-            this.list.Remove(record);
-        }
-
-        private void AddRecordToDictionaries(FileCabinetRecord record)
-        {
-            this.list.Add(record);
+            this.list.Add(currrentRecord);
         }
     }
 }

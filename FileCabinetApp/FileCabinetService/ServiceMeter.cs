@@ -23,7 +23,7 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public int CreateRecord(FileCabinetRecord newRecord)
+        public int CreateRecord(ValidationRecord newRecord)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();

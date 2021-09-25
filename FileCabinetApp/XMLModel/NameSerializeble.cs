@@ -19,9 +19,9 @@ namespace FileCabinetApp
         public string FirstName { get; set; }
 
         /// <summary>
-        /// Gets or sets record first name.
+        /// Gets or sets record last name.
         /// </summary>
-        /// <value>Record first name.</value>
+        /// <value>Record last name.</value>
         [XmlAttribute("last")]
         public string LastName { get; set; }
     }

@@ -17,8 +17,8 @@ namespace FileCabinetApp
     /// </summary>
     public static class Program
     {
-        private static string validationRule = Constants.DefaultValidationSettingsName;
-        private static ServiceType serviceType = Constants.DefaultServiceType;
+        private static string validationRule = ValidationConstants.DefaultValidationSettingsName;
+        private static ServiceType serviceType = ValidationConstants.DefaultServiceType;
         private static IFileCabinetService fileCabinetService;
         private static ValidationSettings validationSettings;
         private static bool isRunning = true;
@@ -88,7 +88,7 @@ namespace FileCabinetApp
 
         private static void LoadValidationSettings()
         {
-            validationSettings = ValidationSetLoader.LoadRules(Constants.ValidationSettingsFileName)[validationRule];
+            validationSettings = ValidationSetLoader.LoadRules(ValidationConstants.ValidationSettingsFileName)[validationRule];
         }
 
         private static void DisplayInfoMessage()
