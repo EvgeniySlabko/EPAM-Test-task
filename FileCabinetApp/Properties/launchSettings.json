@@ -2,7 +2,7 @@
   "profiles": {
     "FileCabinetApp": {
       "commandName": "Project",
-      "commandLineArgs": "-s file -v default -sw true -l true"
+      "commandLineArgs": "-s memory -v default -sw true -l true"
     }
   }
 }

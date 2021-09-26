@@ -47,7 +47,7 @@ namespace FileCabinetApp
         private void Delete(Query query)
         {
             var deletedIdCollection = this.Service.Delete(query);
-            if (deletedIdCollection.Count != 0)
+            if (!deletedIdCollection.Count.Equals(0))
             {
                 var idsStr = deletedIdCollection.Select(i => "#" + i.ToString(CultureInfo.CurrentCulture)).ToArray();
                 var result = string.Join(", ", idsStr);

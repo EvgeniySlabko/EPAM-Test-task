@@ -53,7 +53,7 @@ namespace FileCabinetApp
             type = default;
             path = default;
             var splitedParameters = parameters.Split(' ');
-            if (splitedParameters.Length != 2)
+            if (!splitedParameters.Length.Equals(2))
             {
                 return new (false, "Invalid parameters");
             }

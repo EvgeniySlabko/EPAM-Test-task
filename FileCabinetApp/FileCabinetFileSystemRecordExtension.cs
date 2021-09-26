@@ -19,7 +19,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(record));
             }
 
-            return (record.ServiceInormation & 4) == 0;
+            return (record.ServiceInormation & 4) != 0;
         }
     }
 }

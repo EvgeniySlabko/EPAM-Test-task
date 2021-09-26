@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace FileCabinetApp
 {
@@ -48,9 +46,9 @@ namespace FileCabinetApp
             action = null;
             query = new Query();
             int index = parameters.IndexOf(Where, 0, StringComparison.InvariantCultureIgnoreCase);
-            if (index < 1 || index == parameters.Length)
+            if (index < 1 || index.Equals(parameters.Length))
             {
-                return new (false, "Invalid arguments)");
+                return new (false, "Invalid arguments");
             }
 
             var whereString = parameters[index..];

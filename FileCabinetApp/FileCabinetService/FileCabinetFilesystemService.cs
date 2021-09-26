@@ -311,7 +311,7 @@ namespace FileCabinetApp
                     yield break;
                 }
 
-                if ((serviceRecord.ServiceInormation & 4) == 0)
+                if (!serviceRecord.IsDeleted())
                 {
                     yield return serviceRecord.Record;
                 }

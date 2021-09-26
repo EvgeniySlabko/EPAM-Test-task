@@ -53,6 +53,7 @@ namespace FileCabinetApp
                 this.AddNewRecord(newRecord);
             }
 
+            this.memorizer.Reset();
             return newRecord.Id;
         }
 
@@ -84,10 +85,10 @@ namespace FileCabinetApp
 
             foreach (var newRecord in snapshot.Records)
             {
-                var record = this.list.Find(r => newRecord.Id == r.Id);
-                if (record.Id >= this.id)
+                var record = this.list.Find(r => newRecord.Id.Equals(r.Id));
+                if (newRecord.Id >= this.id)
                 {
-                    this.id = record.Id + 1;
+                    this.id = newRecord.Id + 1;
                 }
 
                 if (record is not null)
@@ -99,6 +100,8 @@ namespace FileCabinetApp
                     this.list.Add(newRecord);
                 }
             }
+
+            this.memorizer.Reset();
         }
 
         /// <inheritdoc/>
@@ -134,6 +137,7 @@ namespace FileCabinetApp
             }
 
             deletedRecords.ForEach(r => this.list.Remove(r));
+            this.memorizer.Reset();
             return new ReadOnlyCollection<int>(deletedRecordsId);
         }
 
@@ -161,6 +165,7 @@ namespace FileCabinetApp
                 }
             }
 
+            this.memorizer.Reset();
             return count;
         }
 

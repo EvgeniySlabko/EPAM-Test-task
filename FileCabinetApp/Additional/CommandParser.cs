@@ -311,7 +311,7 @@ namespace FileCabinetApp
                 }
 
                 var action = actionMaker(convertedValue);
-                complexAction = complexAction is null ? action : ActionCompositor(action, complexAction);
+                complexAction += action;
             }
 
             setAction = complexAction;
@@ -348,15 +348,6 @@ namespace FileCabinetApp
 
             parametersGetter = r => getters.Select(g => g(r)).ToList();
             return new (true, string.Empty);
-        }
-
-        private static Action<FileCabinetRecord> ActionCompositor(Action<FileCabinetRecord> action1, Action<FileCabinetRecord> action2)
-        {
-            return r =>
-            {
-                action1(r);
-                action2(r);
-            };
         }
 
         private static FileCabinetRecord GetDefaultRecord()
