@@ -14,11 +14,12 @@ namespace FileCabinetGenerator
 {
     class Program
     {
-        static OutputFileType outputFileType = new();
+        static FileType outputFileType;
         static string outputFileName;
         static string validationRulesFilePath;
         static int amountOfGeneratedRecords;
         static int firstIdValue;
+        const string randomString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const string resultString = "{0} records were written to {1}";
         private static readonly ResourceManager Rm = new("FileCabinetApp.Resource.Strings", Assembly.GetExecutingAssembly());
         private static void ParseCommandLineArguments(string[] args)
@@ -28,11 +29,11 @@ namespace FileCabinetGenerator
             {
                 if (arg.Equals("csv"))
                 {
-                    outputFileType = OutputFileType.Cvs;
+                    outputFileType = FileType.Сsv;
                 }
                 else if (arg.Equals("xml"))
                 {
-                    outputFileType = OutputFileType.Xml;
+                    outputFileType = FileType.Xml;
                 }
                 else
                 {
@@ -58,9 +59,9 @@ namespace FileCabinetGenerator
             var random = new Random();
             for (int i = 0; i < amountOfGeneratedRecords; i++)
             {
-                var year = random.Next(defaultRule.DateModel.From.Year, defaultRule.DateModel.To.Year);
-                var month = random.Next(defaultRule.DateModel.From.Month, defaultRule.DateModel.To.Month);
-                var day = random.Next(defaultRule.DateModel.From.Day, defaultRule.DateModel.To.Day);
+                var dateFrom = new DateTime(defaultRule.DateModel.From.Year, defaultRule.DateModel.From.Month, defaultRule.DateModel.From.Day);
+                var dateTo = new DateTime(defaultRule.DateModel.To.Year, defaultRule.DateModel.To.Month, defaultRule.DateModel.To.Day);
+                var date = dateFrom.AddDays(random.Next((dateTo - dateFrom).Days));
                 var pointForFourTests = (short)random.Next(defaultRule.PointsModel.Min, defaultRule.PointsModel.Max);
                 var identificationNumber = GetRandomtDecimal(defaultRule.IdentificationNumberModel.Min, defaultRule.IdentificationNumberModel.Max);
 
@@ -69,10 +70,10 @@ namespace FileCabinetGenerator
                     Id = firstIdValue + i,
                     FirstName = GetRandomString(defaultRule.FirstName.Max / 4),
                     LastName = GetRandomString(defaultRule.LastName.Max / 4),
-                    DateOfBirth = new DateTime(year, month, day),
+                    DateOfBirth = date,
                     PointsForFourTests = pointForFourTests,
                     IdentificationNumber = identificationNumber,
-                    IdentificationLetter = 'f'
+                    IdentificationLetter = GetRandomChar(),
                 };
                 records.Add(newRecord);
             }
@@ -97,11 +98,15 @@ namespace FileCabinetGenerator
             return getFromNegativeRange ? decimal.Remainder(r, -from) + from : decimal.Remainder(r, to);
         }
 
+        private static char GetRandomChar()
+        {
+            return char.ToLower(randomString[new Random().Next(randomString.Length - 1)]);
+        }
+       
         private static string GetRandomString(int length)
         {
             var random = new Random();
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            return new string(Enumerable.Repeat(chars, length)
+            return new string(Enumerable.Repeat(randomString, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
         
@@ -123,7 +128,7 @@ namespace FileCabinetGenerator
 
             var recordSerializeble = new FileCabinetRecordsSerializable(records);
             var formatter = new XmlSerializer(typeof(FileCabinetRecordsSerializable));
-            using var fileStream = new FileStream(outputFileName, FileMode.OpenOrCreate);
+            using var fileStream = new FileStream(outputFileName, FileMode.Create);
             formatter.Serialize(fileStream, recordSerializeble, ns);
         }
         
@@ -132,7 +137,7 @@ namespace FileCabinetGenerator
             ParseCommandLineArguments(args);
 
             var records = GenerateRandomRecords();
-            if (outputFileType == OutputFileType.Cvs)
+            if (outputFileType == FileType.Сsv)
             {
                 WriteCsv(records);
             }

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace FileCabinetApp
 {
     /// <summary>
-    /// Model for serialization record.
+    /// Model for record serialization.
     /// </summary>
     [Serializable]
     [XmlRoot("records")]

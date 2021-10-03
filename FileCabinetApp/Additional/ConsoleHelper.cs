@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
 
 namespace FileCabinetApp
 {
     /// <summary>
-    /// Help with entering data from the console.
+    /// Console helper.
     /// </summary>
     public static class ConsoleHelper
     {
@@ -15,32 +14,32 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="newRecord">Record.</param>
         /// <param name="validationSettings">Validation rule set.</param>
-        public static void EnterRecord(out FileCabinetRecord newRecord, ValidationSettings validationSettings)
+        public static void EnterRecord(out ValidationRecord newRecord, ValidationSettings validationSettings)
         {
             if (validationSettings is null)
             {
                 throw new ArgumentNullException(nameof(validationSettings));
             }
 
-            newRecord = new FileCabinetRecord();
+            newRecord = new ValidationRecord();
             Console.WriteLine();
             Console.Write(StringManager.Rm.GetString("FirstNameMessage", CultureInfo.CurrentCulture));
-            newRecord.FirstName = ReadInput(new StringConverter().Convert, new StringValidator(validationSettings.FirstName.Min, validationSettings.FirstName.Max).Validate);
+            newRecord.FirstName = ReadInput(Converter.Convert<string>, new StringValidator(validationSettings.FirstName.Min, validationSettings.FirstName.Max).Validate);
 
             Console.Write(StringManager.Rm.GetString("LastNameMessage", CultureInfo.CurrentCulture));
-            newRecord.LastName = ReadInput(new StringConverter().Convert, new StringValidator(validationSettings.LastName.Min, validationSettings.LastName.Max).Validate);
+            newRecord.LastName = ReadInput(Converter.Convert<string>, new StringValidator(validationSettings.LastName.Min, validationSettings.LastName.Max).Validate);
 
             Console.Write(StringManager.Rm.GetString("DateOfBirthMessage", CultureInfo.CurrentCulture));
-            newRecord.DateOfBirth = ReadInput(new DateTimeConverter().Convert, new DateValidator(validationSettings.DateModel.From, validationSettings.DateModel.To).Validate);
+            newRecord.DateOfBirth = ReadInput(Converter.Convert<DateTime>, new DateValidator(validationSettings.DateModel.From, validationSettings.DateModel.To).Validate);
 
             Console.Write(StringManager.Rm.GetString("IdentificationNumberMessage", CultureInfo.CurrentCulture));
-            newRecord.IdentificationNumber = ReadInput(new DecimalConverter().Convert, new DecimalValidator(validationSettings.IdentificationNumberModel.Min, validationSettings.IdentificationNumberModel.Max).Validate);
+            newRecord.IdentificationNumber = ReadInput(Converter.Convert<decimal>, new DecimalValidator(validationSettings.IdentificationNumberModel.Min, validationSettings.IdentificationNumberModel.Max).Validate);
 
             Console.Write(StringManager.Rm.GetString("IdentificationLetterMessage", CultureInfo.CurrentCulture));
-            newRecord.IdentificationLetter = ReadInput(new CharConverter().Convert, new CharValidator(c => char.IsLetter(c)).Validate);
+            newRecord.IdentificationLetter = ReadInput(Converter.Convert<char>, new CharValidator(c => char.IsLetter(c)).Validate);
 
             Console.Write(StringManager.Rm.GetString("PointsForFourTestsMessage", CultureInfo.CurrentCulture));
-            newRecord.PointsForFourTests = ReadInput(new ShortConverter().Convert, new ShortValidator(validationSettings.PointsModel.Min, validationSettings.PointsModel.Max).Validate);
+            newRecord.PointsForFourTests = ReadInput(Converter.Convert<short>, new ShortValidator(validationSettings.PointsModel.Min, validationSettings.PointsModel.Max).Validate);
         }
 
         /// <summary>

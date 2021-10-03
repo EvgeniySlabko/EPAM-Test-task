@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FileCabinetApp
+﻿namespace FileCabinetApp
 {
     /// <summary>
     /// Global constants.
     /// </summary>
-    public static class Constants
+    public static class ValidationConstants
     {
         /// <summary>
         /// Gets or sets ValidationSettingsFileName.

@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Resources;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FileCabinetApp
+﻿namespace FileCabinetApp
 {
     /// <summary>
     /// Base class for all service handlers.

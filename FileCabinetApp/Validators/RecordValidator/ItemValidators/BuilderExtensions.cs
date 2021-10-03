@@ -22,7 +22,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            var defaultSettings = ValidationSetLoader.LoadRules(Constants.ValidationSettingsFileName)[Constants.DefaultValidationSettingsName];
+            var defaultSettings = ValidationSetLoader.LoadRules(ValidationConstants.ValidationSettingsFileName)[ValidationConstants.DefaultValidationSettingsName];
 
             return new ValidatorBuilder().ValidateFirstName(defaultSettings.FirstName.Min, defaultSettings.FirstName.Max).
                 ValidateLastName(defaultSettings.LastName.Min, defaultSettings.LastName.Max).
@@ -46,7 +46,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            var customSettings = ValidationSetLoader.LoadRules(Constants.ValidationSettingsFileName)[Constants.CustomValidationSettingsName];
+            var customSettings = ValidationSetLoader.LoadRules(ValidationConstants.ValidationSettingsFileName)[ValidationConstants.CustomValidationSettingsName];
 
             return new ValidatorBuilder().ValidateFirstName(customSettings.FirstName.Min, customSettings.FirstName.Max).
                 ValidateLastName(customSettings.LastName.Min, customSettings.LastName.Max).

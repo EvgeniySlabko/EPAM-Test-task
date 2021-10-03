@@ -120,6 +120,9 @@
   <data name="AvailableCommandsMessage" xml:space="preserve">
     <value>Available commands: </value>
   </data>
+  <data name="CommandExplanationMessage" xml:space="preserve">
+    <value>Commad {0} not found.</value>
+  </data>
   <data name="ConsoleStartSymbol" xml:space="preserve">
     <value>&gt;</value>
   </data>
@@ -157,7 +160,7 @@
     <value>First name: </value>
   </data>
   <data name="HelpMessageTemplate" xml:space="preserve">
-    <value>\t{0}\t- {1}</value>
+    <value>{0} - {1}</value>
   </data>
   <data name="HintMessage" xml:space="preserve">
     <value>Enter your command, or enter 'help' to get help.</value>
@@ -177,6 +180,9 @@
   <data name="InvalidArgumentsMessage" xml:space="preserve">
     <value>Invalid arguments</value>
   </data>
+  <data name="InvalidFileExtension" xml:space="preserve">
+    <value>Invalid file extension</value>
+  </data>
   <data name="InvalidFormatMessage" xml:space="preserve">
     <value>Invalid date format</value>
   </data>
@@ -185,6 +191,9 @@
   </data>
   <data name="MissedCommandInfoMessage" xml:space="preserve">
     <value>Command {0} not found.</value>
+  </data>
+  <data name="NoRecordsMatchingTheseParameters" xml:space="preserve">
+    <value>There are no records matching these parameters</value>
   </data>
   <data name="OverflowMessage" xml:space="preserve">
     <value>Overflow error</value>
@@ -204,14 +213,29 @@
   <data name="RecordIsRemoved" xml:space="preserve">
     <value>Record #{0} is removed.</value>
   </data>
+  <data name="RecordsChangedString" xml:space="preserve">
+    <value>{0} records was changed.</value>
+  </data>
   <data name="RecordsWereImport" xml:space="preserve">
     <value>Records were loaded from file</value>
+  </data>
+  <data name="RecordsWerePurgedMessage" xml:space="preserve">
+    <value>Data file processing is completed: {0} records were purged.</value>
+  </data>
+  <data name="SimilarCommandMessage" xml:space="preserve">
+    <value>The most similar command is</value>
+  </data>
+  <data name="SimilarCommandsMessage" xml:space="preserve">
+    <value>The most similar commands are</value>
   </data>
   <data name="StatMessage" xml:space="preserve">
     <value>"{0} exists record(s). {1} deleted."</value>
   </data>
+  <data name="StringsAreDeleted" xml:space="preserve">
+    <value>Records {0} are deleted.</value>
+  </data>
   <data name="SuccessfulWriteToFileMessage" xml:space="preserve">
-    <value>All records are exported to file{0}</value>
+    <value>All records are exported to file</value>
   </data>
   <data name="UnableCommandLineArgumentsMessage" xml:space="preserve">
     <value>Unable command line arguments</value>

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FileCabinetApp
+﻿namespace FileCabinetApp
 {
     /// <summary>
     /// Command handler interface.

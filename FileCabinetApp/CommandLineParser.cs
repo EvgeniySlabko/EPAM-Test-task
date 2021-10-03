@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
@@ -12,10 +9,13 @@ namespace FileCabinetApp
     /// </summary>
     public class CommandLineParser
     {
+        private const string Dash = "-";
+        private const string DoubleDash = "--";
+        private new const string Equals = "=";
         private readonly List<Tuple<string, string, Action<string>>> commandLineArgumentDescriptions = new ();
 
         /// <summary>
-        /// Add command line argument description.
+        /// Add command line argument parse description.
         /// </summary>
         /// <param name="fullArgumentName">Full argument name.</param>
         /// <param name="shortArgumentName">Short argument name.</param>
@@ -68,10 +68,10 @@ namespace FileCabinetApp
                     wasShortArgument = false;
                     continue;
                 }
-                else if (currentArg.StartsWith("--", StringComparison.CurrentCulture) && !wasShortArgument)
+                else if (currentArg.StartsWith(DoubleDash, StringComparison.Ordinal) && !wasShortArgument)
                 {
-                    var splitedArgs = currentArg.Split('=');
-                    if (splitedArgs.Length == 2)
+                    var splitedArgs = currentArg.Split(Equals);
+                    if (splitedArgs.Length.Equals(2))
                     {
                         index = this.commandLineArgumentDescriptions.FindIndex(description => description.Item1 == splitedArgs[0]);
                         if (index != -1)
@@ -82,7 +82,7 @@ namespace FileCabinetApp
                         }
                     }
                 }
-                else if (currentArg.StartsWith("-", StringComparison.CurrentCulture) && !wasShortArgument)
+                else if (currentArg.StartsWith(Dash, StringComparison.Ordinal) && !wasShortArgument)
                 {
                     index = this.commandLineArgumentDescriptions.FindIndex(description => description.Item2 == currentArg);
                     if (index != -1)

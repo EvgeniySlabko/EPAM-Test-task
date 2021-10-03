@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FileCabinetGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "-t xml --output=records.xml -a 10000 -i 0 -v validation-rules.json"
+    }
+  }
+}

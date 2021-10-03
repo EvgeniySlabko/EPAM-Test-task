@@ -22,9 +22,16 @@ namespace FileCabinetApp
         /// <inheritdoc/>
         public override void Handle(AppCommandRequest commandRequest)
         {
-            if (this.CheckCommand(commandRequest) && string.IsNullOrEmpty(commandRequest.Parameters))
+            if (this.CheckCommand(commandRequest))
             {
-                this.Stat();
+                if (string.IsNullOrEmpty(commandRequest.Parameters))
+                {
+                    this.Stat();
+                }
+                else
+                {
+                    Console.WriteLine(StringManager.Rm.GetString("InvalidArgumentsMessage", CultureInfo.CurrentCulture));
+                }
             }
             else
             {

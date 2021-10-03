@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
@@ -25,7 +22,7 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Write string.
+        /// Write string to file.
         /// </summary>
         /// <param name="str">String to write.</param>
         public void Write(string str)
@@ -49,28 +46,28 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(record));
             }
 
-            var cvcRecord = new StringBuilder();
+            var csvRecord = new StringBuilder();
 
-            cvcRecord.Append(record.Id.ToString(CultureInfo.CurrentCulture));
-            cvcRecord.Append(", ");
+            csvRecord.Append(record.Id.ToString(CultureInfo.CurrentCulture));
+            csvRecord.Append(", ");
 
-            cvcRecord.Append(record.FirstName);
-            cvcRecord.Append(", ");
+            csvRecord.Append(record.FirstName);
+            csvRecord.Append(", ");
 
-            cvcRecord.Append(record.LastName);
-            cvcRecord.Append(", ");
+            csvRecord.Append(record.LastName);
+            csvRecord.Append(", ");
 
-            cvcRecord.Append(record.DateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture));
-            cvcRecord.Append(", ");
+            csvRecord.Append(record.DateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture));
+            csvRecord.Append(", ");
 
-            cvcRecord.Append(record.IdentificationNumber.ToString(CultureInfo.CurrentCulture));
-            cvcRecord.Append(", ");
+            csvRecord.Append(record.IdentificationNumber.ToString(CultureInfo.CurrentCulture));
+            csvRecord.Append(", ");
 
-            cvcRecord.Append(record.IdentificationLetter);
-            cvcRecord.Append(", ");
+            csvRecord.Append(record.IdentificationLetter);
+            csvRecord.Append(", ");
 
-            cvcRecord.Append(record.PointsForFourTests.ToString(CultureInfo.CurrentCulture));
-            this.writer.WriteLine(cvcRecord);
+            csvRecord.Append(record.PointsForFourTests.ToString(CultureInfo.CurrentCulture));
+            this.writer.WriteLine(csvRecord);
         }
     }
 }

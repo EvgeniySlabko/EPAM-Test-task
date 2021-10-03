@@ -11,6 +11,7 @@ namespace FileCabinetApp
     public class ExportCommandHandler : FileCabinetServiceCommandHandlerBase
     {
         private const string Command = "export";
+
         private readonly Dictionary<string, FileType> fileType = new ()
         {
             { "csv", FileType.Сsv },
@@ -29,9 +30,17 @@ namespace FileCabinetApp
         /// <inheritdoc/>
         public override void Handle(AppCommandRequest commandRequest)
         {
-            if (this.CheckCommand(commandRequest) && this.ParseParameters(commandRequest.Parameters, out FileType type, out string path))
+            if (this.CheckCommand(commandRequest))
             {
-                this.Export(type, path);
+                var result = this.ParseParameters(commandRequest.Parameters, out FileType type, out string path);
+                if (result.Item1)
+                {
+                    this.Export(type, path);
+                }
+                else
+                {
+                    Console.WriteLine(result.Item2);
+                }
             }
             else
             {
@@ -39,18 +48,44 @@ namespace FileCabinetApp
             }
         }
 
+        private Tuple<bool, string> ParseParameters(string parameters, out FileType type, out string path)
+        {
+            type = default;
+            path = default;
+            var splitedParameters = parameters.Split(' ');
+            if (!splitedParameters.Length.Equals(2))
+            {
+                return new (false, "Invalid parameters");
+            }
+
+            if (File.Exists(splitedParameters[1]) && !ConsoleHelper.RewriteFileDialog(splitedParameters[1]))
+            {
+                return new (false, "Canceling file saving");
+            }
+
+            path = splitedParameters[1];
+
+            if (!this.fileType.TryGetValue(splitedParameters[0], out type))
+            {
+                return new (false, $"Undefined file type - {splitedParameters[0]}");
+            }
+
+            return new (true, string.Empty);
+        }
+
         private void Export(FileType type, string filePath)
         {
-            FileCabinetServiceSnapshot snapshot = this.Service.MakeSnapshot();
-            Action<StreamWriter> saveToMethod;
+            var snapshot = this.Service.MakeSnapshot();
+            Action<StreamWriter> saveTo;
+
             switch (type)
             {
-                case FileType.Xml:
-                    saveToMethod = snapshot.SaveToXml;
+                case FileType.Сsv:
+                    saveTo = snapshot.SaveToCsv;
                     break;
 
-                case FileType.Сsv:
-                    saveToMethod = snapshot.SaveToCsv;
+                case FileType.Xml:
+                    saveTo = snapshot.SaveToXml;
                     break;
 
                 default:
@@ -61,8 +96,7 @@ namespace FileCabinetApp
             try
             {
                 using var writer = new StreamWriter(filePath);
-                snapshot = this.Service.MakeSnapshot();
-                saveToMethod(writer);
+                saveTo(writer);
                 Console.WriteLine(StringManager.Rm.GetString("SuccessfulWriteToFileMessage", CultureInfo.CurrentCulture));
             }
             catch (IOException)
@@ -73,30 +107,6 @@ namespace FileCabinetApp
             {
                 Console.WriteLine(ex.Message);
             }
-        }
-
-        private bool ParseParameters(string parameters, out FileType type, out string path)
-        {
-            type = default;
-            path = default;
-            var splitedParameters = parameters.Split(' ');
-
-            if (splitedParameters.Length != 2 || (File.Exists(splitedParameters[1]) && !ConsoleHelper.RewriteFileDialog(splitedParameters[1])))
-            {
-                return false;
-            }
-
-            path = splitedParameters[1];
-            if (this.fileType.ContainsKey(splitedParameters[0]))
-            {
-                type = this.fileType[splitedParameters[0]];
-            }
-            else
-            {
-                return false;
-            }
-
-            return true;
         }
     }
 }

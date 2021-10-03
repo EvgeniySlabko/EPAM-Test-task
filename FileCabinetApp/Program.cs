@@ -17,8 +17,8 @@ namespace FileCabinetApp
     /// </summary>
     public static class Program
     {
-        private static string validationRule = Constants.DefaultValidationSettingsName;
-        private static ServiceType serviceType = Constants.DefaultServiceType;
+        private static string validationRule = ValidationConstants.DefaultValidationSettingsName;
+        private static ServiceType serviceType = ValidationConstants.DefaultServiceType;
         private static IFileCabinetService fileCabinetService;
         private static ValidationSettings validationSettings;
         private static bool isRunning = true;
@@ -60,53 +60,35 @@ namespace FileCabinetApp
 
         private static ICommandHandler CreateCommandHanders()
         {
+            var selectHandler = new SelectCommandHandler(fileCabinetService, TablePrinter.Print);
+            var uppdateHandler = new UppdateCommandHandler(fileCabinetService);
+            var deleteHandler = new DeleteCommandHandler(fileCabinetService);
+            var insertHandler = new InsertCommandHandler(fileCabinetService);
             var createHandler = new CreateCommandHandler(fileCabinetService, validationSettings);
-            var editHandler = new EditCommandHandler(fileCabinetService, validationSettings);
             var exitHandler = new ExitCommandHandler(stop => isRunning = stop);
             var exportHandler = new ExportCommandHandler(fileCabinetService);
-            var findHandler = new FindCommandHandler(fileCabinetService, Program.DefaultRecordsPrint);
             var helpHandler = new HelpCommandHandler();
             var importHandler = new ImportCommandHandler(fileCabinetService);
-            var listHandler = new ListCommandHandler(fileCabinetService, Program.DefaultRecordsPrint);
-            var removeHandler = new RemoveCommandHandler(fileCabinetService);
             var statHandler = new StatCommandHandler(fileCabinetService);
+            var purgeHandler = new PurgeCommandHandler(fileCabinetService);
 
-            statHandler.SetNext(removeHandler);
-            removeHandler.SetNext(listHandler);
-            listHandler.SetNext(importHandler);
+            statHandler.SetNext(importHandler);
             importHandler.SetNext(helpHandler);
-            helpHandler.SetNext(findHandler);
-            findHandler.SetNext(exportHandler);
+            helpHandler.SetNext(exportHandler);
             exportHandler.SetNext(exitHandler);
-            exitHandler.SetNext(editHandler);
-            editHandler.SetNext(createHandler);
+            exitHandler.SetNext(createHandler);
+            createHandler.SetNext(insertHandler);
+            insertHandler.SetNext(deleteHandler);
+            deleteHandler.SetNext(uppdateHandler);
+            uppdateHandler.SetNext(selectHandler);
+            selectHandler.SetNext(purgeHandler);
 
             return statHandler;
         }
 
         private static void LoadValidationSettings()
         {
-            validationSettings = ValidationSetLoader.LoadRules(Constants.ValidationSettingsFileName)[validationRule];
-        }
-
-        private static void DefaultRecordsPrint(IEnumerable<FileCabinetRecord> records)
-        {
-            var list = new List<FileCabinetRecord>(records);
-
-            if (records is null)
-            {
-                throw new ArgumentNullException(nameof(records));
-            }
-
-            if (list.Count.Equals(0))
-            {
-                Console.WriteLine(StringManager.Rm.GetString("EmptyListMessage", CultureInfo.CurrentCulture));
-            }
-
-            foreach (var record in records)
-            {
-                Console.WriteLine(StringManager.Rm.GetString("RecordInfoString", CultureInfo.CurrentCulture), record.Id, record.FirstName, record.LastName, record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo), record.IdentificationNumber, record.IdentificationLetter, record.PointsForFourTests);
-            }
+            validationSettings = ValidationSetLoader.LoadRules(ValidationConstants.ValidationSettingsFileName)[validationRule];
         }
 
         private static void DisplayInfoMessage()
@@ -142,7 +124,6 @@ namespace FileCabinetApp
             parser.AddCommandLineArgumentDescription("--storage", "-s", StorageRuleAction);
             parser.AddCommandLineArgumentDescription("--use-stopwatch", "-sw", s => useStopWatch = bool.Parse(s));
             parser.AddCommandLineArgumentDescription("--use-logger", "-l", s => useLogger = bool.Parse(s));
-
             parser.ParseCommandLineArguments(args);
             ApplyCommandLineArguments();
         }

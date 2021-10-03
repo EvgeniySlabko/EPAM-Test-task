@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace FileCabinetApp
 {
@@ -8,6 +7,10 @@ namespace FileCabinetApp
     /// </summary>
     public class IntValidator : IValidator<int>
     {
+        private readonly int minValue;
+
+        private readonly int maxValue;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="IntValidator"/> class.
         /// String validator constructor.
@@ -16,21 +19,9 @@ namespace FileCabinetApp
         /// <param name="minValue">Minimal value length.</param>
         public IntValidator(int minValue, int maxValue)
         {
-            this.MinValue = minValue;
-            this.MaxValue = maxValue;
+            this.minValue = minValue;
+            this.maxValue = maxValue;
         }
-
-        /// <summary>
-        /// Gets minimum value.
-        /// </summary>
-        /// <value>Minimum value.</value>
-        public int MinValue { get; }
-
-        /// <summary>
-        /// Gets maximum value.
-        /// </summary>
-        /// <value>Maximum value.</value>
-        public int MaxValue { get; }
 
         /// <summary>
         /// String validation.
@@ -41,9 +32,9 @@ namespace FileCabinetApp
         {
             bool valid;
             string message;
-            if (inputValue < this.MaxValue && inputValue > this.MinValue)
+            if (inputValue < this.maxValue && inputValue > this.minValue)
             {
-                message = "Succesful";
+                message = string.Empty;
                 valid = true;
             }
             else

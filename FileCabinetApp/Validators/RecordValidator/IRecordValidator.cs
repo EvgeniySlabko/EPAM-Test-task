@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FileCabinetApp
+﻿namespace FileCabinetApp
 {
     /// <summary>
     /// Interface for validators.
@@ -14,8 +8,8 @@ namespace FileCabinetApp
         /// <summary>
         /// Method for parameter validation.
         /// </summary>
-        /// <param name="record">Given parameters.</param>
-        /// <returns>Validation result.</returns>
+        /// <param name="record">Given record.</param>
+        /// <returns>Result of validation.</returns>
         public bool ValidateParameters(FileCabinetRecord record);
     }
 }

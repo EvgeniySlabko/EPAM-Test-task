@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FileCabinetApp": {
+      "commandName": "Project",
+      "commandLineArgs": "-s memory -v default -sw true -l true"
+    }
+  }
+}

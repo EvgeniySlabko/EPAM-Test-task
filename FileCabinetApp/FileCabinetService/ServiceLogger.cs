@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
@@ -26,11 +24,11 @@ namespace FileCabinetApp
         public ServiceLogger(IFileCabinetService service)
         {
             this.service = service;
-            this.writer = new StreamWriter(this.logFileName);
+            this.writer = new StreamWriter(this.logFileName, true);
         }
 
         /// <inheritdoc/>
-        public int CreateRecord(FileCabinetRecord newRecord, bool generateNewId)
+        public int CreateRecord(ValidationRecord newRecord)
         {
             if (newRecord is null)
             {
@@ -39,85 +37,25 @@ namespace FileCabinetApp
 
             this.Log($"Calling Create() with FirstName = {newRecord.FirstName}, LastName = {newRecord.LastName}, DateOfBirth = {newRecord.DateOfBirth.ToString(DateFormat, CultureInfo.CurrentCulture)}, IdentificationNumber = {newRecord.IdentificationNumber}, IdentificationLetter = {newRecord.IdentificationLetter}, Points = {newRecord.PointsForFourTests}");
 
-            var result = this.service.CreateRecord(newRecord, generateNewId);
+            var result = this.service.CreateRecord(newRecord);
 
             this.Log($"Calling Create() returne {result.ToString(CultureInfo.CurrentCulture)}");
             return result;
         }
 
         /// <inheritdoc/>
-        public void Edit(FileCabinetRecord newRecord)
+        public int Insert(FileCabinetRecord newRecord)
         {
             if (newRecord is null)
             {
                 throw new ArgumentNullException(nameof(newRecord));
             }
 
-            this.Log($"Calling Edit() for record with id {newRecord.Id}. FirstName = {newRecord.FirstName}, LastName = {newRecord.LastName}, DateOfBirth = {newRecord.DateOfBirth.ToString(DateFormat, CultureInfo.CurrentCulture)}, IdentificationNumber = {newRecord.IdentificationNumber}, IdentificationLetter = {newRecord.IdentificationLetter}, Points = {newRecord.PointsForFourTests}");
+            this.Log($"Calling Create() with FirstName = {newRecord.FirstName}, LastName = {newRecord.LastName}, DateOfBirth = {newRecord.DateOfBirth.ToString(DateFormat, CultureInfo.CurrentCulture)}, IdentificationNumber = {newRecord.IdentificationNumber}, IdentificationLetter = {newRecord.IdentificationLetter}, Points = {newRecord.PointsForFourTests}");
 
-            try
-            {
-                this.service.Edit(newRecord);
-            }
-            catch (ArgumentNullException ex)
-            {
-                this.Log($"Calling Edit() returne ArgumentNullException with message {ex.Message}");
-                throw;
-            }
-            catch (ArithmeticException ex)
-            {
-                this.Log($"Calling Edit() returne ArithmeticException with message {ex.Message}");
-                throw;
-            }
+            var result = this.service.Insert(newRecord);
 
-            this.Log($"Calling Edit() succeeded.");
-        }
-
-        /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
-        {
-            this.Log($"Calling FindByDate() with argument {dataOfBirthday.ToString(DateFormat, CultureInfo.CurrentCulture)}");
-
-            var result = this.service.FindByDate(dataOfBirthday);
-
-            this.Log($"Calling FindByDate() returne {result.Count} records.");
-
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
-        {
-            this.Log($"Calling FindByFirstName() with argument {firstName}");
-
-            var result = this.service.FindByFirstName(firstName);
-
-            this.Log($"Calling FindByFirstName() returne {result.Count} records.");
-
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
-        {
-            this.Log($"Calling FindByLastName() with argument {lastName}");
-
-            var result = this.service.FindByLastName(lastName);
-
-            this.Log($"Calling FindByLastName() returne {result.Count} records.");
-
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
-        {
-            this.Log($"Calling GetRecords()");
-
-            var result = this.service.GetRecords();
-
-            this.Log($"Calling GetRecords() returne {result.Count} records.");
-
+            this.Log($"Calling Create() returne {result.ToString(CultureInfo.CurrentCulture)}");
             return result;
         }
 
@@ -128,7 +66,7 @@ namespace FileCabinetApp
 
             var result = this.service.GetStat();
 
-            this.Log($"Calling GetStat() returne ({result.Item1}, {result.Item1}).");
+            this.Log($"Calling GetStat() return ({result.Item1}, {result.Item1}).");
 
             return result;
         }
@@ -146,39 +84,14 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public void Purge()
+        public int Purge()
         {
             this.Log($"Calling Purge()");
 
-            try
-            {
-                this.service.Purge();
-            }
-            catch (NotImplementedException)
-            {
-                this.Log("Purge() method invalid for this service.");
-                throw;
-            }
+            var result = this.service.Purge();
 
-            this.Log($"Calling Purge() succeeded.");
-        }
-
-        /// <inheritdoc/>
-        public void Remove(int id)
-        {
-            this.Log($"Calling Remove() for record with id {id}");
-
-            try
-            {
-                this.service.Remove(id);
-            }
-            catch (ArgumentException ex)
-            {
-                this.Log($"Calling Remove() returne ArgumentException with message {ex.Message}");
-                throw;
-            }
-
-            this.Log($"Calling Remove() succeeded.");
+            this.Log($"Calling Purge() succeeded. {result} were purged");
+            return result;
         }
 
         /// <inheritdoc/>
@@ -204,13 +117,66 @@ namespace FileCabinetApp
             this.Log($"Calling Restore() succeeded.");
         }
 
-        /// <summary>
-        /// Dispose.
-        /// </summary>
+        /// <inheritdoc/>
+        public ReadOnlyCollection<int> Delete(Query query)
+        {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            this.Log($"Calling Delete()");
+
+            var result = this.service.Delete(query);
+
+            this.Log($"Calling Delete() return {result.Count} id. ");
+            return result;
+        }
+
+        /// <inheritdoc/>
         public void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <inheritdoc/>
+        public int Update(Query query, Action<FileCabinetRecord> action)
+        {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            if (action is null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+
+            this.Log($"Calling Update()");
+
+            var result = this.service.Update(query, action);
+            this.Log($"Calling update() updates {result} records. ");
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<List<string>> SelectParameters(Query query, Func<FileCabinetRecord, List<string>> parameters)
+        {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            if (parameters is null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            this.Log($"Calling Select(). Query hash - {query.Hash}");
+            var result = this.service.SelectParameters(query, parameters);
+            this.Log($"Calling Select() succeeded.");
+            return result;
         }
 
         /// <summary>

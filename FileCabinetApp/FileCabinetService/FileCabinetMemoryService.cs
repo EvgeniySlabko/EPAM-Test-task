@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 
 namespace FileCabinetApp
 {
@@ -10,15 +9,15 @@ namespace FileCabinetApp
     /// </summary>
     public class FileCabinetMemoryService : IFileCabinetService
     {
+        // This value will always be 0 for memory service.
+        private const int DeletedRecords = 0;
+
         private readonly IRecordValidator recordValidator;
 
         private readonly List<FileCabinetRecord> list = new ();
 
-        private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new ();
-
-        private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new ();
-
-        private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateTimeDictionary = new ();
+        private readonly Memorizer memorizer = new ();
+        private int id;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetMemoryService"/> class.
@@ -29,13 +28,8 @@ namespace FileCabinetApp
             this.recordValidator = recordValidator;
         }
 
-        /// <summary>
-        /// Create new record and adds it to list and dictionaries.
-        /// </summary>
-        /// <param name="newRecord">Record to add.</param>
-        /// <param name="generateNewId">determines whether a new id needs to be generated.</param>
-        /// <returns>id of the new record.</returns>
-        public int CreateRecord(FileCabinetRecord newRecord, bool generateNewId = true)
+        /// <inheritdoc/>
+        public int Insert(FileCabinetRecord newRecord)
         {
             if (newRecord is null)
             {
@@ -47,129 +41,41 @@ namespace FileCabinetApp
                 throw new ArgumentException("Invalide parameters");
             }
 
-            FileCabinetRecord currrentRecord = new ()
+            var record = this.list.Find(r => r.Id.Equals(newRecord.Id));
+            if (record is null)
             {
-                Id = generateNewId ? this.list.Count + 1 : newRecord.Id,
-                FirstName = newRecord.FirstName,
-                LastName = newRecord.LastName,
-                DateOfBirth = newRecord.DateOfBirth,
+                this.AddNewRecord(newRecord);
+            }
+            else
+            {
+                // Replace previous record.
+                this.list.Remove(record);
+                this.AddNewRecord(newRecord);
+            }
 
-                IdentificationLetter = newRecord.IdentificationLetter,
-                IdentificationNumber = newRecord.IdentificationNumber,
-                PointsForFourTests = newRecord.PointsForFourTests,
-            };
-
-            return this.AddRecordToDictionaries(currrentRecord);
+            this.memorizer.Reset();
+            return newRecord.Id;
         }
 
-        /// <summary>
-        /// Returns an array with records.
-        /// </summary>
-        /// <returns>array with records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
+        /// <inheritdoc/>
+        public int CreateRecord(ValidationRecord newRecord)
         {
-            return new ReadOnlyCollection<FileCabinetRecord>(this.list);
+            if (newRecord is null)
+            {
+                throw new ArgumentNullException(nameof(newRecord));
+            }
+
+            var record = new FileCabinetRecord(newRecord, this.list.Count + 1);
+            return this.Insert(record);
         }
 
-        /// <summary>
-        /// Returns the number of entries in the list.
-        /// </summary>
-        /// <returns>Number of entries in the list.</returns>
+        /// <inheritdoc/>
         public Tuple<int, int> GetStat()
         {
-            return new Tuple<int, int>(this.list.Count, 0);
+            return new Tuple<int, int>(this.list.Count, DeletedRecords);
         }
 
-        /// <summary>
-        /// Edits the record by its id.
-        /// </summary>
-        /// <param name="newRecord">Edited record.</param>
-        public void Edit(FileCabinetRecord newRecord)
-        {
-            if (newRecord is null)
-            {
-                throw new ArgumentNullException(nameof(newRecord));
-            }
-
-            if (!this.recordValidator.ValidateParameters(newRecord))
-            {
-                throw new ArgumentException("Invalide parameters");
-            }
-
-            foreach (var record in this.list)
-            {
-                if (record.Id == newRecord.Id)
-                {
-                    this.RemoveRecord(record);
-
-                    this.CreateRecord(newRecord, false);
-
-                    return;
-                }
-            }
-
-            throw new ArgumentException("Id was not found");
-        }
-
-        /// <summary>
-        /// Find record by its first name.
-        /// </summary>
-        /// <param name="firstName">First name to search.</param>
-        /// <returns>Record if found otherwise null.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
-        {
-            if (firstName is null)
-            {
-                throw new ArgumentNullException(nameof(firstName));
-            }
-
-            if (this.firstNameDictionary.TryGetValue(firstName.ToLower(CultureInfo.CurrentCulture), out List<FileCabinetRecord> subList))
-            {
-                return new ReadOnlyCollection<FileCabinetRecord>(subList);
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Find record by its last name.
-        /// </summary>
-        /// <param name="lastName">Last name to search.</param>
-        /// <returns>Record if found otherwise null.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
-        {
-            if (lastName is null)
-            {
-                throw new ArgumentNullException(nameof(lastName));
-            }
-
-            if (this.lastNameDictionary.TryGetValue(lastName.ToLower(CultureInfo.CurrentCulture), out List<FileCabinetRecord> subList))
-            {
-                return new ReadOnlyCollection<FileCabinetRecord>(subList);
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Find record by its data of birthday.
-        /// </summary>
-        /// <param name="dataOfBirthday">Вata of birthday to search.</param>
-        /// <returns>Record if found otherwise null.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDate(DateTime dataOfBirthday)
-        {
-            if (this.dateTimeDictionary.TryGetValue(dataOfBirthday, out List<FileCabinetRecord> subList))
-            {
-                return new ReadOnlyCollection<FileCabinetRecord>(subList);
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Restore records from snapshot.
-        /// </summary>
-        /// <param name="snapshot">Given snapshot.</param>
+        /// <inheritdoc/>
         public void Restore(FileCabinetServiceSnapshot snapshot)
         {
             if (snapshot is null)
@@ -179,23 +85,26 @@ namespace FileCabinetApp
 
             foreach (var newRecord in snapshot.Records)
             {
-                for (int i = 0; i < this.list.Count; i++)
+                var record = this.list.Find(r => newRecord.Id.Equals(r.Id));
+                if (newRecord.Id >= this.id)
                 {
-                    if (newRecord.Id == this.list[i].Id)
-                    {
-                        this.list[i] = newRecord;
-                        continue;
-                    }
+                    this.id = newRecord.Id + 1;
                 }
 
-                this.list.Add(newRecord);
+                if (record is not null)
+                {
+                    record = newRecord;
+                }
+                else
+                {
+                    this.list.Add(newRecord);
+                }
             }
+
+            this.memorizer.Reset();
         }
 
-        /// <summary>
-        /// Takes a snapshot of the current state of the list of records.
-        /// </summary>
-        /// <returns>Snapshot of the current list of records.</returns>
+        /// <inheritdoc/>
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
             var copy = (FileCabinetRecord[])this.list.ToArray().Clone();
@@ -203,98 +112,117 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc/>
-        public void Remove(int id)
+        public int Purge()
         {
-            var record = this.list.Find(f => f.Id == id);
-            if (record is not null)
-            {
-                this.list.Remove(record);
-                this.firstNameDictionary.Remove(record.FirstName);
-                this.lastNameDictionary.Remove(record.LastName);
-                this.dateTimeDictionary.Remove(record.DateOfBirth);
-            }
-            else
-            {
-                throw new ArgumentException($"Record {id} does not exists.");
-            }
+            return DeletedRecords;
         }
 
         /// <inheritdoc/>
-        public void Purge()
+        public ReadOnlyCollection<int> Delete(Query query)
         {
-            throw new NotImplementedException();
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var deletedRecordsId = new List<int>();
+            var deletedRecords = new List<FileCabinetRecord>();
+            foreach (var record in this.list)
+            {
+                if (query.Predicate(record))
+                {
+                    deletedRecordsId.Add(record.Id);
+                    deletedRecords.Add(record);
+                }
+            }
+
+            deletedRecords.ForEach(r => this.list.Remove(r));
+            this.memorizer.Reset();
+            return new ReadOnlyCollection<int>(deletedRecordsId);
         }
 
-        /// <summary>
-        /// Remove record from list and dictionaries.
-        /// </summary>
-        /// <param name="record">Record to remove.</param>
-        private void RemoveRecord(FileCabinetRecord record)
+        /// <inheritdoc/>
+        public int Update(Query query, Action<FileCabinetRecord> action)
         {
-            this.firstNameDictionary[record.FirstName.ToLower(CultureInfo.CurrentCulture)].Remove(record);
-            this.firstNameDictionary.Remove(record.FirstName.ToLower(CultureInfo.CurrentCulture));
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
 
-            this.lastNameDictionary[record.LastName.ToLower(CultureInfo.CurrentCulture)].Remove(record);
-            this.lastNameDictionary.Remove(record.LastName.ToLower(CultureInfo.CurrentCulture));
+            if (action is null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
 
-            this.dateTimeDictionary[record.DateOfBirth].Remove(record);
-            this.dateTimeDictionary.Remove(record.DateOfBirth);
+            int count = 0;
+            var recordsToChange = new List<FileCabinetRecord>();
+            foreach (var record in this.list)
+            {
+                if (query.Predicate(record))
+                {
+                    action(record);
+                    count++;
+                }
+            }
 
-            this.list.Remove(record);
+            this.memorizer.Reset();
+            return count;
         }
 
-        /// <summary>
-        /// Takes a snapshot of the current state of the list of records.
-        /// </summary>
-        /// <returns>Snapshot of the current list of records.</returns>
-        private int AddRecordToDictionaries(FileCabinetRecord currrentRecord)
+        /// <inheritdoc/>
+        public IEnumerable<List<string>> SelectParameters(Query query, Func<FileCabinetRecord, List<string>> parametersGetter)
         {
-            // Add record in main list
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            if (parametersGetter is null)
+            {
+                throw new ArgumentNullException(nameof(parametersGetter));
+            }
+
+            var cachedRecords = this.memorizer.GetCached(query.Hash);
+            var recordsForCaching = new List<FileCabinetRecord>();
+            if (cachedRecords is null)
+            {
+                foreach (var record in this.list)
+                {
+                    if (query.Predicate(record))
+                    {
+                        recordsForCaching.Add(record);
+                        yield return parametersGetter((FileCabinetRecord)record.Clone());
+                    }
+                }
+
+                this.memorizer.Add(query.Hash, recordsForCaching);
+                yield break;
+            }
+            else
+            {
+                foreach (var record in cachedRecords)
+                {
+                    yield return parametersGetter((FileCabinetRecord)record.Clone());
+                }
+
+                yield break;
+            }
+        }
+
+        private void AddNewRecord(FileCabinetRecord newRecord)
+        {
+            FileCabinetRecord currrentRecord = new ()
+            {
+                Id = newRecord.Id,
+                FirstName = newRecord.FirstName,
+                LastName = newRecord.LastName,
+                DateOfBirth = newRecord.DateOfBirth,
+                IdentificationLetter = newRecord.IdentificationLetter,
+                IdentificationNumber = newRecord.IdentificationNumber,
+                PointsForFourTests = newRecord.PointsForFourTests,
+            };
+
             this.list.Add(currrentRecord);
-
-            // add record in firstNameDictionary
-            if (this.firstNameDictionary.TryGetValue(currrentRecord.FirstName.ToLower(CultureInfo.CurrentCulture), out List<FileCabinetRecord> subList))
-            {
-                subList.Add(currrentRecord);
-            }
-            else
-            {
-                subList = new List<FileCabinetRecord>
-            {
-                currrentRecord,
-            };
-                this.firstNameDictionary.Add(currrentRecord.FirstName.ToLower(CultureInfo.CurrentCulture), subList);
-            }
-
-            // add record in lastNameDictionary
-            if (this.lastNameDictionary.TryGetValue(currrentRecord.LastName.ToLower(CultureInfo.CurrentCulture), out subList))
-            {
-                subList.Add(currrentRecord);
-            }
-            else
-            {
-                subList = new List<FileCabinetRecord>
-            {
-                currrentRecord,
-            };
-                this.lastNameDictionary.Add(currrentRecord.LastName.ToLower(CultureInfo.CurrentCulture), subList);
-            }
-
-            // add record in dateTimeDictionary
-            if (this.dateTimeDictionary.TryGetValue(currrentRecord.DateOfBirth, out subList))
-            {
-                subList.Add(currrentRecord);
-            }
-            else
-            {
-                subList = new List<FileCabinetRecord>
-            {
-                currrentRecord,
-            };
-                this.dateTimeDictionary.Add(currrentRecord.DateOfBirth, subList);
-            }
-
-            return currrentRecord.Id;
         }
     }
 }
