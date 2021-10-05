@@ -32,7 +32,7 @@ namespace FileCabinetApp
             new string[]
             {
                 "insert", "insert record to service", "The 'insert' insert record to service." +
-                 $"{Environment.NewLine}Example: insert (id, firstname, lastname, dateofbirth) values ('77', 'John', 'Doe', '5/18/1986')",
+                 $"{Environment.NewLine}Example: insert (id, firstname, lastname, dateofbirth, letter, identificationnumber, points) values ('77', 'John', 'Doe', '5/18/1986', 'h', '555', '6')",
             },
             new string[]
             {

@@ -98,7 +98,7 @@ namespace FileCabinetApp
             int deletedCount = 0;
             foreach (var record in this.GetAnyRecords())
             {
-                if ((record.ServiceInormation & 4) != 4)
+                if (!record.IsDeleted())
                 {
                     existsCount++;
                 }
@@ -119,7 +119,7 @@ namespace FileCabinetApp
             int iterationIndex = 0;
             foreach (var record in this.GetAnyRecords())
             {
-                if ((record.ServiceInormation & 4) != 0)
+                if (record.IsDeleted())
                 {
                     offset++;
                 }
@@ -138,6 +138,7 @@ namespace FileCabinetApp
             }
 
             this.memorizer.Reset();
+            this.lastPosition = iterationIndex - offset;
             this.fileStrieam.SetLength(RecordSize * (iterationIndex - offset));
             return offset;
         }
@@ -413,7 +414,7 @@ namespace FileCabinetApp
             int currentPosition = 0;
             foreach (var record in this.GetAnyRecords())
             {
-                if (!record.IsDeleted())
+                if (record.IsDeleted())
                 {
                     currentPosition++;
                     continue;
@@ -421,7 +422,7 @@ namespace FileCabinetApp
 
                 if (record.Record.Id > this.id)
                 {
-                    this.id = record.Record.Id;
+                    this.id = record.Record.Id + 1;
                 }
 
                 this.lastPosition++;
